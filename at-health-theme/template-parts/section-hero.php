@@ -6,7 +6,7 @@
 
 $hero_eyebrow   = ah_field( 'hero_eyebrow', 'Clinically Proven Weight Loss' );
 $hero_title     = ah_field( 'hero_title', 'Your health, in trusted hands.' );
-$hero_subtitle  = ah_field( 'hero_subtitle', 'Together Clinic is a GPhC-registered online pharmacy built around you. Expert pharmacist prescribers, transparent pricing, and care that puts your wellbeing first — all from the comfort of home.' );
+$hero_subtitle  = ah_field( 'hero_subtitle', 'Together Clinic is a General Pharmaceutical Council (GPhC)-registered online pharmacy built around you. Expert pharmacist prescribers, transparent pricing, and care that puts your wellbeing first — all from the comfort of home.' );
 $hero_cta_text  = ah_field( 'hero_cta_text', 'Start Your Journey' );
 $hero_cta_url   = ah_field( 'hero_cta_url', '' );
 if ( $hero_cta_url === null || $hero_cta_url === '' ) {

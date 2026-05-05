@@ -56,7 +56,7 @@ get_header();
           </div>
           <div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">Solving the Access Problem</h3>
-            <p class="text-gray-600 leading-relaxed"><?php echo esc_html( ah_field( 'ab_story_2', 'GLP-1 medications were difficult to access. We removed barriers — offering same-day prescriptions, 48-hour delivery, and transparent pricing.' ) ); ?></p>
+            <p class="text-gray-600 leading-relaxed"><?php echo esc_html( ah_field( 'ab_story_2', 'Glucagon-Like Peptide-1 (GLP-1) medications were difficult to access. We removed barriers — offering same-day prescriptions, 48-hour delivery, and transparent pricing.' ) ); ?></p>
           </div>
           <div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">No Compromise on Quality</h3>
