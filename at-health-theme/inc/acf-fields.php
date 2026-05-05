@@ -52,10 +52,10 @@ acf_add_local_field_group( array(
     'key'      => 'group_ah_a2_contact',
     'title'    => 'A2 — Contact & Details',
     'fields'   => array(
-        array( 'key' => 'field_ah_phone_number', 'label' => 'Phone Number', 'name' => 'phone_number', 'type' => 'text', 'default_value' => '0161 336 2548' ),
-        array( 'key' => 'field_ah_phone_hours', 'label' => 'Phone Hours', 'name' => 'phone_hours', 'type' => 'text', 'default_value' => 'Mon–Fri, 9am–6pm' ),
-        array( 'key' => 'field_ah_email_address', 'label' => 'Email Address', 'name' => 'email_address', 'type' => 'email', 'default_value' => 'ahmed@at-health.co.uk' ),
+        array( 'key' => 'field_ah_business_hours', 'label' => 'Business Hours', 'name' => 'business_hours', 'type' => 'text', 'default_value' => '9am - 5pm, Monday to Friday' ),
+        array( 'key' => 'field_ah_email_address', 'label' => 'Email Address', 'name' => 'email_address', 'type' => 'email', 'default_value' => 'info@togetherclinic.co.uk' ),
         array( 'key' => 'field_ah_email_response_time', 'label' => 'Email Response Time', 'name' => 'email_response_time', 'type' => 'text', 'default_value' => 'Reply within 4 hours' ),
+        array( 'key' => 'field_ah_no_phone_notice', 'label' => 'No Phone Consultations Notice', 'name' => 'no_phone_notice', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'We do not offer telephone consultations. Please contact us via email or live chat.' ),
         array( 'key' => 'field_ah_eligibility_url', 'label' => 'Eligibility / Booking URL', 'name' => 'eligibility_url', 'type' => 'url', 'instructions' => 'The main CTA link used across the site.' ),
     ),
     'location' => array( array( array( 'param' => 'options_page', 'operator' => '==', 'value' => 'ah-settings-contact' ) ) ),

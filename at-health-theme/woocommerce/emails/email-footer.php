@@ -5,8 +5,9 @@
  */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-$phone   = function_exists( 'ah_phone' ) ? ah_phone() : '0161 336 2548';
-$email   = function_exists( 'ah_email' ) ? ah_email() : 'ahmed@at-health.co.uk';
+$email   = function_exists( 'ah_email' ) ? ah_email() : 'info@togetherclinic.co.uk';
+$hours   = function_exists( 'ah_business_hours' ) ? ah_business_hours() : '9am - 5pm, Monday to Friday';
+$notice  = function_exists( 'ah_no_phone_notice' ) ? ah_no_phone_notice() : 'We do not offer telephone consultations. Please contact us via email or live chat.';
 $company = function_exists( 'ah_company_name' ) ? ah_company_name() : 'AT Health';
 ?>
                         </td>
@@ -24,11 +25,10 @@ $company = function_exists( 'ah_company_name' ) ? ah_company_name() : 'AT Health
                         <td style="background-color: #f7f4f9; border-radius: 16px; padding: 24px 32px; text-align: center;">
                             <p style="margin: 0 0 8px; font-size: 14px; font-weight: 600; color: #111827;">Need support?</p>
                             <p style="margin: 0; font-size: 14px; color: #6b7280;">
-                                Call <a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>" style="color: #8e88d0; font-weight: 600;"><?php echo esc_html( $phone ); ?></a>
-                                &nbsp;&middot;&nbsp;
                                 Email <a href="mailto:<?php echo esc_attr( $email ); ?>" style="color: #8e88d0; font-weight: 600;"><?php echo esc_html( $email ); ?></a>
                             </p>
-                            <p style="margin: 6px 0 0; font-size: 12px; color: #9ca3af;">Mon–Fri, 9am–6pm</p>
+                            <p style="margin: 6px 0 0; font-size: 12px; color: #9ca3af;">Hours: <?php echo esc_html( $hours ); ?></p>
+                            <p style="margin: 6px 0 0; font-size: 12px; color: #9ca3af;"><?php echo esc_html( $notice ); ?></p>
                         </td>
                     </tr>
                 </table>

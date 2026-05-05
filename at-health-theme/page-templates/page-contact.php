@@ -46,14 +46,14 @@ get_header();
         <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="inline-flex items-center gap-2 bg-white text-purple-700 font-semibold px-6 py-3 rounded-xl text-sm hover:bg-gray-100 transition-all">Begin Assessment</a>
         <p class="text-white/60 text-xs mt-3">Takes 5 minutes</p>
       </div>
-      <!-- Call -->
+      <!-- Hours -->
       <div class="ct-info-card" data-reveal style="--stagger-index:1">
         <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center mb-5">
-          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         </div>
-        <h3 class="text-xl font-serif text-gray-900 mb-3">Call Us</h3>
-        <a href="<?php echo esc_url( ah_phone_link() ); ?>" class="text-2xl font-serif text-purple-700 font-bold hover:text-purple-600 transition-colors"><?php echo esc_html( ah_phone() ); ?></a>
-        <p class="text-sm text-gray-500 mt-2"><?php echo esc_html( ah_option( 'phone_hours', 'Mon–Fri, 9am–6pm' ) ); ?></p>
+        <h3 class="text-xl font-serif text-gray-900 mb-3">Hours</h3>
+        <p class="text-lg text-purple-700 font-semibold"><?php echo esc_html( ah_business_hours() ); ?></p>
+        <p class="text-sm text-gray-500 mt-2"><?php echo esc_html( ah_no_phone_notice() ); ?></p>
       </div>
       <!-- Email -->
       <div class="ct-info-card" data-reveal style="--stagger-index:2">

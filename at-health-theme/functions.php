@@ -108,7 +108,7 @@ function ah_company_name() {
 }
 
 function ah_phone() {
-    return ah_option( 'phone_number', '0161 336 2548' );
+    return ah_option( 'phone_number', '' );
 }
 
 function ah_phone_link() {
@@ -116,7 +116,15 @@ function ah_phone_link() {
 }
 
 function ah_email() {
-    return ah_option( 'email_address', 'ahmed@at-health.co.uk' );
+    return ah_option( 'email_address', 'info@togetherclinic.co.uk' );
+}
+
+function ah_business_hours() {
+    return ah_option( 'business_hours', '9am - 5pm, Monday to Friday' );
+}
+
+function ah_no_phone_notice() {
+    return ah_option( 'no_phone_notice', 'We do not offer telephone consultations. Please contact us via email or live chat.' );
 }
 
 function ah_booking_url() {

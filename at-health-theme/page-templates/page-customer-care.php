@@ -56,12 +56,12 @@ get_header();
 <!-- Contact CTA -->
 <section class="py-14 md:py-16" style="background: #fdf8f3;">
   <div class="ah-container text-center" data-reveal>
-    <h2 class="text-3xl md:text-4xl font-serif text-gray-900 mb-4">Need to speak with us?</h2>
-    <p class="text-gray-600 mb-8">Our UK-based team is available Monday to Friday, 9am–6pm.</p>
+    <h2 class="text-3xl md:text-4xl font-serif text-gray-900 mb-4">Need to get in touch?</h2>
+    <p class="text-gray-600 mb-8">Our UK-based team is available <?php echo esc_html( ah_business_hours() ); ?>.</p>
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-      <a href="<?php echo esc_url( ah_phone_link() ); ?>" class="ah-btn-purple">Call <?php echo esc_html( ah_phone() ); ?></a>
-      <a href="mailto:<?php echo esc_attr( ah_email() ); ?>" class="inline-flex items-center gap-2 border-2 border-gray-200 hover:border-purple-300 text-gray-700 font-semibold px-8 py-4 rounded-xl transition-all">Email <?php echo esc_html( ah_email() ); ?></a>
+      <a href="mailto:<?php echo esc_attr( ah_email() ); ?>" class="ah-btn-purple">Email <?php echo esc_html( ah_email() ); ?></a>
     </div>
+    <p class="text-sm text-gray-500 mt-6 max-w-xl mx-auto"><?php echo esc_html( ah_no_phone_notice() ); ?></p>
   </div>
 </section>
 
