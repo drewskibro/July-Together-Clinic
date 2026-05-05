@@ -5,8 +5,8 @@
  */
 
 $hero_eyebrow   = ah_field( 'hero_eyebrow', 'Clinically Proven Weight Loss' );
-$hero_title     = ah_field( 'hero_title', 'Transform Your<br>Life With Medical<br><span style="color: #6366f1;">Weight Loss</span>' );
-$hero_subtitle  = ah_field( 'hero_subtitle', 'Clinically-proven prescription treatments that work when diets have failed. Lose up to 26% body weight with expert medical support every step of the way.' );
+$hero_title     = ah_field( 'hero_title', 'Your health, in trusted hands.' );
+$hero_subtitle  = ah_field( 'hero_subtitle', 'Together Clinic is a GPhC-registered online pharmacy built around you. Expert pharmacist prescribers, transparent pricing, and care that puts your wellbeing first — all from the comfort of home.' );
 $hero_cta_text  = ah_field( 'hero_cta_text', 'Start Your Journey' );
 $hero_cta_url   = ah_field( 'hero_cta_url', '' );
 if ( $hero_cta_url === null || $hero_cta_url === '' ) {
@@ -61,6 +61,10 @@ $hero_image_alt = ah_field( 'hero_image_alt', 'Woman in kitchen feeling confiden
           </a>
           <span class="text-gray-400 text-xs font-medium tracking-wide uppercase hidden sm:inline">GPhC Regulated</span>
         </div>
+        <!-- Trust line -->
+        <p class="text-xs text-gray-400 mt-4 opacity-0 animate-fade-in-up delay-[500ms]" style="animation-fill-mode: forwards;">
+          Regulated by the General Pharmaceutical Council (GPhC)
+        </p>
       </div>
 
       <!-- Right Column: Hero image -->
