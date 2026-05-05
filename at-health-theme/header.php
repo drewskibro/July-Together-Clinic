@@ -58,7 +58,7 @@
                     <img
                         src="<?php echo esc_url( ah_logo_url() ); ?>"
                         alt="<?php echo esc_attr( ah_company_name() ); ?>"
-                        class="h-12"
+                        class="h-16"
                     />
                 </a>
 
