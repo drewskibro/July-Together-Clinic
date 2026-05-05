@@ -64,11 +64,69 @@ get_template_part( 'template-parts/section', 'how-it-works' );
 </section>
 
 <!-- Section 4: Know Your Team -->
-<!-- TO BE POPULATED -->
+<?php
+$team_eyebrow  = ah_field( 'team_eyebrow', 'Meet Your Pharmacists' );
+$team_title    = ah_field( 'team_title', 'Know Your Team' );
+$team_subtitle = ah_field( 'team_subtitle', 'Our pharmacists are fully registered with the General Pharmaceutical Council (GPhC). Click any registration number to verify on the official GPhC register.' );
+
+$team_members = array(
+    array(
+        'photo'       => ah_field( 'team_member1_photo', '' ),
+        'name'        => ah_field( 'team_member1_name', 'Ahmed Nizar Al-Liabi' ),
+        'role'        => ah_field( 'team_member1_role', 'Superintendent Pharmacist' ),
+        'gphc_number' => ah_field( 'team_member1_gphc_number', '2208502' ),
+        'gphc_url'    => ah_field( 'team_member1_gphc_url', 'https://www.pharmacyregulation.org/registers/pharmacist' ),
+    ),
+    array(
+        'photo'       => ah_field( 'team_member2_photo', '' ),
+        'name'        => ah_field( 'team_member2_name', 'Sunil Thacker' ),
+        'role'        => ah_field( 'team_member2_role', 'Independent Pharmacist Prescriber' ),
+        'gphc_number' => ah_field( 'team_member2_gphc_number', '2047968' ),
+        'gphc_url'    => ah_field( 'team_member2_gphc_url', 'https://www.pharmacyregulation.org/registers/pharmacist' ),
+    ),
+);
+?>
 <section class="relative py-16 md:py-20" style="background: #fdf8f3;">
   <div class="ah-container-wide">
-    <div class="text-center">
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-serif text-gray-900">Know Your Team</h2>
+    <div class="text-center mb-12 section-header">
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <div class="w-1 h-8 bg-purple-600 rounded-full"></div>
+        <p class="text-purple-600 text-xs md:text-sm font-bold uppercase tracking-wider"><?php echo esc_html( $team_eyebrow ); ?></p>
+      </div>
+      <h2 class="text-3xl md:text-4xl lg:text-5xl text-gray-800 font-serif leading-[1.1] mb-4">
+        <?php echo esc_html( $team_title ); ?>
+      </h2>
+      <p class="text-base md:text-lg text-gray-700 leading-[1.7] max-w-2xl mx-auto">
+        <?php echo esc_html( $team_subtitle ); ?>
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto" data-stagger>
+      <?php foreach ( $team_members as $i => $member ) : ?>
+      <div class="bg-white rounded-3xl p-8 md:p-10 shadow-lg border border-gray-200 text-center" data-reveal style="--stagger-index:<?php echo (int) $i; ?>">
+        <div class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden bg-purple-50 border-4 border-white shadow-md">
+          <?php if ( $member['photo'] !== null && $member['photo'] !== '' ) : ?>
+            <?php echo wp_get_attachment_image( $member['photo'], 'medium', false, array(
+                'class' => 'w-full h-full object-cover',
+                'alt'   => esc_attr( $member['name'] ),
+            ) ); ?>
+          <?php else : ?>
+            <!-- AWAITING PHOTO FROM CLIENT -->
+            <svg class="w-full h-full text-purple-200" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+            </svg>
+          <?php endif; ?>
+        </div>
+        <h3 class="text-2xl font-serif text-gray-900 mb-2"><?php echo esc_html( $member['name'] ); ?></h3>
+        <p class="text-base text-gray-600 mb-4"><?php echo esc_html( $member['role'] ); ?></p>
+        <a href="<?php echo esc_url( $member['gphc_url'] ); ?>" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+          </svg>
+          GPhC: <?php echo esc_html( $member['gphc_number'] ); ?>
+        </a>
+      </div>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
