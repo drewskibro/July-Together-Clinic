@@ -221,7 +221,7 @@ get_header();
           <tr><td class="font-semibold text-gray-900">Starting Dose</td><td>2.5mg</td><td>0.25mg</td></tr>
           <tr><td class="font-semibold text-gray-900">Dosing Plan</td><td>20 weeks to full dose</td><td>16 weeks to full dose</td></tr>
           <tr><td class="font-semibold text-gray-900">Delivery</td><td>Within 48 hours</td><td>Within 48 hours</td></tr>
-          <tr><td class="font-semibold text-gray-900">Side Effects</td><td>Nausea, diarrhea, reduced appetite</td><td>Nausea, diarrhea, reduced appetite</td></tr>
+          <tr><td class="font-semibold text-gray-900">Side Effects</td><td>Nausea, diarrhoea, reduced appetite</td><td>Nausea, diarrhoea, reduced appetite</td></tr>
         </tbody>
       </table>
     </div>
