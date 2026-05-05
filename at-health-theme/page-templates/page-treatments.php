@@ -126,7 +126,7 @@ get_header();
       <p class="text-base md:text-lg text-gray-700 max-w-2xl mx-auto">Both are clinically proven and prescribed by UK-registered doctors.</p>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto" data-stagger>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto" data-stagger>
       <!-- Mounjaro Card -->
       <div class="tr-treatment-card" data-reveal style="--stagger-index:0">
         <div class="relative">
@@ -140,6 +140,8 @@ get_header();
           <h3 class="text-3xl font-serif text-gray-900 mb-2">Mounjaro</h3>
           <p class="text-purple-600 font-bold text-lg mb-3">22.5% average weight loss</p>
           <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_mounjaro_desc', 'Dual-action GLP-1 and GIP receptor agonist. The most effective weight loss treatment available with up to 22.5% body weight reduction.' ) ); ?></p>
+          <!-- AWAITING PRICE FROM CLIENT -->
+          <p class="tr-price"><?php echo esc_html( ah_field( 'tr_mounjaro_price', 'from £XX' ) ); ?></p>
           <div class="flex gap-3">
             <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
             <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'mounjaro' ) ) ); ?>" class="flex-1 text-center border-2 border-gray-200 hover:border-purple-300 text-gray-700 font-semibold py-3 rounded-xl transition-all">Learn More</a>
@@ -160,9 +162,37 @@ get_header();
           <h3 class="text-3xl font-serif text-gray-900 mb-2">Wegovy</h3>
           <p class="text-purple-600 font-bold text-lg mb-3">20.7% average weight loss</p>
           <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_wegovy_desc', 'GLP-1 receptor agonist with proven cardiovascular benefits. Up to 20.7% body weight reduction and 20% reduced cardiovascular risk.' ) ); ?></p>
+          <!-- AWAITING PRICE FROM CLIENT -->
+          <p class="tr-price"><?php echo esc_html( ah_field( 'tr_wegovy_price', 'from £XX' ) ); ?></p>
           <div class="flex gap-3">
             <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
             <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy' ) ) ); ?>" class="flex-1 text-center border-2 border-gray-200 hover:border-purple-300 text-gray-700 font-semibold py-3 rounded-xl transition-all">Learn More</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orlistat / Xenical Card -->
+      <div class="tr-treatment-card" data-reveal style="--stagger-index:2">
+        <div class="relative">
+          <span class="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">Tablet Option</span>
+          <?php $or_img = ah_field( 'tr_orlistat_image', '' ); ?>
+          <?php if ( $or_img ) : echo wp_get_attachment_image( $or_img, 'treatment-card', false, array( 'class' => 'w-full h-56 object-cover' ) ); else : ?>
+          <div class="w-full h-56 flex items-center justify-center" style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);">
+            <svg class="w-20 h-20 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          </div>
+          <?php endif; ?>
+        </div>
+        <div class="p-8">
+          <h3 class="text-3xl font-serif text-gray-900 mb-2">Orlistat</h3>
+          <p class="text-purple-600 font-bold text-lg mb-3">Branded as Xenical</p>
+          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_orlistat_desc', 'A clinically proven weight loss tablet that reduces the amount of fat your body absorbs from food. Suitable for patients with a Body Mass Index (BMI) of 28 or above.' ) ); ?></p>
+          <!-- AWAITING PRICE FROM CLIENT -->
+          <p class="tr-price"><?php echo esc_html( ah_field( 'tr_orlistat_price', 'from £XX' ) ); ?></p>
+          <div class="flex gap-3">
+            <!-- AWAITING PRODUCT PAGE BUILD -->
+            <a href="#" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
+            <!-- AWAITING PRODUCT PAGE BUILD -->
+            <a href="#" class="flex-1 text-center border-2 border-gray-200 hover:border-purple-300 text-gray-700 font-semibold py-3 rounded-xl transition-all">Learn More</a>
           </div>
         </div>
       </div>

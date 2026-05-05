@@ -21,6 +21,16 @@
     border-color: var(--ah-purple-300);
 }
 
+.tr-price {
+    font-family: var(--ah-font-serif, 'DM Serif Display', serif);
+    font-size: 28px;
+    line-height: 1;
+    color: var(--ah-gray-900, #111827);
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--ah-gray-100, #f3f4f6);
+}
+
 .tr-comparison-table {
     width: 100%;
     border-collapse: collapse;

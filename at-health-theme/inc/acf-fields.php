@@ -433,8 +433,13 @@ acf_add_local_field_group( array(
         array( 'key' => 'field_ah_tr_subtitle', 'label' => 'Subtitle', 'name' => 'tr_subtitle', 'type' => 'textarea', 'rows' => 2 ),
         array( 'key' => 'field_ah_tr_mounjaro_image', 'label' => 'Mounjaro Card Image', 'name' => 'tr_mounjaro_image', 'type' => 'image', 'return_format' => 'id' ),
         array( 'key' => 'field_ah_tr_mounjaro_desc', 'label' => 'Mounjaro Description', 'name' => 'tr_mounjaro_desc', 'type' => 'textarea', 'rows' => 2 ),
+        array( 'key' => 'field_ah_tr_mounjaro_price', 'label' => 'Mounjaro Price (e.g. "from £XX")', 'name' => 'tr_mounjaro_price', 'type' => 'text', 'default_value' => 'from £XX' ),
         array( 'key' => 'field_ah_tr_wegovy_image', 'label' => 'Wegovy Card Image', 'name' => 'tr_wegovy_image', 'type' => 'image', 'return_format' => 'id' ),
         array( 'key' => 'field_ah_tr_wegovy_desc', 'label' => 'Wegovy Description', 'name' => 'tr_wegovy_desc', 'type' => 'textarea', 'rows' => 2 ),
+        array( 'key' => 'field_ah_tr_wegovy_price', 'label' => 'Wegovy Price (e.g. "from £XX")', 'name' => 'tr_wegovy_price', 'type' => 'text', 'default_value' => 'from £XX' ),
+        array( 'key' => 'field_ah_tr_orlistat_image', 'label' => 'Orlistat Card Image', 'name' => 'tr_orlistat_image', 'type' => 'image', 'return_format' => 'id' ),
+        array( 'key' => 'field_ah_tr_orlistat_desc', 'label' => 'Orlistat Description', 'name' => 'tr_orlistat_desc', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'A clinically proven weight loss tablet that reduces the amount of fat your body absorbs from food. Suitable for patients with a Body Mass Index (BMI) of 28 or above.' ),
+        array( 'key' => 'field_ah_tr_orlistat_price', 'label' => 'Orlistat Price (e.g. "from £XX")', 'name' => 'tr_orlistat_price', 'type' => 'text', 'default_value' => 'from £XX' ),
     ),
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-treatments.php' ) ) ),
 ) );
