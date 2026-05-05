@@ -39,14 +39,10 @@
 
     <!-- Top Banner -->
     <div class="ah-top-banner" style="background:#8e88d0;">
-        <div class="ah-container text-center">
-            <p class="text-white text-sm font-medium py-3">
-                <?php echo wp_kses_post( ah_option( 'top_banner_text', 'Switch to Wegovy and save up to 27%' ) ); ?>
-                <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="underline ml-2" style="color:#fff;">
-                    <?php echo esc_html( ah_option( 'top_banner_link_text', 'Check eligibility' ) ); ?>
-                </a>
-            </p>
-        </div>
+        <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="block ah-container text-center text-white text-sm font-medium py-3 hover:opacity-90 transition-opacity">
+            <?php echo wp_kses_post( ah_option( 'top_banner_text', 'Clinically proven weight loss treatments —' ) ); ?>
+            <span class="underline ml-1"><?php echo esc_html( ah_option( 'top_banner_link_text', 'Check your eligibility' ) ); ?></span>
+        </a>
     </div>
 
     <!-- Navigation -->

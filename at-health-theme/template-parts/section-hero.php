@@ -4,9 +4,9 @@
  * Used on the homepage.
  */
 
-$hero_eyebrow   = ah_field( 'hero_eyebrow', 'Clinically Proven Weight Loss' );
+$hero_eyebrow   = ah_field( 'hero_eyebrow', 'GPhC Registered Online Pharmacy' );
 $hero_title     = ah_field( 'hero_title', 'Your health, in trusted hands.' );
-$hero_subtitle  = ah_field( 'hero_subtitle', 'Together Clinic is a General Pharmaceutical Council (GPhC)-registered online pharmacy built around you. Expert pharmacist prescribers, transparent pricing, and care that puts your wellbeing first — all from the comfort of home.' );
+$hero_subtitle  = ah_field( 'hero_subtitle', 'Together Clinic is a GPhC-registered online pharmacy built around you. Expert pharmacist prescribers, transparent pricing, and care that puts your wellbeing first — all from the comfort of home.' );
 $hero_cta_text  = ah_field( 'hero_cta_text', 'Start Your Journey' );
 $hero_cta_url   = ah_field( 'hero_cta_url', '' );
 if ( $hero_cta_url === null || $hero_cta_url === '' ) {
@@ -59,12 +59,29 @@ $hero_image_alt = ah_field( 'hero_image_alt', 'Woman in kitchen feeling confiden
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </a>
-          <span class="text-gray-400 text-xs font-medium tracking-wide uppercase hidden sm:inline">GPhC Regulated</span>
         </div>
-        <!-- Trust line -->
-        <p class="text-xs text-gray-400 mt-4 opacity-0 animate-fade-in-up delay-[500ms]" style="animation-fill-mode: forwards;">
-          Regulated by the General Pharmaceutical Council (GPhC)
-        </p>
+        <!-- Trust row -->
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mt-6 opacity-0 animate-fade-in-up delay-[500ms]" style="animation-fill-mode: forwards;">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span class="text-xs text-gray-500 font-medium">GPhC Regulated</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span class="text-xs text-gray-500 font-medium">100% Confidential</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            <span class="text-xs text-gray-500 font-medium">48hr Delivery</span>
+          </div>
+        </div>
+        <p class="text-xs text-gray-400 mt-2">Regulated by the General Pharmaceutical Council (GPhC)</p>
       </div>
 
       <!-- Right Column: Hero image -->
