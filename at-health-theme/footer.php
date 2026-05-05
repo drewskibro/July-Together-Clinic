@@ -58,17 +58,17 @@
                 <div class="col-span-2 sm:col-span-3 lg:col-span-2">
                     <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.18em] mb-5">Get In Touch</h3>
                     <div class="space-y-4">
-                        <a href="<?php echo esc_url( ah_phone_link() ); ?>" class="flex items-center gap-3 group">
-                            <div class="w-9 h-9 rounded-lg bg-white/[0.05] border border-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:bg-purple-600/20 group-hover:border-purple-500/30 transition-all">
-                                <svg class="w-4 h-4 text-gray-400 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-white/[0.05] border border-white/[0.06] flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-white text-sm font-medium group-hover:text-purple-300 transition-colors"><?php echo esc_html( ah_phone() ); ?></p>
-                                <p class="text-[11px] text-gray-500"><?php echo esc_html( ah_option( 'phone_hours', 'Mon–Fri, 9am–6pm' ) ); ?></p>
+                                <p class="text-white text-sm font-medium">Hours</p>
+                                <p class="text-[11px] text-gray-500"><?php echo esc_html( ah_business_hours() ); ?></p>
                             </div>
-                        </a>
+                        </div>
                         <a href="mailto:<?php echo esc_attr( ah_email() ); ?>" class="flex items-center gap-3 group">
                             <div class="w-9 h-9 rounded-lg bg-white/[0.05] border border-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:bg-purple-600/20 group-hover:border-purple-500/30 transition-all">
                                 <svg class="w-4 h-4 text-gray-400 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,6 +80,7 @@
                                 <p class="text-[11px] text-gray-500"><?php echo esc_html( ah_option( 'email_response_time', 'Reply within 4 hours' ) ); ?></p>
                             </div>
                         </a>
+                        <p class="text-[11px] text-gray-500 leading-relaxed"><?php echo esc_html( ah_no_phone_notice() ); ?></p>
 
                         <!-- Newsletter -->
                         <form class="mt-6 flex gap-2" action="#" method="post">
