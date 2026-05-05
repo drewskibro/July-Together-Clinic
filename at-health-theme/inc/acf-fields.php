@@ -272,6 +272,30 @@ acf_add_local_field_group( array(
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-home.php' ) ) ),
 ) );
 
+// B7b: Home — Know Your Team
+acf_add_local_field_group( array(
+    'key'   => 'group_ah_b7b_home_team',
+    'title' => 'B7b — Home: Know Your Team',
+    'fields' => array(
+        array( 'key' => 'field_ah_team_eyebrow', 'label' => 'Eyebrow', 'name' => 'team_eyebrow', 'type' => 'text', 'default_value' => 'Meet Your Pharmacists' ),
+        array( 'key' => 'field_ah_team_title', 'label' => 'Title', 'name' => 'team_title', 'type' => 'text', 'default_value' => 'Know Your Team' ),
+        array( 'key' => 'field_ah_team_subtitle', 'label' => 'Subtitle', 'name' => 'team_subtitle', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'Our pharmacists are fully registered with the General Pharmaceutical Council (GPhC). Click any registration number to verify on the official GPhC register.' ),
+
+        array( 'key' => 'field_ah_team_member1_photo', 'label' => 'Member 1 Photo', 'name' => 'team_member1_photo', 'type' => 'image', 'return_format' => 'id' ),
+        array( 'key' => 'field_ah_team_member1_name', 'label' => 'Member 1 Name', 'name' => 'team_member1_name', 'type' => 'text', 'default_value' => 'Ahmed Nizar Al-Liabi' ),
+        array( 'key' => 'field_ah_team_member1_role', 'label' => 'Member 1 Role', 'name' => 'team_member1_role', 'type' => 'text', 'default_value' => 'Superintendent Pharmacist' ),
+        array( 'key' => 'field_ah_team_member1_gphc_number', 'label' => 'Member 1 GPhC Number', 'name' => 'team_member1_gphc_number', 'type' => 'text', 'default_value' => '2208502' ),
+        array( 'key' => 'field_ah_team_member1_gphc_url', 'label' => 'Member 1 GPhC URL', 'name' => 'team_member1_gphc_url', 'type' => 'url', 'default_value' => 'https://www.pharmacyregulation.org/registers/pharmacist' ),
+
+        array( 'key' => 'field_ah_team_member2_photo', 'label' => 'Member 2 Photo', 'name' => 'team_member2_photo', 'type' => 'image', 'return_format' => 'id' ),
+        array( 'key' => 'field_ah_team_member2_name', 'label' => 'Member 2 Name', 'name' => 'team_member2_name', 'type' => 'text', 'default_value' => 'Sunil Thacker' ),
+        array( 'key' => 'field_ah_team_member2_role', 'label' => 'Member 2 Role', 'name' => 'team_member2_role', 'type' => 'text', 'default_value' => 'Independent Pharmacist Prescriber' ),
+        array( 'key' => 'field_ah_team_member2_gphc_number', 'label' => 'Member 2 GPhC Number', 'name' => 'team_member2_gphc_number', 'type' => 'text', 'default_value' => '2047968' ),
+        array( 'key' => 'field_ah_team_member2_gphc_url', 'label' => 'Member 2 GPhC URL', 'name' => 'team_member2_gphc_url', 'type' => 'url', 'default_value' => 'https://www.pharmacyregulation.org/registers/pharmacist' ),
+    ),
+    'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-home.php' ) ) ),
+) );
+
 // B8: Home — How It Works (step details)
 acf_add_local_field_group( array(
     'key'   => 'group_ah_b8_home_hiw_steps',
