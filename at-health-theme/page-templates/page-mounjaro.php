@@ -42,7 +42,7 @@ get_header();
         <h1 class="text-5xl lg:text-6xl font-serif text-gray-900 mb-5 leading-[1.02] tracking-[-0.02em]"><?php echo esc_html( ah_field( 'mj_title', 'Mounjaro' ) ); ?></h1>
 
         <p class="text-base md:text-lg text-gray-600 leading-relaxed mb-8 max-w-lg">
-          <?php echo esc_html( ah_field( 'mj_description', 'Mounjaro (tirzepatide) is a once-weekly injection that helps you lose weight by reducing appetite and slowing digestion. Clinical trials show patients lose up to 22.5% of their body weight. FDA and MHRA approved for weight management.' ) ); ?>
+          <?php echo esc_html( ah_field( 'mj_description', 'Mounjaro (tirzepatide) is a once-weekly injection that helps you lose weight by reducing appetite and slowing digestion. Clinical trials show patients lose up to 22.5% of their body weight. Food and Drug Administration (FDA) and Medicines and Healthcare products Regulatory Agency (MHRA) approved for weight management.' ) ); ?>
         </p>
 
         <!-- Key Benefits -->
@@ -51,7 +51,7 @@ get_header();
           $benefits = array(
               '<strong>Up to 22.5% body weight loss</strong> in clinical trials',
               '<strong>Once-weekly injection</strong> — convenient dosing',
-              '<strong>Dual-action formula</strong> — GLP-1 and GIP receptor agonist',
+              '<strong>Dual-action formula</strong> — Glucagon-Like Peptide-1 (GLP-1) and Glucose-dependent Insulinotropic Polypeptide (GIP) receptor agonist',
               '<strong>Delivered within 48 hours</strong> with ongoing support',
           );
           $acf_benefits = ah_field( 'mj_benefits', '' );

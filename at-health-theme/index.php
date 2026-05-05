@@ -9,7 +9,7 @@ get_header();
     <section class="ah-container-wide py-16 md:py-24">
         <div class="text-center mb-12">
             <h1 class="text-3xl md:text-4xl lg:text-5xl font-serif text-gray-900 mb-4">Health Hub</h1>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Expert insights on weight loss, GLP-1 medications, and healthy living.</p>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Expert insights on weight loss, Glucagon-Like Peptide-1 (GLP-1) medications, and healthy living.</p>
         </div>
 
         <?php if ( have_posts() ) : ?>

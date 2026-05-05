@@ -139,7 +139,7 @@ get_header();
         <div class="p-8">
           <h3 class="text-3xl font-serif text-gray-900 mb-2">Mounjaro</h3>
           <p class="text-purple-600 font-bold text-lg mb-3">22.5% average weight loss</p>
-          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_mounjaro_desc', 'Dual-action GLP-1 and GIP receptor agonist. The most effective weight loss treatment available with up to 22.5% body weight reduction.' ) ); ?></p>
+          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_mounjaro_desc', 'Dual-action Glucagon-Like Peptide-1 (GLP-1) and Glucose-dependent Insulinotropic Polypeptide (GIP) receptor agonist. The most effective weight loss treatment available with up to 22.5% body weight reduction.' ) ); ?></p>
           <!-- AWAITING PRICE FROM CLIENT -->
           <p class="tr-price"><?php echo esc_html( ah_field( 'tr_mounjaro_price', 'from £XX' ) ); ?></p>
           <div class="flex gap-3">
