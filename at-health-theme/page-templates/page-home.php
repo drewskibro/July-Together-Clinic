@@ -173,14 +173,196 @@ $team_members = array(
 </section>
 
 <!-- Section 6: Health Hub Snapshot -->
-<!-- TO BE POPULATED -->
-<section class="relative py-16 md:py-20" style="background: #f7f4f9;">
+<?php
+$hh_eyebrow      = ah_field( 'health_hub_eyebrow', 'HEALTH HUB' );
+$hh_heading      = ah_field( 'health_hub_heading', 'Know More. Feel Better.' );
+$hh_subheading   = ah_field( 'health_hub_subheading', 'Honest health guidance from our pharmacist prescribers — written for real people, not medical textbooks.' );
+
+$hh_hero = array(
+    'category'  => ah_field( 'health_hub_hero_category', 'Weight Loss' ),
+    'title'     => ah_field( 'health_hub_hero_title', 'Why Starting Your Weight Loss Journey Earlier Makes All the Difference' ),
+    'excerpt'   => ah_field( 'health_hub_hero_excerpt', 'Why starting early makes all the difference to your long-term weight loss success and overall health.' ),
+    'read_time' => ah_field( 'health_hub_hero_read_time', '5 min read' ),
+    'url'       => ah_field( 'health_hub_hero_url', '/health-hub/why-starting-your-weight-loss-journey-earlier-makes-all-the-difference/' ),
+);
+
+$hh_cards_default = array(
+    array(
+        'card_category'  => 'Weight Loss',
+        'card_title'     => 'The Truth About Prescription Weight Loss — What Nobody Tells You',
+        'card_excerpt'   => 'Common misconceptions, honest answers, and what to realistically expect.',
+        'card_read_time' => '4 min read',
+        'card_url'       => '/health-hub/the-truth-about-prescription-weight-loss/',
+    ),
+    array(
+        'card_category'  => 'Weight Loss',
+        'card_title'     => "How to Know if You're Clinically Eligible for Weight Loss Treatment",
+        'card_excerpt'   => 'Understanding Body Mass Index thresholds, health conditions and assessment criteria.',
+        'card_read_time' => '4 min read',
+        'card_url'       => '/health-hub/how-to-know-if-youre-clinically-eligible-for-weight-loss-treatment/',
+    ),
+    array(
+        'card_category'  => 'Weight Loss',
+        'card_title'     => 'Weight Loss Injections vs Tablets — Which Is Right for You?',
+        'card_excerpt'   => 'A balanced guide to help you understand your treatment options before your consultation.',
+        'card_read_time' => '5 min read',
+        'card_url'       => '/health-hub/weight-loss-injections-vs-tablets-which-is-right-for-you/',
+    ),
+    array(
+        'card_category'  => 'Weight Loss',
+        'card_title'     => 'What Happens During Your Together Clinic Consultation?',
+        'card_excerpt'   => 'A step-by-step walkthrough so you know exactly what to expect.',
+        'card_read_time' => '3 min read',
+        'card_url'       => '/health-hub/what-happens-during-your-together-clinic-consultation/',
+    ),
+);
+$hh_cards = ah_field( 'health_hub_cards', '' );
+if ( ! is_array( $hh_cards ) || empty( $hh_cards ) ) {
+    $hh_cards = $hh_cards_default;
+}
+
+$hh_sixth = array(
+    'category'  => ah_field( 'health_hub_sixth_category', 'Weight Loss' ),
+    'title'     => ah_field( 'health_hub_sixth_title', 'Five Signs Your Weight Is Affecting Your Long-Term Health' ),
+    'excerpt'   => ah_field( 'health_hub_sixth_excerpt', 'From breathlessness to disrupted sleep — five evidence-based signs worth taking seriously.' ),
+    'read_time' => ah_field( 'health_hub_sixth_read_time', '5 min read' ),
+    'url'       => ah_field( 'health_hub_sixth_url', '/health-hub/five-signs-your-weight-is-affecting-your-long-term-health/' ),
+);
+
+$hh_cta_heading     = ah_field( 'health_hub_cta_heading', 'Ready to take the first step?' );
+$hh_cta_subtext     = ah_field( 'health_hub_cta_subtext', 'Answer a few quick questions and find out which treatment is right for you.' );
+$hh_cta_button_text = ah_field( 'health_hub_cta_button_text', 'Check Your Eligibility' );
+$hh_cta_button_url  = ah_field( 'health_hub_cta_button_url', '' );
+if ( $hh_cta_button_url === null || $hh_cta_button_url === '' ) {
+    $hh_cta_button_url = ah_booking_url();
+}
+$hh_explore_url = ah_field( 'health_hub_explore_url', '/health-hub/' );
+?>
+<section class="hh-home-section relative py-[60px] md:py-[100px]" style="background: #fdf8f3;">
   <div class="ah-container-wide">
-    <div class="text-center">
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-serif text-gray-900">Health Hub</h2>
+    <!-- Section header — left aligned, editorial -->
+    <div class="max-w-3xl mb-12 md:mb-16" data-reveal>
+      <p class="text-[11px] md:text-xs font-bold uppercase tracking-[0.28em] mb-5" style="color: #8e88d0;">
+        <?php echo esc_html( $hh_eyebrow ); ?>
+      </p>
+      <h2 class="font-serif text-gray-900 leading-[1.05] tracking-[-0.025em] mb-5 text-[2.5rem] md:text-[3.5rem] lg:text-[4rem]">
+        <?php echo esc_html( $hh_heading ); ?>
+      </h2>
+      <p class="text-base md:text-lg text-gray-600 leading-[1.6] max-w-xl">
+        <?php echo esc_html( $hh_subheading ); ?>
+      </p>
+    </div>
+
+    <!-- ROW 1: Hero article — full-width lavender card with cream typography -->
+    <a href="<?php echo esc_url( $hh_hero['url'] ); ?>" class="hh-hero-article block rounded-[28px] p-10 md:p-14 lg:p-16 mb-10 md:mb-12 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl group" style="background: #8e88d0; min-height: 320px;" data-reveal>
+      <div class="flex flex-col h-full justify-between gap-8 min-h-[260px]">
+        <div>
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mb-6">
+            <span class="text-[11px] font-bold uppercase tracking-[0.2em]" style="color: #fdf8f4;">
+              <?php echo esc_html( $hh_hero['category'] ); ?>
+            </span>
+            <span class="text-[11px] uppercase tracking-[0.2em]" style="color: rgba(253,248,244,0.65);">
+              <?php echo esc_html( $hh_hero['read_time'] ); ?>
+            </span>
+          </div>
+          <h3 class="font-serif leading-[1.05] tracking-[-0.02em] mb-5 text-[2rem] md:text-[2.75rem] lg:text-[3.25rem] max-w-4xl" style="color: #fdf8f4;">
+            <?php echo esc_html( $hh_hero['title'] ); ?>
+          </h3>
+          <p class="text-base md:text-lg leading-[1.6] max-w-2xl" style="color: rgba(253,248,244,0.85);">
+            <?php echo esc_html( $hh_hero['excerpt'] ); ?>
+          </p>
+        </div>
+        <div class="inline-flex items-center gap-2 text-[15px] font-semibold transition-transform duration-300 group-hover:translate-x-1" style="color: #fdf8f4;">
+          Read Article
+          <span aria-hidden="true">&rarr;</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- ROW 2: Four supporting article cards — clean editorial grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-12" data-stagger>
+      <?php foreach ( $hh_cards as $i => $card ) :
+          $c_cat   = isset( $card['card_category'] ) ? $card['card_category'] : '';
+          $c_title = isset( $card['card_title'] ) ? $card['card_title'] : '';
+          $c_exc   = isset( $card['card_excerpt'] ) ? $card['card_excerpt'] : '';
+          $c_read  = isset( $card['card_read_time'] ) ? $card['card_read_time'] : '';
+          $c_url   = isset( $card['card_url'] ) ? $card['card_url'] : '#';
+      ?>
+      <a href="<?php echo esc_url( $c_url ); ?>" class="hh-card group flex flex-col pb-6 transition-all duration-300" style="border-bottom: 1px solid rgba(142,136,208,0.2); --stagger-index:<?php echo (int) $i; ?>;" data-reveal>
+        <span class="text-[11px] font-bold uppercase tracking-[0.1em] mb-4" style="color: #8e88d0;">
+          <?php echo esc_html( $c_cat ); ?>
+        </span>
+        <h3 class="font-serif text-gray-900 text-[1.25rem] md:text-[1.35rem] leading-[1.25] tracking-[-0.01em] mb-3 transition-colors duration-300 group-hover:text-[#8e88d0]">
+          <?php echo esc_html( $c_title ); ?>
+        </h3>
+        <p class="text-[15px] text-gray-600 leading-[1.6] mb-4 flex-grow">
+          <?php echo esc_html( $c_exc ); ?>
+        </p>
+        <p class="text-xs text-gray-500 mb-5"><?php echo esc_html( $c_read ); ?></p>
+        <span class="inline-flex items-center gap-1.5 text-sm font-semibold transition-transform duration-300 group-hover:translate-x-1" style="color: #8e88d0;">
+          Read
+          <span aria-hidden="true">&rarr;</span>
+        </span>
+      </a>
+      <?php endforeach; ?>
+    </div>
+
+    <!-- ROW 3: Sixth article (60%) + CTA panel (40%) -->
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8" data-reveal>
+      <!-- Sixth article -->
+      <a href="<?php echo esc_url( $hh_sixth['url'] ); ?>" class="hh-card-large group lg:col-span-3 flex flex-col justify-between pb-8 transition-all duration-300" style="border-bottom: 1px solid rgba(142,136,208,0.2);">
+        <div>
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mb-5">
+            <span class="text-[11px] font-bold uppercase tracking-[0.1em]" style="color: #8e88d0;">
+              <?php echo esc_html( $hh_sixth['category'] ); ?>
+            </span>
+            <span class="text-xs text-gray-500">
+              <?php echo esc_html( $hh_sixth['read_time'] ); ?>
+            </span>
+          </div>
+          <h3 class="font-serif text-gray-900 text-[1.75rem] md:text-[2.25rem] leading-[1.1] tracking-[-0.015em] mb-4 transition-colors duration-300 group-hover:text-[#8e88d0]">
+            <?php echo esc_html( $hh_sixth['title'] ); ?>
+          </h3>
+          <p class="text-base md:text-lg text-gray-600 leading-[1.6] max-w-xl">
+            <?php echo esc_html( $hh_sixth['excerpt'] ); ?>
+          </p>
+        </div>
+        <span class="inline-flex items-center gap-1.5 text-[15px] font-semibold mt-6 transition-transform duration-300 group-hover:translate-x-1" style="color: #8e88d0;">
+          Read Article
+          <span aria-hidden="true">&rarr;</span>
+        </span>
+      </a>
+
+      <!-- CTA panel -->
+      <div class="lg:col-span-2 rounded-[28px] p-10 flex flex-col justify-center" style="background: #8e88d0;">
+        <h3 class="font-serif text-[1.75rem] md:text-[2rem] leading-[1.15] tracking-[-0.015em] mb-4" style="color: #fdf8f4;">
+          <?php echo esc_html( $hh_cta_heading ); ?>
+        </h3>
+        <p class="text-base leading-[1.6] mb-7" style="color: rgba(253,248,244,0.8);">
+          <?php echo esc_html( $hh_cta_subtext ); ?>
+        </p>
+        <a href="<?php echo esc_url( $hh_cta_button_url ); ?>" class="inline-flex items-center justify-center gap-2 text-[15px] font-semibold px-7 py-4 rounded-xl transition-all duration-300 hover:opacity-90 self-start" style="background: #fdf8f4; color: #8e88d0;">
+          <?php echo esc_html( $hh_cta_button_text ); ?>
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Section footer: Explore All link -->
+    <!-- HEALTH HUB PAGE TO BE BUILT -->
+    <div class="text-center mt-12 md:mt-16">
+      <a href="<?php echo esc_url( $hh_explore_url ); ?>" class="hh-explore-link inline-flex items-center gap-2 text-[15px] font-semibold transition-all duration-300" style="color: #8e88d0;">
+        Explore All Articles
+        <span aria-hidden="true">&rarr;</span>
+      </a>
     </div>
   </div>
 </section>
+
+<style>
+  .hh-explore-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .hh-card:hover, .hh-card-large:hover { border-bottom-color: rgba(142,136,208,0.5) !important; }
+</style>
 
 <?php
 // Section 7: FAQ
