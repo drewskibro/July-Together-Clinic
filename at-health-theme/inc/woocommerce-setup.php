@@ -3,7 +3,7 @@
  * AT Health — WooCommerce Product Setup Script
  *
  * Creates all weight loss medication products with correct pricing.
- * Run ONCE via: WordPress Admin > Tools > AT Health Product Setup
+ * Run ONCE via: WordPress Admin > Tools > Together Clinic Product Setup
  * Or visit: /wp-admin/admin.php?page=ah-product-setup
  *
  * Products created:
@@ -17,8 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // Register admin page
 add_action( 'admin_menu', function () {
     add_management_page(
-        'AT Health Product Setup',
-        'AT Health Product Setup',
+        'Together Clinic Product Setup',
+        'Together Clinic Product Setup',
         'manage_woocommerce',
         'ah-product-setup',
         'ah_product_setup_page'
@@ -28,7 +28,7 @@ add_action( 'admin_menu', function () {
 function ah_product_setup_page() {
     // Check WooCommerce is active
     if ( ! class_exists( 'WooCommerce' ) ) {
-        echo '<div class="wrap"><h1>AT Health Product Setup</h1>';
+        echo '<div class="wrap"><h1>Together Clinic Product Setup</h1>';
         echo '<div class="notice notice-error"><p>WooCommerce must be installed and activated first.</p></div></div>';
         return;
     }
@@ -42,7 +42,7 @@ function ah_product_setup_page() {
     }
 
     echo '<div class="wrap">';
-    echo '<h1>AT Health — Product Setup</h1>';
+    echo '<h1>Together Clinic — Product Setup</h1>';
 
     if ( $ran ) {
         echo '<div class="notice notice-success"><p><strong>Products created successfully!</strong></p></div>';

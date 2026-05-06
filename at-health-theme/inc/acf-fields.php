@@ -38,9 +38,9 @@ acf_add_local_field_group( array(
     'key'      => 'group_ah_a1_branding',
     'title'    => 'A1 — Branding',
     'fields'   => array(
-        array( 'key' => 'field_ah_site_logo', 'label' => 'Site Logo', 'name' => 'site_logo', 'type' => 'image', 'return_format' => 'id', 'instructions' => 'Upload the AT Health logo. Recommended: SVG or PNG with transparency.' ),
-        array( 'key' => 'field_ah_company_name', 'label' => 'Company Name', 'name' => 'company_name', 'type' => 'text', 'default_value' => 'AT Health' ),
-        array( 'key' => 'field_ah_company_legal_name', 'label' => 'Company Legal Name', 'name' => 'company_legal_name', 'type' => 'text', 'default_value' => 'AT Health Ltd' ),
+        array( 'key' => 'field_ah_site_logo', 'label' => 'Site Logo', 'name' => 'site_logo', 'type' => 'image', 'return_format' => 'id', 'instructions' => 'Upload the Together Clinic logo. Recommended: SVG or PNG with transparency.' ),
+        array( 'key' => 'field_ah_company_name', 'label' => 'Company Name', 'name' => 'company_name', 'type' => 'text', 'default_value' => 'Together Clinic' ),
+        array( 'key' => 'field_ah_company_legal_name', 'label' => 'Company Legal Name', 'name' => 'company_legal_name', 'type' => 'text', 'default_value' => 'Together Clinic Ltd' ),
         array( 'key' => 'field_ah_company_registration', 'label' => 'Company Registration Text', 'name' => 'company_registration', 'type' => 'text', 'default_value' => 'Company registered in England & Wales.' ),
         array( 'key' => 'field_ah_footer_tagline', 'label' => 'Footer Tagline', 'name' => 'footer_tagline', 'type' => 'text', 'default_value' => 'Medical Weight Loss, Delivered' ),
     ),

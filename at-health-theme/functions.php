@@ -104,7 +104,7 @@ function ah_field( $field_name, $default = '' ) {
  * Shortcut helpers for commonly used global values.
  */
 function ah_company_name() {
-    return ah_option( 'company_name', 'AT Health' );
+    return ah_option( 'company_name', 'Together Clinic' );
 }
 
 function ah_phone() {
@@ -259,7 +259,7 @@ if ( class_exists( 'WooCommerce' ) ) {
 
     // Set "From" name to AT Health
     add_filter( 'woocommerce_email_from_name', function () {
-        return function_exists( 'ah_company_name' ) ? ah_company_name() : 'AT Health';
+        return function_exists( 'ah_company_name' ) ? ah_company_name() : 'Together Clinic';
     } );
 }
 

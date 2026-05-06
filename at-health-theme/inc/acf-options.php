@@ -10,8 +10,8 @@ if ( function_exists( 'acf_add_options_page' ) ) {
 
     // Parent page
     acf_add_options_page( array(
-        'page_title'  => 'AT Health Settings',
-        'menu_title'  => 'AT Health Settings',
+        'page_title'  => 'Together Clinic Settings',
+        'menu_title'  => 'Together Clinic Settings',
         'menu_slug'   => 'ah-settings',
         'capability'  => 'manage_options',
         'redirect'    => true,

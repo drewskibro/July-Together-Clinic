@@ -62,7 +62,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
                 if ( $logo_url ) : ?>
                     <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>" width="160" style="display: block; margin: 0 auto 24px; height: auto;" />
                 <?php else : ?>
-                    <h2 style="font-family: 'DM Serif Display', Georgia, serif; font-size: 28px; color: #111827; margin: 0 0 24px; text-align: center;">AT Health</h2>
+                    <h2 style="font-family: 'DM Serif Display', Georgia, serif; font-size: 28px; color: #111827; margin: 0 0 24px; text-align: center;">Together Clinic</h2>
                 <?php endif; ?>
             </td>
         </tr>

@@ -14,7 +14,7 @@ get_header();
       <?php echo wp_kses_post( ah_field( 'ab_title', 'The People Behind<br>Your <em class="not-italic" style="color: #a89dd6;">Transformation</em>' ) ); ?>
     </h1>
     <p class="text-lg text-gray-400 max-w-2xl mx-auto mb-12">
-      <?php echo esc_html( ah_field( 'ab_subtitle', 'Since 2021, AT Health has helped over 10,000 people across the UK lose weight and regain their confidence through clinically-proven, medically supervised weight loss programmes.' ) ); ?>
+      <?php echo esc_html( ah_field( 'ab_subtitle', 'Since 2021, Together Clinic has helped over 10,000 people across the UK lose weight and regain their confidence through clinically-proven, medically supervised weight loss programmes.' ) ); ?>
     </p>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
       <?php
@@ -41,7 +41,7 @@ get_header();
       <div class="relative" data-reveal>
         <?php $ab_image = ah_field( 'ab_story_image', '' ); ?>
         <?php if ( $ab_image ) : echo wp_get_attachment_image( $ab_image, 'hero-image', false, array( 'class' => 'w-full rounded-3xl shadow-xl' ) ); else : ?>
-        <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=1200&h=1600&fit=crop" alt="AT Health medical professional" class="w-full rounded-3xl shadow-xl" />
+        <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=1200&h=1600&fit=crop" alt="Together Clinic medical professional" class="w-full rounded-3xl shadow-xl" />
         <?php endif; ?>
         <div class="absolute -bottom-4 -right-4 bg-purple-600 text-white rounded-2xl shadow-xl px-6 py-4">
           <p class="text-sm font-bold">Patient-First Approach</p>
