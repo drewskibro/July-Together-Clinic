@@ -296,6 +296,55 @@ acf_add_local_field_group( array(
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-home.php' ) ) ),
 ) );
 
+// B7c: Home — Health Hub Snapshot
+acf_add_local_field_group( array(
+    'key'   => 'group_ah_b7c_home_health_hub',
+    'title' => 'B7c — Home: Health Hub',
+    'fields' => array(
+        array( 'key' => 'field_ah_health_hub_eyebrow', 'label' => 'Eyebrow', 'name' => 'health_hub_eyebrow', 'type' => 'text', 'default_value' => 'HEALTH HUB' ),
+        array( 'key' => 'field_ah_health_hub_heading', 'label' => 'Heading', 'name' => 'health_hub_heading', 'type' => 'text', 'default_value' => 'Know More. Feel Better.' ),
+        array( 'key' => 'field_ah_health_hub_subheading', 'label' => 'Subheading', 'name' => 'health_hub_subheading', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'Honest health guidance from our pharmacist prescribers — written for real people, not medical textbooks.' ),
+
+        array( 'key' => 'field_ah_health_hub_hero_category', 'label' => 'Hero Category', 'name' => 'health_hub_hero_category', 'type' => 'text', 'default_value' => 'Weight Loss' ),
+        array( 'key' => 'field_ah_health_hub_hero_title', 'label' => 'Hero Title', 'name' => 'health_hub_hero_title', 'type' => 'text', 'default_value' => 'Why Starting Your Weight Loss Journey Earlier Makes All the Difference' ),
+        array( 'key' => 'field_ah_health_hub_hero_excerpt', 'label' => 'Hero Excerpt', 'name' => 'health_hub_hero_excerpt', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'Why starting early makes all the difference to your long-term weight loss success and overall health.' ),
+        array( 'key' => 'field_ah_health_hub_hero_read_time', 'label' => 'Hero Read Time', 'name' => 'health_hub_hero_read_time', 'type' => 'text', 'default_value' => '5 min read' ),
+        array( 'key' => 'field_ah_health_hub_hero_url', 'label' => 'Hero URL', 'name' => 'health_hub_hero_url', 'type' => 'url', 'default_value' => '/health-hub/why-starting-your-weight-loss-journey-earlier-makes-all-the-difference/' ),
+
+        array(
+            'key'        => 'field_ah_health_hub_cards',
+            'label'      => 'Supporting Cards (4 items)',
+            'name'       => 'health_hub_cards',
+            'type'       => 'repeater',
+            'min'        => 4,
+            'max'        => 4,
+            'layout'     => 'block',
+            'button_label' => 'Add Card',
+            'sub_fields' => array(
+                array( 'key' => 'field_ah_card_category', 'label' => 'Category', 'name' => 'card_category', 'type' => 'text' ),
+                array( 'key' => 'field_ah_card_title', 'label' => 'Title', 'name' => 'card_title', 'type' => 'text' ),
+                array( 'key' => 'field_ah_card_excerpt', 'label' => 'Excerpt', 'name' => 'card_excerpt', 'type' => 'textarea', 'rows' => 2 ),
+                array( 'key' => 'field_ah_card_read_time', 'label' => 'Read Time', 'name' => 'card_read_time', 'type' => 'text' ),
+                array( 'key' => 'field_ah_card_url', 'label' => 'URL', 'name' => 'card_url', 'type' => 'url' ),
+            ),
+        ),
+
+        array( 'key' => 'field_ah_health_hub_sixth_category', 'label' => 'Sixth Article Category', 'name' => 'health_hub_sixth_category', 'type' => 'text', 'default_value' => 'Weight Loss' ),
+        array( 'key' => 'field_ah_health_hub_sixth_title', 'label' => 'Sixth Article Title', 'name' => 'health_hub_sixth_title', 'type' => 'text', 'default_value' => 'Five Signs Your Weight Is Affecting Your Long-Term Health' ),
+        array( 'key' => 'field_ah_health_hub_sixth_excerpt', 'label' => 'Sixth Article Excerpt', 'name' => 'health_hub_sixth_excerpt', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'From breathlessness to disrupted sleep — five evidence-based signs worth taking seriously.' ),
+        array( 'key' => 'field_ah_health_hub_sixth_read_time', 'label' => 'Sixth Article Read Time', 'name' => 'health_hub_sixth_read_time', 'type' => 'text', 'default_value' => '5 min read' ),
+        array( 'key' => 'field_ah_health_hub_sixth_url', 'label' => 'Sixth Article URL', 'name' => 'health_hub_sixth_url', 'type' => 'url', 'default_value' => '/health-hub/five-signs-your-weight-is-affecting-your-long-term-health/' ),
+
+        array( 'key' => 'field_ah_health_hub_cta_heading', 'label' => 'CTA Heading', 'name' => 'health_hub_cta_heading', 'type' => 'text', 'default_value' => 'Ready to take the first step?' ),
+        array( 'key' => 'field_ah_health_hub_cta_subtext', 'label' => 'CTA Subtext', 'name' => 'health_hub_cta_subtext', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'Answer a few quick questions and find out which treatment is right for you.' ),
+        array( 'key' => 'field_ah_health_hub_cta_button_text', 'label' => 'CTA Button Text', 'name' => 'health_hub_cta_button_text', 'type' => 'text', 'default_value' => 'Check Your Eligibility' ),
+        array( 'key' => 'field_ah_health_hub_cta_button_url', 'label' => 'CTA Button URL', 'name' => 'health_hub_cta_button_url', 'type' => 'url' ),
+
+        array( 'key' => 'field_ah_health_hub_explore_url', 'label' => 'Explore All URL', 'name' => 'health_hub_explore_url', 'type' => 'url', 'default_value' => '/health-hub/' ),
+    ),
+    'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-home.php' ) ) ),
+) );
+
 // B8: Home — How It Works (step details)
 acf_add_local_field_group( array(
     'key'   => 'group_ah_b8_home_hiw_steps',
