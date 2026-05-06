@@ -180,6 +180,7 @@ $hh_subheading   = ah_field( 'health_hub_subheading', 'Honest health guidance fr
 
 $hh_hero = array(
     'category'  => ah_field( 'health_hub_hero_category', 'Weight Loss' ),
+    'image'     => ah_field( 'health_hub_hero_image', '' ),
     'title'     => ah_field( 'health_hub_hero_title', 'Why Starting Your Weight Loss Journey Earlier Makes All the Difference' ),
     'excerpt'   => ah_field( 'health_hub_hero_excerpt', 'Why starting early makes all the difference to your long-term weight loss success and overall health.' ),
     'read_time' => ah_field( 'health_hub_hero_read_time', '5 min read' ),
@@ -223,6 +224,7 @@ if ( ! is_array( $hh_cards ) || empty( $hh_cards ) ) {
 
 $hh_sixth = array(
     'category'  => ah_field( 'health_hub_sixth_category', 'Weight Loss' ),
+    'image'     => ah_field( 'health_hub_sixth_image', '' ),
     'title'     => ah_field( 'health_hub_sixth_title', 'Five Signs Your Weight Is Affecting Your Long-Term Health' ),
     'excerpt'   => ah_field( 'health_hub_sixth_excerpt', 'From breathlessness to disrupted sleep — five evidence-based signs worth taking seriously.' ),
     'read_time' => ah_field( 'health_hub_sixth_read_time', '5 min read' ),
@@ -253,29 +255,42 @@ $hh_explore_url = ah_field( 'health_hub_explore_url', '/health-hub/' );
       </p>
     </div>
 
-    <!-- ROW 1: Hero article — full-width lavender card with cream typography -->
-    <a href="<?php echo esc_url( $hh_hero['url'] ); ?>" class="hh-hero-article block rounded-[28px] p-10 md:p-14 lg:p-16 mb-10 md:mb-12 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl group" style="background: #8e88d0; min-height: 320px;" data-reveal>
-      <div class="flex flex-col h-full justify-between gap-8 min-h-[260px]">
-        <div>
-          <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mb-6">
-            <span class="text-[11px] font-bold uppercase tracking-[0.2em]" style="color: #fdf8f4;">
-              <?php echo esc_html( $hh_hero['category'] ); ?>
-            </span>
-            <span class="text-[11px] uppercase tracking-[0.2em]" style="color: rgba(253,248,244,0.65);">
-              <?php echo esc_html( $hh_hero['read_time'] ); ?>
-            </span>
+    <!-- ROW 1: Hero article — full-width lavender card. Image on right if uploaded; typography-only fallback otherwise. -->
+    <?php $hh_has_hero_image = ( $hh_hero['image'] !== null && $hh_hero['image'] !== '' ); ?>
+    <a href="<?php echo esc_url( $hh_hero['url'] ); ?>" class="hh-hero-article block rounded-[28px] mb-10 md:mb-12 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl group overflow-hidden" style="background: #8e88d0;" data-reveal>
+      <div class="grid <?php echo $hh_has_hero_image ? 'lg:grid-cols-2' : 'grid-cols-1'; ?> gap-0 items-stretch" style="min-height: 320px;">
+        <!-- Text column -->
+        <div class="flex flex-col justify-between gap-8 p-10 md:p-14 lg:p-16 min-h-[260px] order-2 lg:order-1">
+          <div>
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mb-6">
+              <span class="text-[11px] font-bold uppercase tracking-[0.2em]" style="color: #fdf8f4;">
+                <?php echo esc_html( $hh_hero['category'] ); ?>
+              </span>
+              <span class="text-[11px] uppercase tracking-[0.2em]" style="color: rgba(253,248,244,0.65);">
+                <?php echo esc_html( $hh_hero['read_time'] ); ?>
+              </span>
+            </div>
+            <h3 class="font-serif leading-[1.05] tracking-[-0.02em] mb-5 text-[2rem] md:text-[2.75rem] lg:text-[3.25rem]" style="color: #fdf8f4;">
+              <?php echo esc_html( $hh_hero['title'] ); ?>
+            </h3>
+            <p class="text-base md:text-lg leading-[1.6]" style="color: rgba(253,248,244,0.85);">
+              <?php echo esc_html( $hh_hero['excerpt'] ); ?>
+            </p>
           </div>
-          <h3 class="font-serif leading-[1.05] tracking-[-0.02em] mb-5 text-[2rem] md:text-[2.75rem] lg:text-[3.25rem] max-w-4xl" style="color: #fdf8f4;">
-            <?php echo esc_html( $hh_hero['title'] ); ?>
-          </h3>
-          <p class="text-base md:text-lg leading-[1.6] max-w-2xl" style="color: rgba(253,248,244,0.85);">
-            <?php echo esc_html( $hh_hero['excerpt'] ); ?>
-          </p>
+          <div class="inline-flex items-center gap-2 text-[15px] font-semibold transition-transform duration-300 group-hover:translate-x-1" style="color: #fdf8f4;">
+            Read Article
+            <span aria-hidden="true">&rarr;</span>
+          </div>
         </div>
-        <div class="inline-flex items-center gap-2 text-[15px] font-semibold transition-transform duration-300 group-hover:translate-x-1" style="color: #fdf8f4;">
-          Read Article
-          <span aria-hidden="true">&rarr;</span>
+        <!-- Image column (only when uploaded) -->
+        <?php if ( $hh_has_hero_image ) : ?>
+        <div class="relative order-1 lg:order-2 min-h-[240px] lg:min-h-full">
+          <?php echo wp_get_attachment_image( $hh_hero['image'], 'large', false, array(
+              'class' => 'absolute inset-0 w-full h-full object-cover',
+              'alt'   => esc_attr( $hh_hero['title'] ),
+          ) ); ?>
         </div>
+        <?php endif; ?>
       </div>
     </a>
 
@@ -283,12 +298,21 @@ $hh_explore_url = ah_field( 'health_hub_explore_url', '/health-hub/' );
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-12" data-stagger>
       <?php foreach ( $hh_cards as $i => $card ) :
           $c_cat   = isset( $card['card_category'] ) ? $card['card_category'] : '';
+          $c_img   = isset( $card['card_image'] ) ? $card['card_image'] : '';
           $c_title = isset( $card['card_title'] ) ? $card['card_title'] : '';
           $c_exc   = isset( $card['card_excerpt'] ) ? $card['card_excerpt'] : '';
           $c_read  = isset( $card['card_read_time'] ) ? $card['card_read_time'] : '';
           $c_url   = isset( $card['card_url'] ) ? $card['card_url'] : '#';
       ?>
       <a href="<?php echo esc_url( $c_url ); ?>" class="hh-card group flex flex-col pb-6 transition-all duration-300" style="border-bottom: 1px solid rgba(142,136,208,0.2); --stagger-index:<?php echo (int) $i; ?>;" data-reveal>
+        <?php if ( $c_img !== null && $c_img !== '' ) : ?>
+        <div class="relative aspect-[4/3] mb-5 rounded-2xl overflow-hidden bg-gray-100">
+          <?php echo wp_get_attachment_image( $c_img, 'health-hub-card', false, array(
+              'class' => 'absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105',
+              'alt'   => esc_attr( $c_title ),
+          ) ); ?>
+        </div>
+        <?php endif; ?>
         <span class="text-[11px] font-bold uppercase tracking-[0.1em] mb-4" style="color: #8e88d0;">
           <?php echo esc_html( $c_cat ); ?>
         </span>
@@ -312,6 +336,14 @@ $hh_explore_url = ah_field( 'health_hub_explore_url', '/health-hub/' );
       <!-- Sixth article -->
       <a href="<?php echo esc_url( $hh_sixth['url'] ); ?>" class="hh-card-large group lg:col-span-3 flex flex-col justify-between pb-8 transition-all duration-300" style="border-bottom: 1px solid rgba(142,136,208,0.2);">
         <div>
+          <?php if ( $hh_sixth['image'] !== null && $hh_sixth['image'] !== '' ) : ?>
+          <div class="relative aspect-[16/9] mb-6 rounded-2xl overflow-hidden bg-gray-100">
+            <?php echo wp_get_attachment_image( $hh_sixth['image'], 'large', false, array(
+                'class' => 'absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105',
+                'alt'   => esc_attr( $hh_sixth['title'] ),
+            ) ); ?>
+          </div>
+          <?php endif; ?>
           <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mb-5">
             <span class="text-[11px] font-bold uppercase tracking-[0.1em]" style="color: #8e88d0;">
               <?php echo esc_html( $hh_sixth['category'] ); ?>

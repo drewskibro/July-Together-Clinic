@@ -306,6 +306,7 @@ acf_add_local_field_group( array(
         array( 'key' => 'field_ah_health_hub_subheading', 'label' => 'Subheading', 'name' => 'health_hub_subheading', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'Honest health guidance from our pharmacist prescribers — written for real people, not medical textbooks.' ),
 
         array( 'key' => 'field_ah_health_hub_hero_category', 'label' => 'Hero Category', 'name' => 'health_hub_hero_category', 'type' => 'text', 'default_value' => 'Weight Loss' ),
+        array( 'key' => 'field_ah_health_hub_hero_image', 'label' => 'Hero Image', 'name' => 'health_hub_hero_image', 'type' => 'image', 'return_format' => 'id', 'instructions' => 'Large featured image for the hero article card. Recommended 1600x900px.' ),
         array( 'key' => 'field_ah_health_hub_hero_title', 'label' => 'Hero Title', 'name' => 'health_hub_hero_title', 'type' => 'text', 'default_value' => 'Why Starting Your Weight Loss Journey Earlier Makes All the Difference' ),
         array( 'key' => 'field_ah_health_hub_hero_excerpt', 'label' => 'Hero Excerpt', 'name' => 'health_hub_hero_excerpt', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'Why starting early makes all the difference to your long-term weight loss success and overall health.' ),
         array( 'key' => 'field_ah_health_hub_hero_read_time', 'label' => 'Hero Read Time', 'name' => 'health_hub_hero_read_time', 'type' => 'text', 'default_value' => '5 min read' ),
@@ -322,6 +323,7 @@ acf_add_local_field_group( array(
             'button_label' => 'Add Card',
             'sub_fields' => array(
                 array( 'key' => 'field_ah_card_category', 'label' => 'Category', 'name' => 'card_category', 'type' => 'text' ),
+                array( 'key' => 'field_ah_card_image', 'label' => 'Image', 'name' => 'card_image', 'type' => 'image', 'return_format' => 'id', 'instructions' => 'Card image. Recommended 800x600px.' ),
                 array( 'key' => 'field_ah_card_title', 'label' => 'Title', 'name' => 'card_title', 'type' => 'text' ),
                 array( 'key' => 'field_ah_card_excerpt', 'label' => 'Excerpt', 'name' => 'card_excerpt', 'type' => 'textarea', 'rows' => 2 ),
                 array( 'key' => 'field_ah_card_read_time', 'label' => 'Read Time', 'name' => 'card_read_time', 'type' => 'text' ),
@@ -330,6 +332,7 @@ acf_add_local_field_group( array(
         ),
 
         array( 'key' => 'field_ah_health_hub_sixth_category', 'label' => 'Sixth Article Category', 'name' => 'health_hub_sixth_category', 'type' => 'text', 'default_value' => 'Weight Loss' ),
+        array( 'key' => 'field_ah_health_hub_sixth_image', 'label' => 'Sixth Article Image', 'name' => 'health_hub_sixth_image', 'type' => 'image', 'return_format' => 'id', 'instructions' => 'Image for the sixth article card. Recommended 1200x800px.' ),
         array( 'key' => 'field_ah_health_hub_sixth_title', 'label' => 'Sixth Article Title', 'name' => 'health_hub_sixth_title', 'type' => 'text', 'default_value' => 'Five Signs Your Weight Is Affecting Your Long-Term Health' ),
         array( 'key' => 'field_ah_health_hub_sixth_excerpt', 'label' => 'Sixth Article Excerpt', 'name' => 'health_hub_sixth_excerpt', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'From breathlessness to disrupted sleep — five evidence-based signs worth taking seriously.' ),
         array( 'key' => 'field_ah_health_hub_sixth_read_time', 'label' => 'Sixth Article Read Time', 'name' => 'health_hub_sixth_read_time', 'type' => 'text', 'default_value' => '5 min read' ),
