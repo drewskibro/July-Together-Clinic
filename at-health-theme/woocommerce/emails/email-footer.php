@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 $email   = function_exists( 'ah_email' ) ? ah_email() : 'info@togetherclinic.co.uk';
 $hours   = function_exists( 'ah_business_hours' ) ? ah_business_hours() : '9am - 5pm, Monday to Friday';
 $notice  = function_exists( 'ah_no_phone_notice' ) ? ah_no_phone_notice() : 'We do not offer telephone consultations. Please contact us via email or live chat.';
-$company = function_exists( 'ah_company_name' ) ? ah_company_name() : 'AT Health';
+$company = function_exists( 'ah_company_name' ) ? ah_company_name() : 'Together Clinic';
 ?>
                         </td>
                     </tr>

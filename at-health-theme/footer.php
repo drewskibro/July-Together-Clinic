@@ -132,7 +132,7 @@
         <div class="ah-container-wide py-6">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                 <p class="text-gray-500 text-xs">
-                    &copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php echo esc_html( ah_option( 'company_legal_name', 'AT Health Ltd' ) ); ?>. All rights reserved. <?php echo esc_html( ah_option( 'company_registration', 'Company registered in England & Wales.' ) ); ?>
+                    &copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php echo esc_html( ah_option( 'company_legal_name', 'Together Clinic Ltd' ) ); ?>. All rights reserved. <?php echo esc_html( ah_option( 'company_registration', 'Company registered in England & Wales.' ) ); ?>
                 </p>
                 <div class="flex flex-wrap justify-center gap-5 text-xs text-gray-500">
                     <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'terms' ) ) ); ?>" class="hover:text-gray-300 transition-colors">Terms</a>

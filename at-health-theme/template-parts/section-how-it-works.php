@@ -29,7 +29,7 @@ $hiw_cta_url     = ah_field( 'hiw_cta_url', '' );
 if ( $hiw_cta_url === null || $hiw_cta_url === '' ) {
     $hiw_cta_url = ah_booking_url();
 }
-$hiw_social_proof = ah_field( 'hiw_social_proof', 'Over <strong class="text-gray-900 text-lg"><span data-count="10000" data-suffix="+">0</span> patients</strong> have started their journey with AT Health' );
+$hiw_social_proof = ah_field( 'hiw_social_proof', 'Over <strong class="text-gray-900 text-lg"><span data-count="10000" data-suffix="+">0</span> patients</strong> have started their journey with Together Clinic' );
 ?>
 
 <!-- Premium How It Works Section -->

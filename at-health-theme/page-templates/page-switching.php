@@ -94,7 +94,7 @@ get_header();
         <!-- Right: Hero Image — flush edge-to-edge -->
         <div class="order-1 lg:order-2 opacity-0 animate-fade-in-up delay-300" style="animation-fill-mode: forwards;">
           <div class="relative w-full h-[340px] sm:h-[420px] lg:h-full lg:min-h-[520px]">
-            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=900&fit=crop" alt="Happy patient who switched to AT Health" class="absolute inset-0 w-full h-full object-cover object-[25%]" />
+            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=900&fit=crop" alt="Happy patient who switched to Together Clinic" class="absolute inset-0 w-full h-full object-cover object-[25%]" />
             <!-- Floating stat badge -->
             <div class="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 bg-white/95 backdrop-blur-md rounded-2xl p-5 shadow-xl border border-gray-200/50 max-w-[220px]">
               <div class="text-3xl font-serif font-bold text-gray-900 mb-1">2,400+</div>
@@ -211,10 +211,10 @@ get_header();
       <div class="text-center mb-10 md:mb-12" data-reveal>
         <div class="flex items-center justify-center gap-3 mb-4">
           <div class="w-1 h-8 bg-purple-600 rounded-full"></div>
-          <p class="text-purple-600 text-xs md:text-sm font-bold uppercase tracking-wider">The AT Health Difference</p>
+          <p class="text-purple-600 text-xs md:text-sm font-bold uppercase tracking-wider">The Together Clinic Difference</p>
         </div>
         <h2 class="text-3xl md:text-4xl lg:text-5xl text-gray-800 font-serif leading-[1.1] mb-4">
-          Why Patients Switch to <span class="text-purple-600">AT Health</span>
+          Why Patients Switch to <span class="text-purple-600">Together Clinic</span>
         </h2>
         <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
           Lower prices, faster delivery, and support that actually supports you.
@@ -327,7 +327,7 @@ get_header();
           At A Glance
         </div>
         <h2 class="text-4xl md:text-5xl lg:text-[3.5rem] font-serif text-gray-900 leading-[1.06] tracking-[-0.025em] mb-4">
-          How AT Health <em class="not-italic" style="color:#7c6fba;">Compares</em>
+          How Together Clinic <em class="not-italic" style="color:#7c6fba;">Compares</em>
         </h2>
         <p class="text-base md:text-lg text-gray-500 max-w-md mx-auto leading-relaxed">
           See how we stack up against other weight loss providers.
@@ -360,7 +360,7 @@ get_header();
                     <div class="w-12 h-12 rounded-full flex items-center justify-center mb-3" style="background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.15); box-shadow: 0 0 20px rgba(161,140,255,0.25);">
                       <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                     </div>
-                    <span class="text-white text-[15px] font-bold tracking-wide block">AT Health</span>
+                    <span class="text-white text-[15px] font-bold tracking-wide block">Together Clinic</span>
                     <span class="inline-flex items-center gap-1 mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest" style="background: rgba(52,211,153,0.15); color: #6ee7b7; border: 1px solid rgba(52,211,153,0.2);">
                       <span class="w-1 h-1 rounded-full bg-emerald-400 inline-block"></span>
                       Recommended
@@ -573,7 +573,7 @@ get_header();
                 <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);">
                   <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                 </div>
-                <span class="text-white text-lg font-bold">AT Health</span>
+                <span class="text-white text-lg font-bold">Together Clinic</span>
               </div>
               <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest" style="background: rgba(52,211,153,0.15); color: #6ee7b7; border: 1px solid rgba(52,211,153,0.2);">
                 <span class="w-1 h-1 rounded-full bg-emerald-400 inline-block"></span>
@@ -773,7 +773,7 @@ get_header();
             <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
           </div>
           <blockquote class="relative z-10 mb-8 flex-grow">
-            <p class="text-xl font-serif text-gray-900 leading-tight">&ldquo;My old provider took days to reply. AT Health responded within 2 hours. Night and day difference.&rdquo;</p>
+            <p class="text-xl font-serif text-gray-900 leading-tight">&ldquo;My old provider took days to reply. Together Clinic responded within 2 hours. Night and day difference.&rdquo;</p>
           </blockquote>
           <div class="flex items-center justify-between mt-auto pt-6 border-t border-gray-50 relative z-10">
             <div>
@@ -854,7 +854,7 @@ get_header();
             </div>
           </button>
           <div class="faq-body max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-            <div class="px-6 md:px-8 pb-6 text-gray-600 leading-relaxed text-[15px]">We strongly recommend starting your switch before your current supply runs out. With same-day clinical approval and 48-hour delivery, most patients receive their AT Health medication within 2 days, ensuring zero interruption to their treatment.</div>
+            <div class="px-6 md:px-8 pb-6 text-gray-600 leading-relaxed text-[15px]">We strongly recommend starting your switch before your current supply runs out. With same-day clinical approval and 48-hour delivery, most patients receive their Together Clinic medication within 2 days, ensuring zero interruption to their treatment.</div>
           </div>
         </div>
 
@@ -867,7 +867,7 @@ get_header();
             </div>
           </button>
           <div class="faq-body max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-            <div class="px-6 md:px-8 pb-6 text-gray-600 leading-relaxed text-[15px]">On average, patients switching to AT Health save up to 27% compared to major online pharmacies like Boots. That&#39;s up to &pound;516 per year. Our prices include everything — medication, clinical consultations, and delivery. No hidden fees, no surprise charges.</div>
+            <div class="px-6 md:px-8 pb-6 text-gray-600 leading-relaxed text-[15px]">On average, patients switching to Together Clinic save up to 27% compared to major online pharmacies like Boots. That&#39;s up to &pound;516 per year. Our prices include everything — medication, clinical consultations, and delivery. No hidden fees, no surprise charges.</div>
           </div>
         </div>
 
@@ -893,7 +893,7 @@ get_header();
             </div>
           </button>
           <div class="faq-body max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-            <div class="px-6 md:px-8 pb-6 text-gray-600 leading-relaxed text-[15px]">We recommend cancelling your old subscription to avoid being charged by two providers. However, you can start with AT Health immediately — there&#39;s no dependency on your old provider. Cancel with them in your own time once you&#39;ve received your first AT Health delivery.</div>
+            <div class="px-6 md:px-8 pb-6 text-gray-600 leading-relaxed text-[15px]">We recommend cancelling your old subscription to avoid being charged by two providers. However, you can start with Together Clinic immediately — there&#39;s no dependency on your old provider. Cancel with them in your own time once you&#39;ve received your first Together Clinic delivery.</div>
           </div>
         </div>
       </div>
@@ -947,7 +947,7 @@ get_header();
         Make the switch<br/><em class="not-italic" style="color: #a89dd6;">in 5 minutes</em>
       </h2>
       <p class="text-base md:text-lg text-gray-400 leading-relaxed mb-10 max-w-xl mx-auto">
-        Join 2,400+ patients who switched to AT Health in 2024. Better prices, better support, zero treatment gaps.
+        Join 2,400+ patients who switched to Together Clinic in 2024. Better prices, better support, zero treatment gaps.
       </p>
       <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="inline-flex items-center gap-3 bg-white hover:bg-gray-100 text-gray-900 text-[15px] font-semibold px-10 py-4 rounded-xl transition-all hover-lift shadow-xl mb-10">
         Start Your Switch
