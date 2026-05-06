@@ -220,6 +220,17 @@ $hh_cards_default = array(
 $hh_cards = ah_field( 'health_hub_cards', '' );
 if ( ! is_array( $hh_cards ) || empty( $hh_cards ) ) {
     $hh_cards = $hh_cards_default;
+} else {
+    // Merge saved ACF rows with hardcoded defaults so blank fields never render empty
+    foreach ( $hh_cards as $i => &$card ) {
+        $d = isset( $hh_cards_default[ $i ] ) ? $hh_cards_default[ $i ] : array();
+        foreach ( array( 'card_category', 'card_title', 'card_excerpt', 'card_read_time', 'card_url' ) as $key ) {
+            if ( ! isset( $card[ $key ] ) || $card[ $key ] === null || $card[ $key ] === '' ) {
+                $card[ $key ] = isset( $d[ $key ] ) ? $d[ $key ] : '';
+            }
+        }
+    }
+    unset( $card );
 }
 
 $hh_sixth = array(
