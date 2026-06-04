@@ -145,29 +145,78 @@ $team_members = array(
       </h2>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-6 max-w-5xl mx-auto" data-stagger>
-      <div class="hp-stat-card" data-reveal style="--stagger-index:0">
-        <div class="hp-stat-number"><span data-count="30" data-suffix="+">0</span></div>
-        <p class="text-sm text-gray-600">Years Combined Clinical Experience</p>
-      </div>
-      <div class="hp-stat-card" data-reveal style="--stagger-index:1">
-        <div class="hp-stat-number"><span data-count="10000" data-suffix="+">0</span></div>
-        <p class="text-sm text-gray-600">Patients Treated</p>
-      </div>
-      <div class="hp-stat-card" data-reveal style="--stagger-index:2">
-        <div class="hp-stat-number">4.9<span class="text-amber-400 text-2xl">&#9733;</span></div>
-        <p class="text-sm text-gray-600">Patient Rating</p>
-      </div>
-      <div class="hp-stat-card" data-reveal style="--stagger-index:3">
-        <div class="hp-stat-number">48h</div>
-        <p class="text-sm text-gray-600">Tracked Delivery</p>
-      </div>
-      <div class="hp-stat-card col-span-2 md:col-span-1" data-reveal style="--stagger-index:4">
-        <div class="flex items-center justify-center gap-2 mb-2">
-          <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+    <?php
+    $stats_label_1     = ah_field( 'stats_label_1', 'Years combined clinical experience' );
+    $stats_label_2     = ah_field( 'stats_label_2', 'Patients treated since 2020' );
+    $stats_label_3     = ah_field( 'stats_label_3', 'Verified patient rating' );
+    $stats_label_4     = ah_field( 'stats_label_4', 'Tracked UK delivery' );
+    $stats_badges_lbl  = ah_field( 'stats_badges_label', 'Fully regulated' );
+    $stats_gphc_url    = ah_field( 'stats_gphc_url', 'https://www.pharmacyregulation.org/registers/pharmacy' );
+    $stats_mhra_url    = ah_field( 'stats_mhra_url', 'https://products.mhra.gov.uk/' );
+    $stats_cta_text    = ah_field( 'stats_cta_text', 'Start your assessment' );
+    $stats_cta_url     = ah_field( 'stats_cta_url', '' );
+    if ( $stats_cta_url === null || $stats_cta_url === '' ) {
+        $stats_cta_url = ah_booking_url();
+    }
+    ?>
+
+    <!-- Stat cards: 4-up grid (2 cols mobile, 4 cols desktop) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 max-w-5xl mx-auto mb-12" data-stagger>
+      <!-- Stat 1: Years -->
+      <div class="hp-stat-card-v2" data-reveal style="--stagger-index:0">
+        <div class="hp-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
         </div>
-        <p class="text-sm text-gray-600 font-semibold">GPhC & MHRA Regulated</p>
+        <div class="hp-stat-number"><span data-count="30" data-suffix="+">0</span></div>
+        <p class="text-sm text-gray-600 leading-snug"><?php echo esc_html( $stats_label_1 ); ?></p>
       </div>
+      <!-- Stat 2: Patients -->
+      <div class="hp-stat-card-v2" data-reveal style="--stagger-index:1">
+        <div class="hp-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
+        <div class="hp-stat-number"><span data-count="10000" data-suffix="+">0</span></div>
+        <p class="text-sm text-gray-600 leading-snug"><?php echo esc_html( $stats_label_2 ); ?></p>
+      </div>
+      <!-- Stat 3: Rating -->
+      <div class="hp-stat-card-v2" data-reveal style="--stagger-index:2">
+        <div class="hp-stat-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0.6" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        </div>
+        <div class="hp-stat-number">4.9</div>
+        <p class="text-sm text-gray-600 leading-snug"><?php echo esc_html( $stats_label_3 ); ?></p>
+      </div>
+      <!-- Stat 4: Delivery -->
+      <div class="hp-stat-card-v2" data-reveal style="--stagger-index:3">
+        <div class="hp-stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+        </div>
+        <div class="hp-stat-number"><span data-count="48" data-suffix="h">0h</span></div>
+        <p class="text-sm text-gray-600 leading-snug"><?php echo esc_html( $stats_label_4 ); ?></p>
+      </div>
+    </div>
+
+    <!-- Trust badges strip -->
+    <div class="hp-trust-strip max-w-3xl mx-auto mb-10 md:mb-12" data-reveal>
+      <span class="hp-trust-strip-label"><?php echo esc_html( $stats_badges_lbl ); ?></span>
+      <div class="hp-trust-strip-logos">
+        <a href="<?php echo esc_url( $stats_gphc_url ); ?>" target="_blank" rel="noopener noreferrer" class="hp-trust-badge">
+          <span class="hp-trust-badge-mark">GPhC</span>
+          <span class="hp-trust-badge-sub">Registered Pharmacy</span>
+        </a>
+        <a href="<?php echo esc_url( $stats_mhra_url ); ?>" target="_blank" rel="noopener noreferrer" class="hp-trust-badge">
+          <span class="hp-trust-badge-mark">MHRA</span>
+          <span class="hp-trust-badge-sub">Regulated</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center" data-reveal>
+      <a href="<?php echo esc_url( $stats_cta_url ); ?>" class="inline-flex items-center justify-center gap-2.5 bg-gray-900 hover:bg-gray-800 text-white text-[15px] font-semibold px-9 py-4 rounded-xl transition-all hover-lift shadow-lg">
+        <?php echo esc_html( $stats_cta_text ); ?>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+      </a>
     </div>
   </div>
 </section>
