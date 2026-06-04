@@ -301,3 +301,98 @@ a {
 @media (min-width: 1024px) {
     .hidden-desktop { display: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   SINGLE POST CONTENT — typography defaults for blog posts
+   Scoped to .single-post .prose so it never affects other pages.
+   ═══════════════════════════════════════════════════════════════ */
+.single-post .prose {
+    max-width: 740px;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: 'Inter', sans-serif;
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--ah-gray-700);
+}
+
+.single-post .prose p {
+    margin: 0 0 24px;
+}
+
+.single-post .prose p:last-child {
+    margin-bottom: 0;
+}
+
+.single-post .prose h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ah-gray-900);
+    margin: 48px 0 16px;
+}
+
+.single-post .prose h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--ah-gray-900);
+    margin: 32px 0 12px;
+}
+
+.single-post .prose h2:first-child,
+.single-post .prose h3:first-child {
+    margin-top: 0;
+}
+
+.single-post .prose strong,
+.single-post .prose b {
+    font-weight: 600;
+    color: var(--ah-gray-900);
+}
+
+.single-post .prose a {
+    color: var(--ah-purple-600);
+    text-decoration: none;
+    transition: text-decoration 0.2s ease, color 0.2s ease;
+}
+
+.single-post .prose a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.single-post .prose ul,
+.single-post .prose ol {
+    margin: 0 0 24px;
+    padding-left: 24px;
+}
+
+.single-post .prose li {
+    margin-bottom: 8px;
+}
+
+.single-post .prose blockquote {
+    margin: 32px 0;
+    padding: 4px 0 4px 24px;
+    border-left: 3px solid var(--ah-purple-600);
+    font-style: italic;
+    color: var(--ah-gray-500);
+}
+
+.single-post .prose blockquote p {
+    margin-bottom: 12px;
+}
+
+.single-post .prose blockquote p:last-child {
+    margin-bottom: 0;
+}
+
+.single-post .prose img {
+    border-radius: 12px;
+    margin: 32px 0;
+    max-width: 100%;
+    height: auto;
+}
