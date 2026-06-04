@@ -242,7 +242,7 @@ get_header();
     </h2>
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
       <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="inline-flex items-center gap-3 bg-white hover:bg-gray-100 text-gray-900 text-[15px] font-semibold px-10 py-4 rounded-xl transition-all hover-lift shadow-xl">Start Free Assessment</a>
-      <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'contact' ) ) ); ?>" class="inline-flex items-center gap-3 border-2 border-white/20 hover:border-white/40 text-white text-[15px] font-semibold px-10 py-4 rounded-xl transition-all">Speak to Our Team</a>
+      <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'contact-us' ) ?: get_page_by_path( 'contact' ) ) ); ?>" class="inline-flex items-center gap-3 border-2 border-white/20 hover:border-white/40 text-white text-[15px] font-semibold px-10 py-4 rounded-xl transition-all">Speak to Our Team</a>
     </div>
   </div>
 </section>

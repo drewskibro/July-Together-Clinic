@@ -4,8 +4,8 @@
  * Used on the homepage.
  */
 
-$hero_eyebrow   = ah_field( 'hero_eyebrow', 'GPhC Registered Online Pharmacy' );
-$hero_title     = ah_field( 'hero_title', 'Your health, in trusted hands.' );
+$hero_eyebrow   = ah_field( 'hero_eyebrow', 'Pharmacist-led. UK Registered.' );
+$hero_title     = ah_field( 'hero_title', 'Your health, in <em>trusted</em> hands.' );
 $hero_subtitle  = ah_field( 'hero_subtitle', 'Together Clinic is a GPhC-registered online pharmacy built around you. Expert pharmacist prescribers, transparent pricing, and care that puts your wellbeing first — all from the comfort of home.' );
 $hero_cta_text  = ah_field( 'hero_cta_text', 'Start Your Journey' );
 $hero_cta_url   = ah_field( 'hero_cta_url', '' );
@@ -17,7 +17,7 @@ $hero_image_alt = ah_field( 'hero_image_alt', 'Woman in kitchen feeling confiden
 ?>
 
 <!-- Premium Hero Section 2025 -->
-<section class="relative w-full overflow-hidden" style="background: #fdf8f3;">
+<section class="ah-hero-section relative w-full overflow-hidden" style="background: #fdf8f3;">
   <div class="max-w-[1920px] mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-2 min-h-0">
       <!-- Left Column: Content -->
@@ -52,7 +52,8 @@ $hero_image_alt = ah_field( 'hero_image_alt', 'Woman in kitchen feeling confiden
         >
           <a
             href="<?php echo esc_url( $hero_cta_url ); ?>"
-            class="inline-flex items-center justify-center gap-2.5 bg-gray-900 hover:bg-gray-800 text-white text-[15px] font-semibold px-9 py-4 rounded-lg transition-all hover-lift"
+            class="ah-hero-cta inline-flex items-center justify-center gap-2.5 text-white text-[15px] font-semibold px-9 py-4 rounded-lg transition-all"
+            style="background: #8e88d0;"
           >
             <?php echo esc_html( $hero_cta_text ); ?>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,6 +83,14 @@ $hero_image_alt = ah_field( 'hero_image_alt', 'Woman in kitchen feeling confiden
           </div>
         </div>
         <p class="text-xs text-gray-400 mt-2">Regulated by the General Pharmaceutical Council (GPhC)</p>
+
+        <!-- Social proof line -->
+        <p class="ah-hero-social-proof text-xs text-gray-400 mt-4 flex items-center gap-2 opacity-0 animate-fade-in-up delay-[600ms]" style="animation-fill-mode: forwards;">
+          <svg class="w-3.5 h-3.5 text-purple-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+          </svg>
+          Trusted by 10,000+ patients across the UK
+        </p>
       </div>
 
       <!-- Right Column: Hero image -->

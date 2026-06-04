@@ -105,7 +105,7 @@
                     <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'health-hub' ) ) ); ?>"
                        class="text-gray-700 text-sm font-medium hover:text-purple-600">Resources</a>
 
-                    <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'contact' ) ) ); ?>"
+                    <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'contact-us' ) ?: get_page_by_path( 'contact' ) ) ); ?>"
                        class="text-gray-700 text-sm font-medium hover:text-purple-600">Contact</a>
                 </div>
 
@@ -186,7 +186,7 @@
                     <span class="text-gray-700 text-base font-semibold group-hover:text-purple-600 transition-colors">Resources</span>
                 </a>
 
-                <a class="group flex items-center px-4 py-4 rounded-xl hover:bg-purple-50 transition-all" href="<?php echo esc_url( get_permalink( get_page_by_path( 'contact' ) ) ); ?>">
+                <a class="group flex items-center px-4 py-4 rounded-xl hover:bg-purple-50 transition-all" href="<?php echo esc_url( get_permalink( get_page_by_path( 'contact-us' ) ?: get_page_by_path( 'contact' ) ) ); ?>">
                     <span class="text-gray-700 text-base font-semibold group-hover:text-purple-600 transition-colors">Contact</span>
                 </a>
             </nav>

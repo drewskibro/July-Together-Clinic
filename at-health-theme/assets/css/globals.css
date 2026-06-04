@@ -209,6 +209,22 @@ a {
     transform: translateY(-2px);
 }
 
+/* ── Hero CTA — brand-coloured with lavender glow on hover ── */
+.ah-hero-cta {
+    box-shadow: 0 4px 14px -4px rgba(142, 136, 208, 0.4);
+}
+.ah-hero-cta:hover {
+    background: #7d76ba !important;
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px -10px rgba(142, 136, 208, 0.6);
+}
+
+/* ── Hero H1 italic emphasis (DM Serif Display Italic) ── */
+.ah-hero-section h1 em {
+    font-style: italic;
+    font-weight: inherit;
+}
+
 /* Purple utility classes (matching Tailwind config from HTML) */
 .bg-purple-50  { background-color: var(--ah-purple-50); }
 .bg-purple-600 { background-color: var(--ah-purple-600); }
