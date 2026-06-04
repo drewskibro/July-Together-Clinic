@@ -42,6 +42,100 @@
     padding: 32px 24px;
 }
 
+/* Stats v2 — bordered cards with icon */
+.hp-stat-card-v2 {
+    background: #fff;
+    border: 1px solid var(--ah-gray-200);
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.hp-stat-card-v2:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(26, 26, 46, 0.08);
+    border-color: var(--ah-purple-300);
+}
+.hp-stat-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f3eff9 0%, #ede6f8 100%);
+    border-radius: 12px;
+    color: #8e88d0;
+}
+.hp-stat-icon svg {
+    width: 24px;
+    height: 24px;
+}
+.hp-stat-card-v2 .hp-stat-number {
+    font-family: var(--ah-font-serif);
+    font-size: 2.5rem;
+    line-height: 1;
+    color: var(--ah-gray-900);
+    margin-bottom: 8px;
+}
+
+/* Trust strip */
+.hp-trust-strip {
+    background: #fff;
+    border: 1px solid var(--ah-gray-200);
+    border-radius: 16px;
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+.hp-trust-strip-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ah-gray-500, #6b7280);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+.hp-trust-strip-logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+.hp-trust-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+.hp-trust-badge:hover {
+    background: #f7f4f9;
+}
+.hp-trust-badge-mark {
+    font-family: var(--ah-font-serif);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ah-gray-900);
+    letter-spacing: 0.02em;
+    line-height: 1;
+}
+.hp-trust-badge-sub {
+    font-size: 11px;
+    color: var(--ah-gray-500, #6b7280);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 5px;
+}
+@media (min-width: 640px) {
+    .hp-trust-strip { flex-direction: row; justify-content: center; gap: 28px; }
+    .hp-trust-strip-logos { gap: 24px; }
+}
+
 .hp-stat-number {
     font-family: var(--ah-font-serif);
     font-size: 3rem;

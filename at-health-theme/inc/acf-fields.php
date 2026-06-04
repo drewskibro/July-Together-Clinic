@@ -268,6 +268,15 @@ acf_add_local_field_group( array(
     'fields' => array(
         array( 'key' => 'field_ah_stats_eyebrow', 'label' => 'Eyebrow', 'name' => 'stats_eyebrow', 'type' => 'text', 'default_value' => 'Why Patients Choose Us' ),
         array( 'key' => 'field_ah_stats_title', 'label' => 'Title (HTML)', 'name' => 'stats_title', 'type' => 'textarea', 'rows' => 2 ),
+        array( 'key' => 'field_ah_stats_label_1', 'label' => 'Stat 1 Label', 'name' => 'stats_label_1', 'type' => 'text', 'default_value' => 'Years combined clinical experience' ),
+        array( 'key' => 'field_ah_stats_label_2', 'label' => 'Stat 2 Label', 'name' => 'stats_label_2', 'type' => 'text', 'default_value' => 'Patients treated since 2020' ),
+        array( 'key' => 'field_ah_stats_label_3', 'label' => 'Stat 3 Label', 'name' => 'stats_label_3', 'type' => 'text', 'default_value' => 'Verified patient rating' ),
+        array( 'key' => 'field_ah_stats_label_4', 'label' => 'Stat 4 Label', 'name' => 'stats_label_4', 'type' => 'text', 'default_value' => 'Tracked UK delivery' ),
+        array( 'key' => 'field_ah_stats_badges_label', 'label' => 'Badges Strip Label', 'name' => 'stats_badges_label', 'type' => 'text', 'default_value' => 'Fully regulated' ),
+        array( 'key' => 'field_ah_stats_gphc_url', 'label' => 'GPhC Link URL', 'name' => 'stats_gphc_url', 'type' => 'url', 'default_value' => 'https://www.pharmacyregulation.org/registers/pharmacy' ),
+        array( 'key' => 'field_ah_stats_mhra_url', 'label' => 'MHRA Link URL', 'name' => 'stats_mhra_url', 'type' => 'url', 'default_value' => 'https://products.mhra.gov.uk/' ),
+        array( 'key' => 'field_ah_stats_cta_text', 'label' => 'CTA Button Text', 'name' => 'stats_cta_text', 'type' => 'text', 'default_value' => 'Start your assessment' ),
+        array( 'key' => 'field_ah_stats_cta_url', 'label' => 'CTA Button URL', 'name' => 'stats_cta_url', 'type' => 'url' ),
     ),
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-home.php' ) ) ),
 ) );
