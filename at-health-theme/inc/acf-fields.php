@@ -402,14 +402,95 @@ acf_add_local_field_group( array(
 // C-SERIES: BLOG POST FIELDS
 // ═══════════════════════════════════════════════
 
+// A10: Clinical Team — global repeater on options
+acf_add_local_field_group( array(
+    'key'   => 'group_ah_a10_clinical_team',
+    'title' => 'A10 — Clinical Team',
+    'fields' => array(
+        array(
+            'key'        => 'field_ah_clinical_team',
+            'label'      => 'Team Members',
+            'name'       => 'clinical_team',
+            'type'       => 'repeater',
+            'layout'     => 'block',
+            'button_label' => 'Add Team Member',
+            'instructions' => 'Defined once here, then selectable per post via Written by / Reviewed by dropdowns.',
+            'sub_fields' => array(
+                array( 'key' => 'field_ah_ct_name', 'label' => 'Name', 'name' => 'name', 'type' => 'text' ),
+                array( 'key' => 'field_ah_ct_role', 'label' => 'Role', 'name' => 'role', 'type' => 'text', 'instructions' => 'e.g. "Superintendent Pharmacist" or "Independent Pharmacist Prescriber".' ),
+                array( 'key' => 'field_ah_ct_gphc', 'label' => 'GPhC Number', 'name' => 'gphc_number', 'type' => 'text', 'instructions' => 'Optional. If set, appears next to the role in the "Reviewed by" column.' ),
+                array( 'key' => 'field_ah_ct_photo', 'label' => 'Photo', 'name' => 'photo', 'type' => 'image', 'return_format' => 'id', 'instructions' => 'Square headshot. Recommended 300x300px.' ),
+                array( 'key' => 'field_ah_ct_verify_url', 'label' => 'GPhC Verify URL', 'name' => 'verify_url', 'type' => 'url', 'instructions' => 'Optional. Direct link to this person on the GPhC register.' ),
+            ),
+        ),
+    ),
+    'location' => array( array( array( 'param' => 'options_page', 'operator' => '==', 'value' => 'ah-settings-clinical-team' ) ) ),
+) );
+
 acf_add_local_field_group( array(
     'key'   => 'group_ah_c1_blog',
     'title' => 'C1 — Blog Post Fields',
     'fields' => array(
         array( 'key' => 'field_ah_reading_time', 'label' => 'Reading Time (minutes)', 'name' => 'reading_time', 'type' => 'number', 'default_value' => '' ),
+
+        array(
+            'key'      => 'field_ah_post_written_by',
+            'label'    => 'Written by',
+            'name'     => 'post_written_by',
+            'type'     => 'select',
+            'ui'       => 1,
+            'allow_null' => 1,
+            'choices'  => array(),
+            'instructions' => 'Pick from the Clinical Team list (Together Clinic Settings → Clinical Team).',
+        ),
+        array(
+            'key'      => 'field_ah_post_reviewed_by',
+            'label'    => 'Reviewed by',
+            'name'     => 'post_reviewed_by',
+            'type'     => 'select',
+            'ui'       => 1,
+            'allow_null' => 1,
+            'choices'  => array(),
+            'instructions' => 'Pick from the Clinical Team list.',
+        ),
+        array(
+            'key'           => 'field_ah_post_hide_clinical_box',
+            'label'         => 'Hide Clinical Review Box',
+            'name'          => 'post_hide_clinical_box',
+            'type'          => 'true_false',
+            'ui'            => 1,
+            'instructions'  => 'Hides the EEAT box at the top of this post.',
+        ),
+        array(
+            'key'           => 'field_ah_post_hide_toc',
+            'label'         => 'Hide Table of Contents',
+            'name'          => 'post_hide_toc',
+            'type'          => 'true_false',
+            'ui'            => 1,
+            'instructions'  => 'TOC normally auto-renders when a post has 2+ H2 headings.',
+        ),
     ),
     'location' => array( array( array( 'param' => 'post_type', 'operator' => '==', 'value' => 'post' ) ) ),
 ) );
+
+// Populate Written-by / Reviewed-by choices from the global Clinical Team repeater at render time.
+add_filter( 'acf/load_field/name=post_written_by', 'ah_load_clinical_team_choices' );
+add_filter( 'acf/load_field/name=post_reviewed_by', 'ah_load_clinical_team_choices' );
+function ah_load_clinical_team_choices( $field ) {
+    $field['choices'] = array();
+    if ( function_exists( 'get_field' ) ) {
+        $team = get_field( 'clinical_team', 'option' );
+        if ( is_array( $team ) ) {
+            foreach ( $team as $i => $member ) {
+                $name = isset( $member['name'] ) ? $member['name'] : '';
+                if ( $name !== '' ) {
+                    $field['choices'][ (string) $i ] = $name;
+                }
+            }
+        }
+    }
+    return $field;
+}
 
 // ═══════════════════════════════════════════════
 // D-SERIES ADDITIONAL: MOUNJARO PAGE

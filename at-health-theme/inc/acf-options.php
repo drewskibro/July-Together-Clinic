@@ -54,4 +54,11 @@ if ( function_exists( 'acf_add_options_page' ) ) {
         'menu_slug'   => 'ah-settings-navigation',
         'parent_slug' => 'ah-settings',
     ) );
+
+    acf_add_options_sub_page( array(
+        'page_title'  => 'Clinical Team',
+        'menu_title'  => 'Clinical Team',
+        'menu_slug'   => 'ah-settings-clinical-team',
+        'parent_slug' => 'ah-settings',
+    ) );
 }
