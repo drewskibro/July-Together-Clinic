@@ -221,75 +221,54 @@ $team_members = array(
   </div>
 </section>
 
-<!-- Section 6: Health Hub Snapshot -->
+<!-- Section 6: Health Hub Snapshot — driven by ACF post pickers -->
 <?php
 $hh_eyebrow      = ah_field( 'health_hub_eyebrow', 'HEALTH HUB' );
 $hh_heading      = ah_field( 'health_hub_heading', 'Know More. Feel Better.' );
 $hh_subheading   = ah_field( 'health_hub_subheading', 'Honest health guidance from our pharmacist prescribers — written for real people, not medical textbooks.' );
 
-$hh_hero = array(
-    'category'  => ah_field( 'health_hub_hero_category', 'Weight Loss' ),
-    'image'     => ah_field( 'health_hub_hero_image', '' ),
-    'title'     => ah_field( 'health_hub_hero_title', 'Why Starting Your Weight Loss Journey Earlier Makes All the Difference' ),
-    'excerpt'   => ah_field( 'health_hub_hero_excerpt', 'Why starting early makes all the difference to your long-term weight loss success and overall health.' ),
-    'read_time' => ah_field( 'health_hub_hero_read_time', '5 min read' ),
-    'url'       => ah_field( 'health_hub_hero_url', '/health-hub/why-starting-your-weight-loss-journey-earlier-makes-all-the-difference/' ),
-);
-
-$hh_cards_default = array(
-    array(
-        'card_category'  => 'Weight Loss',
-        'card_title'     => 'The Truth About Prescription Weight Loss — What Nobody Tells You',
-        'card_excerpt'   => 'Common misconceptions, honest answers, and what to realistically expect.',
-        'card_read_time' => '4 min read',
-        'card_url'       => '/health-hub/the-truth-about-prescription-weight-loss/',
-    ),
-    array(
-        'card_category'  => 'Weight Loss',
-        'card_title'     => "How to Know if You're Clinically Eligible for Weight Loss Treatment",
-        'card_excerpt'   => 'Understanding Body Mass Index thresholds, health conditions and assessment criteria.',
-        'card_read_time' => '4 min read',
-        'card_url'       => '/health-hub/how-to-know-if-youre-clinically-eligible-for-weight-loss-treatment/',
-    ),
-    array(
-        'card_category'  => 'Weight Loss',
-        'card_title'     => 'Weight Loss Injections vs Tablets — Which Is Right for You?',
-        'card_excerpt'   => 'A balanced guide to help you understand your treatment options before your consultation.',
-        'card_read_time' => '5 min read',
-        'card_url'       => '/health-hub/weight-loss-injections-vs-tablets-which-is-right-for-you/',
-    ),
-    array(
-        'card_category'  => 'Weight Loss',
-        'card_title'     => 'What Happens During Your Together Clinic Consultation?',
-        'card_excerpt'   => 'A step-by-step walkthrough so you know exactly what to expect.',
-        'card_read_time' => '3 min read',
-        'card_url'       => '/health-hub/what-happens-during-your-together-clinic-consultation/',
-    ),
-);
-$hh_cards = ah_field( 'health_hub_cards', '' );
-if ( ! is_array( $hh_cards ) || empty( $hh_cards ) ) {
-    $hh_cards = $hh_cards_default;
-} else {
-    // Merge saved ACF rows with hardcoded defaults so blank fields never render empty
-    foreach ( $hh_cards as $i => &$card ) {
-        $d = isset( $hh_cards_default[ $i ] ) ? $hh_cards_default[ $i ] : array();
-        foreach ( array( 'card_category', 'card_title', 'card_excerpt', 'card_read_time', 'card_url' ) as $key ) {
-            if ( ! isset( $card[ $key ] ) || $card[ $key ] === null || $card[ $key ] === '' ) {
-                $card[ $key ] = isset( $d[ $key ] ) ? $d[ $key ] : '';
+// Normalise a picked post ID into the shape the cards expect.
+$hh_post_card = function ( $post_id, $read_time = '' ) {
+    if ( ! $post_id || ! get_post( $post_id ) ) {
+        return null;
+    }
+    $cats     = get_the_category( $post_id );
+    $category = '';
+    if ( $cats ) {
+        foreach ( $cats as $c ) {
+            if ( strtolower( $c->slug ) !== 'uncategorized' && strtolower( $c->slug ) !== 'uncategorised' ) {
+                $category = $c->name;
+                break;
             }
         }
+        if ( $category === '' ) { $category = $cats[0]->name; }
     }
-    unset( $card );
+    return array(
+        'title'     => get_the_title( $post_id ),
+        'excerpt'   => wp_strip_all_tags( get_the_excerpt( $post_id ) ),
+        'image'     => get_post_thumbnail_id( $post_id ),
+        'url'       => get_permalink( $post_id ),
+        'category'  => $category,
+        'read_time' => $read_time,
+    );
+};
+
+$hh_hero_id  = ah_field( 'health_hub_hero_post', 0 );
+$hh_hero     = $hh_post_card( $hh_hero_id, ah_field( 'health_hub_hero_read_time', '5 min read' ) );
+
+$hh_cards_raw = ah_field( 'health_hub_cards', array() );
+$hh_cards     = array();
+if ( is_array( $hh_cards_raw ) ) {
+    foreach ( $hh_cards_raw as $row ) {
+        $pid   = isset( $row['card_post'] ) ? $row['card_post'] : 0;
+        $rtime = isset( $row['card_read_time'] ) ? $row['card_read_time'] : '';
+        $card  = $hh_post_card( $pid, $rtime );
+        if ( $card ) { $hh_cards[] = $card; }
+    }
 }
 
-$hh_sixth = array(
-    'category'  => ah_field( 'health_hub_sixth_category', 'Weight Loss' ),
-    'image'     => ah_field( 'health_hub_sixth_image', '' ),
-    'title'     => ah_field( 'health_hub_sixth_title', 'Five Signs Your Weight Is Affecting Your Long-Term Health' ),
-    'excerpt'   => ah_field( 'health_hub_sixth_excerpt', 'From breathlessness to disrupted sleep — five evidence-based signs worth taking seriously.' ),
-    'read_time' => ah_field( 'health_hub_sixth_read_time', '5 min read' ),
-    'url'       => ah_field( 'health_hub_sixth_url', '/health-hub/five-signs-your-weight-is-affecting-your-long-term-health/' ),
-);
+$hh_sixth_id = ah_field( 'health_hub_sixth_post', 0 );
+$hh_sixth    = $hh_post_card( $hh_sixth_id, ah_field( 'health_hub_sixth_read_time', '5 min read' ) );
 
 $hh_cta_heading     = ah_field( 'health_hub_cta_heading', 'Ready to take the first step?' );
 $hh_cta_subtext     = ah_field( 'health_hub_cta_subtext', 'Answer a few quick questions and find out which treatment is right for you.' );
@@ -315,35 +294,42 @@ $hh_explore_url = ah_field( 'health_hub_explore_url', '/health-hub/' );
       </p>
     </div>
 
-    <!-- ROW 1: Hero article — full-width lavender card. Image on right if uploaded; typography-only fallback otherwise. -->
-    <?php $hh_has_hero_image = ( $hh_hero['image'] !== null && $hh_hero['image'] !== '' ); ?>
+    <!-- ROW 1: Hero article — pulled from the picked post -->
+    <?php if ( $hh_hero ) :
+        $hero_has_image = ( $hh_hero['image'] !== null && $hh_hero['image'] !== '' );
+    ?>
     <a href="<?php echo esc_url( $hh_hero['url'] ); ?>" class="hh-hero-article block rounded-[28px] mb-10 md:mb-12 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl group overflow-hidden" style="background: #8e88d0;" data-reveal>
-      <div class="grid <?php echo $hh_has_hero_image ? 'lg:grid-cols-2' : 'grid-cols-1'; ?> gap-0 items-stretch" style="min-height: 320px;">
+      <div class="grid <?php echo $hero_has_image ? 'lg:grid-cols-2' : 'grid-cols-1'; ?> gap-0 items-stretch" style="min-height: 320px;">
         <!-- Text column -->
         <div class="flex flex-col justify-between gap-8 p-10 md:p-14 lg:p-16 min-h-[260px] order-2 lg:order-1">
           <div>
             <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mb-6">
+              <?php if ( $hh_hero['category'] !== '' ) : ?>
               <span class="text-[11px] font-bold uppercase tracking-[0.2em]" style="color: #fdf8f4;">
                 <?php echo esc_html( $hh_hero['category'] ); ?>
               </span>
+              <?php endif; ?>
+              <?php if ( $hh_hero['read_time'] !== '' ) : ?>
               <span class="text-[11px] uppercase tracking-[0.2em]" style="color: rgba(253,248,244,0.65);">
                 <?php echo esc_html( $hh_hero['read_time'] ); ?>
               </span>
+              <?php endif; ?>
             </div>
             <h3 class="font-serif leading-[1.05] tracking-[-0.02em] mb-5 text-[2rem] md:text-[2.75rem] lg:text-[3.25rem]" style="color: #fdf8f4;">
               <?php echo esc_html( $hh_hero['title'] ); ?>
             </h3>
+            <?php if ( $hh_hero['excerpt'] !== '' ) : ?>
             <p class="text-base md:text-lg leading-[1.6]" style="color: rgba(253,248,244,0.85);">
               <?php echo esc_html( $hh_hero['excerpt'] ); ?>
             </p>
+            <?php endif; ?>
           </div>
           <div class="inline-flex items-center gap-2 text-[15px] font-semibold transition-transform duration-300 group-hover:translate-x-1" style="color: #fdf8f4;">
             Read Article
             <span aria-hidden="true">&rarr;</span>
           </div>
         </div>
-        <!-- Image column (only when uploaded) -->
-        <?php if ( $hh_has_hero_image ) : ?>
+        <?php if ( $hero_has_image ) : ?>
         <div class="relative order-1 lg:order-2 min-h-[240px] lg:min-h-full">
           <?php echo wp_get_attachment_image( $hh_hero['image'], 'large', false, array(
               'class' => 'absolute inset-0 w-full h-full object-cover',
@@ -353,36 +339,37 @@ $hh_explore_url = ah_field( 'health_hub_explore_url', '/health-hub/' );
         <?php endif; ?>
       </div>
     </a>
+    <?php endif; ?>
 
-    <!-- ROW 2: Four supporting article cards — clean editorial grid -->
+    <!-- ROW 2: Four supporting article cards -->
+    <?php if ( ! empty( $hh_cards ) ) : ?>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-12" data-stagger>
-      <?php foreach ( $hh_cards as $i => $card ) :
-          $c_cat   = isset( $card['card_category'] ) ? $card['card_category'] : '';
-          $c_img   = isset( $card['card_image'] ) ? $card['card_image'] : '';
-          $c_title = isset( $card['card_title'] ) ? $card['card_title'] : '';
-          $c_exc   = isset( $card['card_excerpt'] ) ? $card['card_excerpt'] : '';
-          $c_read  = isset( $card['card_read_time'] ) ? $card['card_read_time'] : '';
-          $c_url   = isset( $card['card_url'] ) ? $card['card_url'] : '#';
-      ?>
-      <a href="<?php echo esc_url( $c_url ); ?>" class="hh-card group flex flex-col pb-6 transition-all duration-300" style="border-bottom: 1px solid rgba(142,136,208,0.2); --stagger-index:<?php echo (int) $i; ?>;" data-reveal>
-        <?php if ( $c_img !== null && $c_img !== '' ) : ?>
+      <?php foreach ( $hh_cards as $i => $card ) : ?>
+      <a href="<?php echo esc_url( $card['url'] ); ?>" class="hh-card group flex flex-col pb-6 transition-all duration-300" style="border-bottom: 1px solid rgba(142,136,208,0.2); --stagger-index:<?php echo (int) $i; ?>;" data-reveal>
+        <?php if ( $card['image'] ) : ?>
         <div class="relative aspect-[4/3] mb-5 rounded-2xl overflow-hidden bg-gray-100">
-          <?php echo wp_get_attachment_image( $c_img, 'health-hub-card', false, array(
+          <?php echo wp_get_attachment_image( $card['image'], 'health-hub-card', false, array(
               'class' => 'absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105',
-              'alt'   => esc_attr( $c_title ),
+              'alt'   => esc_attr( $card['title'] ),
           ) ); ?>
         </div>
         <?php endif; ?>
+        <?php if ( $card['category'] !== '' ) : ?>
         <span class="text-[11px] font-bold uppercase tracking-[0.1em] mb-4" style="color: #8e88d0;">
-          <?php echo esc_html( $c_cat ); ?>
+          <?php echo esc_html( $card['category'] ); ?>
         </span>
+        <?php endif; ?>
         <h3 class="font-serif text-gray-900 text-[1.25rem] md:text-[1.35rem] leading-[1.25] tracking-[-0.01em] mb-3 transition-colors duration-300 group-hover:text-[#8e88d0]">
-          <?php echo esc_html( $c_title ); ?>
+          <?php echo esc_html( $card['title'] ); ?>
         </h3>
+        <?php if ( $card['excerpt'] !== '' ) : ?>
         <p class="text-[15px] text-gray-600 leading-[1.6] mb-4 flex-grow">
-          <?php echo esc_html( $c_exc ); ?>
+          <?php echo esc_html( $card['excerpt'] ); ?>
         </p>
-        <p class="text-xs text-gray-500 mb-5"><?php echo esc_html( $c_read ); ?></p>
+        <?php endif; ?>
+        <?php if ( $card['read_time'] !== '' ) : ?>
+        <p class="text-xs text-gray-500 mb-5"><?php echo esc_html( $card['read_time'] ); ?></p>
+        <?php endif; ?>
         <span class="inline-flex items-center gap-1.5 text-sm font-semibold transition-transform duration-300 group-hover:translate-x-1" style="color: #8e88d0;">
           Read
           <span aria-hidden="true">&rarr;</span>
@@ -390,13 +377,14 @@ $hh_explore_url = ah_field( 'health_hub_explore_url', '/health-hub/' );
       </a>
       <?php endforeach; ?>
     </div>
+    <?php endif; ?>
 
     <!-- ROW 3: Sixth article (60%) + CTA panel (40%) -->
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8" data-reveal>
-      <!-- Sixth article -->
+    <div class="grid grid-cols-1 <?php echo $hh_sixth ? 'lg:grid-cols-5' : ''; ?> gap-6 md:gap-8" data-reveal>
+      <?php if ( $hh_sixth ) : ?>
       <a href="<?php echo esc_url( $hh_sixth['url'] ); ?>" class="hh-card-large group lg:col-span-3 flex flex-col justify-between pb-8 transition-all duration-300" style="border-bottom: 1px solid rgba(142,136,208,0.2);">
         <div>
-          <?php if ( $hh_sixth['image'] !== null && $hh_sixth['image'] !== '' ) : ?>
+          <?php if ( $hh_sixth['image'] ) : ?>
           <div class="relative aspect-[16/9] mb-6 rounded-2xl overflow-hidden bg-gray-100">
             <?php echo wp_get_attachment_image( $hh_sixth['image'], 'large', false, array(
                 'class' => 'absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105',
@@ -405,28 +393,35 @@ $hh_explore_url = ah_field( 'health_hub_explore_url', '/health-hub/' );
           </div>
           <?php endif; ?>
           <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mb-5">
+            <?php if ( $hh_sixth['category'] !== '' ) : ?>
             <span class="text-[11px] font-bold uppercase tracking-[0.1em]" style="color: #8e88d0;">
               <?php echo esc_html( $hh_sixth['category'] ); ?>
             </span>
+            <?php endif; ?>
+            <?php if ( $hh_sixth['read_time'] !== '' ) : ?>
             <span class="text-xs text-gray-500">
               <?php echo esc_html( $hh_sixth['read_time'] ); ?>
             </span>
+            <?php endif; ?>
           </div>
           <h3 class="font-serif text-gray-900 text-[1.75rem] md:text-[2.25rem] leading-[1.1] tracking-[-0.015em] mb-4 transition-colors duration-300 group-hover:text-[#8e88d0]">
             <?php echo esc_html( $hh_sixth['title'] ); ?>
           </h3>
+          <?php if ( $hh_sixth['excerpt'] !== '' ) : ?>
           <p class="text-base md:text-lg text-gray-600 leading-[1.6] max-w-xl">
             <?php echo esc_html( $hh_sixth['excerpt'] ); ?>
           </p>
+          <?php endif; ?>
         </div>
         <span class="inline-flex items-center gap-1.5 text-[15px] font-semibold mt-6 transition-transform duration-300 group-hover:translate-x-1" style="color: #8e88d0;">
           Read Article
           <span aria-hidden="true">&rarr;</span>
         </span>
       </a>
+      <?php endif; ?>
 
       <!-- CTA panel -->
-      <div class="lg:col-span-2 rounded-[28px] p-10 flex flex-col justify-center" style="background: #8e88d0;">
+      <div class="<?php echo $hh_sixth ? 'lg:col-span-2' : ''; ?> rounded-[28px] p-10 flex flex-col justify-center" style="background: #8e88d0;">
         <h3 class="font-serif text-[1.75rem] md:text-[2rem] leading-[1.15] tracking-[-0.015em] mb-4" style="color: #fdf8f4;">
           <?php echo esc_html( $hh_cta_heading ); ?>
         </h3>
@@ -441,7 +436,6 @@ $hh_explore_url = ah_field( 'health_hub_explore_url', '/health-hub/' );
     </div>
 
     <!-- Section footer: Explore All link -->
-    <!-- HEALTH HUB PAGE TO BE BUILT -->
     <div class="text-center mt-12 md:mt-16">
       <a href="<?php echo esc_url( $hh_explore_url ); ?>" class="hh-explore-link inline-flex items-center gap-2 text-[15px] font-semibold transition-all duration-300" style="color: #8e88d0;">
         Explore All Articles
