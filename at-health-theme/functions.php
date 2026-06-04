@@ -242,6 +242,9 @@ require_once get_theme_file_path( 'inc/acf-options.php' );
 // ACF Field definitions
 require_once get_theme_file_path( 'inc/acf-fields.php' );
 
+// Single-post EEAT box + auto Table of Contents
+require_once get_theme_file_path( 'inc/post-clinical-content.php' );
+
 // WooCommerce product setup (admin tool)
 if ( class_exists( 'WooCommerce' ) ) {
     require_once get_theme_file_path( 'inc/woocommerce-setup.php' );
