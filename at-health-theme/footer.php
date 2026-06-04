@@ -40,7 +40,7 @@
                     <ul class="space-y-3.5">
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'switching-providers' ) ) ); ?>" class="text-[15px] text-gray-300 hover:text-white transition-colors">Switching Providers</a></li>
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'customer-care' ) ) ); ?>" class="text-[15px] text-gray-300 hover:text-white transition-colors">Customer Care</a></li>
-                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'contact' ) ) ); ?>" class="text-[15px] text-gray-300 hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'contact-us' ) ?: get_page_by_path( 'contact' ) ) ); ?>" class="text-[15px] text-gray-300 hover:text-white transition-colors">Contact Us</a></li>
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'reorder' ) ) ); ?>" class="text-[15px] text-gray-300 hover:text-white transition-colors">Reorder</a></li>
                     </ul>
                 </div>
