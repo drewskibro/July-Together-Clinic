@@ -110,14 +110,16 @@
                 </div>
 
                 <!-- CTA Buttons -->
-                <a href="/my-account/"
-                   class="hidden sm:inline-block text-sm font-medium px-6 py-3 rounded-lg border-[1.5px] border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300 mr-2">
-                    Log In
-                </a>
-                <a href="<?php echo esc_url( ah_booking_url() ); ?>"
-                   class="hidden sm:inline-block bg-purple-600 text-white text-sm font-medium px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
-                    <?php echo esc_html( ah_option( 'nav_cta_text', 'Start Journey →' ) ); ?>
-                </a>
+                <div class="hidden sm:flex items-center gap-3">
+                    <a href="/my-account/"
+                       class="text-sm font-medium px-6 py-3 rounded-lg border-[1.5px] border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300">
+                        Log In
+                    </a>
+                    <a href="<?php echo esc_url( ah_booking_url() ); ?>"
+                       class="bg-purple-600 text-white text-sm font-medium px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
+                        <?php echo esc_html( ah_option( 'nav_cta_text', 'Start Journey →' ) ); ?>
+                    </a>
+                </div>
 
                 <!-- Mobile Menu Button -->
                 <button class="lg:hidden flex items-center justify-center w-10 h-10 text-gray-600 hover:text-purple-600 transition-colors" id="menuToggle" aria-label="Open menu">
