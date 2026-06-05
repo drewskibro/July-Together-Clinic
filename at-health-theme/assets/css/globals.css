@@ -423,6 +423,39 @@ a {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   HTML BLOCK / .tc-article WIDTH FIX
+   Lets writers drop a full-width custom-HTML wrapper (.tc-article)
+   inside a post and have it break out of the 740px content column.
+   Scoped to .single body class so other page types are unaffected.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Author-supplied rules — let HTML blocks and tc-article fill 100% */
+.single .wp-block-html,
+.single .wp-block-html .tc-article {
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+.single .tc-article {
+    max-width: 780px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 24px;
+    box-sizing: border-box;
+}
+
+/* Parent overrides — required for the author rules above to take effect.
+   The post template wraps content in <div class="max-w-3xl"><div class="prose">
+   which would otherwise clip tc-article at 740-768px regardless. Only fires
+   when a .tc-article descendant is present. */
+.single .prose:has(.tc-article) {
+    max-width: none;
+}
+.single .max-w-3xl:has(.tc-article) {
+    max-width: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    CLINICAL REVIEW (EEAT) CARD — auto-injected at top of post content
    ═══════════════════════════════════════════════════════════════ */
 .single-post .bp-review-card {
