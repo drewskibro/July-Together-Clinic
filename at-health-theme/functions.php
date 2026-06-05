@@ -128,7 +128,7 @@ function ah_no_phone_notice() {
 }
 
 function ah_booking_url() {
-    return ah_option( 'eligibility_url', '/eligibility/' );
+    return ah_option( 'eligibility_url', '/weight-loss-eligibility/' );
 }
 
 /**

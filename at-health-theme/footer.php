@@ -30,7 +30,7 @@
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'mounjaro' ) ) ); ?>" class="text-[15px] text-gray-300 hover:text-white transition-colors">Mounjaro</a></li>
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy' ) ) ); ?>" class="text-[15px] text-gray-300 hover:text-white transition-colors">Wegovy</a></li>
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) ); ?>" class="text-[15px] text-gray-300 hover:text-white transition-colors">All Treatments</a></li>
-                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'eligibility' ) ) ); ?>" class="text-[15px] text-gray-300 hover:text-white transition-colors">Check Eligibility</a></li>
+                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'weight-loss-eligibility' ) ?: get_page_by_path( 'eligibility' ) ) ); ?>" class="text-[15px] text-gray-300 hover:text-white transition-colors">Check Eligibility</a></li>
                     </ul>
                 </div>
 
