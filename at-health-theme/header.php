@@ -112,11 +112,11 @@
                 <!-- CTA Buttons -->
                 <div class="hidden sm:flex items-center gap-3 lg:ml-10">
                     <a href="/my-account/"
-                       class="text-sm font-medium px-6 py-3 rounded-lg border-[1.5px] border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300">
+                       class="whitespace-nowrap text-sm font-medium px-6 py-3 rounded-lg border-[1.5px] border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300">
                         Log In
                     </a>
                     <a href="<?php echo esc_url( ah_booking_url() ); ?>"
-                       class="bg-purple-600 text-white text-sm font-medium px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
+                       class="whitespace-nowrap bg-purple-600 text-white text-sm font-medium px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
                         <?php echo esc_html( ah_option( 'nav_cta_text', 'Start Journey →' ) ); ?>
                     </a>
                 </div>
