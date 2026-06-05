@@ -82,7 +82,7 @@
                     <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'switching-providers' ) ) ); ?>"
                        class="text-gray-700 text-sm font-medium hover:text-purple-600">Switching Providers</a>
 
-                    <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'eligibility' ) ) ); ?>"
+                    <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'weight-loss-eligibility' ) ?: get_page_by_path( 'eligibility' ) ) ); ?>"
                        class="text-gray-700 text-sm font-medium hover:text-purple-600">Eligibility</a>
 
                     <!-- About Dropdown -->
@@ -170,7 +170,7 @@
                     <span class="text-gray-700 text-base font-semibold group-hover:text-purple-600 transition-colors">Switching Providers</span>
                 </a>
 
-                <a class="group flex items-center px-4 py-4 rounded-xl hover:bg-purple-50 transition-all" href="<?php echo esc_url( get_permalink( get_page_by_path( 'eligibility' ) ) ); ?>">
+                <a class="group flex items-center px-4 py-4 rounded-xl hover:bg-purple-50 transition-all" href="<?php echo esc_url( get_permalink( get_page_by_path( 'weight-loss-eligibility' ) ?: get_page_by_path( 'eligibility' ) ) ); ?>">
                     <span class="text-gray-700 text-base font-semibold group-hover:text-purple-600 transition-colors">Eligibility</span>
                 </a>
 
