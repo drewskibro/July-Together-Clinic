@@ -82,6 +82,12 @@ $hero_image_alt = ah_field( 'hero_image_alt', 'Woman in kitchen feeling confiden
             <span class="text-xs text-gray-500 font-medium">48hr Delivery</span>
           </div>
         </div>
+
+        <!-- Existing-patient login nudge — sits with the action area, not buried in trust stack -->
+        <p class="ah-hero-login text-xs text-gray-500 mt-4">
+          Already a patient? <a href="/my-account/" class="inline-block py-2.5 -my-2.5 font-semibold transition-colors duration-200" style="color: #8e88d0;">Log in to reorder &rarr;</a>
+        </p>
+
         <p class="text-xs text-gray-400 mt-2">Regulated by the General Pharmaceutical Council (GPhC)</p>
 
         <!-- Social proof line -->
