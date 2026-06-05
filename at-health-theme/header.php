@@ -109,7 +109,11 @@
                        class="text-gray-700 text-sm font-medium hover:text-purple-600">Contact</a>
                 </div>
 
-                <!-- CTA Button -->
+                <!-- CTA Buttons -->
+                <a href="/my-account/"
+                   class="hidden sm:inline-block text-sm font-medium px-6 py-3 rounded-lg border-[1.5px] border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300 mr-2">
+                    Log In
+                </a>
                 <a href="<?php echo esc_url( ah_booking_url() ); ?>"
                    class="hidden sm:inline-block bg-purple-600 text-white text-sm font-medium px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors">
                     <?php echo esc_html( ah_option( 'nav_cta_text', 'Start Journey →' ) ); ?>
@@ -193,6 +197,12 @@
 
             <!-- Menu Footer -->
             <div class="p-6 border-t border-gray-200 space-y-4">
+                <a href="/my-account/" class="w-full flex items-center justify-center gap-3 border-[1.5px] border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white text-base font-semibold px-6 py-4 rounded-xl transition-all duration-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                    </svg>
+                    Log In
+                </a>
                 <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="w-full flex items-center justify-center gap-3 bg-purple-600 hover:bg-purple-700 text-white text-base font-semibold px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>

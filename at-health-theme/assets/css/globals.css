@@ -225,6 +225,15 @@ a {
     font-weight: inherit;
 }
 
+/* ── Hero existing-patient login link ── */
+.ah-hero-login a {
+    text-decoration: none;
+}
+.ah-hero-login a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
 /* Purple utility classes (matching Tailwind config from HTML) */
 .bg-purple-50  { background-color: var(--ah-purple-50); }
 .bg-purple-600 { background-color: var(--ah-purple-600); }
