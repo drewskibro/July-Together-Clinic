@@ -110,7 +110,7 @@
                 </div>
 
                 <!-- CTA Buttons -->
-                <div class="hidden sm:flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-3 lg:ml-10">
                     <a href="/my-account/"
                        class="text-sm font-medium px-6 py-3 rounded-lg border-[1.5px] border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300">
                         Log In
