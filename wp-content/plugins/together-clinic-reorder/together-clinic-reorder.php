@@ -3,7 +3,7 @@
  * Plugin Name:       Together Clinic Reorder
  * Plugin URI:        https://togetherclinic.co.uk/
  * Description:       Multi-step reorder form for verified returning patients. Pulls medication / dose from previous order, reads live prices from WooCommerce, attaches rrqr_data to cart for the eligibility plugin's checkout bypass.
- * Version:           1.0.6
+ * Version:           1.0.7
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Together Clinic
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TC_REORDER_VERSION', '1.0.6' );
+define( 'TC_REORDER_VERSION', '1.0.7' );
 define( 'TC_REORDER_FILE', __FILE__ );
 define( 'TC_REORDER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'TC_REORDER_URL', plugin_dir_url( __FILE__ ) );
