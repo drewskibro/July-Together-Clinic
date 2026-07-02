@@ -221,16 +221,22 @@ class TC_Checkout {
 	}
 
 	public static function attach_assessment_to_order( WC_Order $order ) {
-		if ( $order->get_meta( self::ORDER_META_RAW ) ) {
-			return;
-		}
-
 		$elig = TC_Cookie_Store::get();
 		if ( empty( $elig ) ) {
 			return;
 		}
 
 		$assessment_id = $elig['assessment_id'] ?? '';
+
+		// Idempotent by assessment identity: skip only when this order already
+		// carries the *same* assessment. A re-taken assessment (a new id in the
+		// cookie) must overwrite an earlier snapshot — e.g. a Blocks draft order
+		// stamped before the customer went back and retook the assessment.
+		$stored_id = (string) $order->get_meta( self::ORDER_META_ASSESSMENT_ID );
+		if ( $assessment_id !== '' && $stored_id === (string) $assessment_id ) {
+			return;
+		}
+
 		if ( $assessment_id ) {
 			$order->update_meta_data( self::ORDER_META_ASSESSMENT_ID, $assessment_id );
 		}

@@ -63,10 +63,6 @@ class TC_Reorder_Checkout {
 	}
 
 	public static function attach_assessment_to_order( WC_Order $order ) {
-		if ( $order->get_meta( self::ORDER_META_RAW ) ) {
-			return;
-		}
-
 		$data = TC_Reorder_Cookie_Store::get();
 		if ( empty( $data ) ) {
 			return;
@@ -74,6 +70,15 @@ class TC_Reorder_Checkout {
 
 		$assessment_id = $data['assessment_id'] ?? '';
 		if ( ! $assessment_id ) {
+			return;
+		}
+
+		// Idempotent by assessment identity: skip only when this order already
+		// carries the *same* reorder assessment. A newly-taken reorder (a new
+		// id) overwrites an earlier snapshot — e.g. a Blocks draft order stamped
+		// before the patient retook the reorder assessment.
+		$stored_id = (string) $order->get_meta( self::ORDER_META_ASSESSMENT_ID );
+		if ( $stored_id === $assessment_id ) {
 			return;
 		}
 
