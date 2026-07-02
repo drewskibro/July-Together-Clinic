@@ -22,7 +22,7 @@ class TC_Checkout {
 
 		add_filter( 'woocommerce_add_to_cart_validation', [ $this, 'validate_add_to_cart' ], 10, 3 );
 
-		add_action( 'woocommerce_email_order_meta', [ 'TC_Emails', 'inject_into_woo_order_email' ], 20, 1 );
+		add_action( 'woocommerce_email_order_meta', [ 'TC_Emails', 'inject_into_woo_order_email' ], 20, 2 );
 	}
 
 	public function enforce_before_checkout() {
