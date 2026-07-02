@@ -71,10 +71,9 @@ class TC_My_Account {
 
 	private function destination_for_current_user() {
 		$assessment_page_id = (int) get_option( 'tc_eligibility_assessment_page_id', 0 );
-		$reorder_page_id    = (int) get_option( 'tc_reorder_page_id', 0 );
 
 		$assessment_url = $assessment_page_id ? get_permalink( $assessment_page_id ) : home_url( '/weight-loss-eligibility/' );
-		$reorder_url    = $reorder_page_id ? get_permalink( $reorder_page_id ) : home_url( '/reorder-now/' );
+		$reorder_url    = TC_Checkout::reorder_url();
 
 		return $this->is_returning_customer() ? $reorder_url : $assessment_url;
 	}

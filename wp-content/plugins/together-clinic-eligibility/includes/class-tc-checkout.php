@@ -22,7 +22,7 @@ class TC_Checkout {
 
 		add_filter( 'woocommerce_add_to_cart_validation', [ $this, 'validate_add_to_cart' ], 10, 3 );
 
-		add_action( 'woocommerce_email_order_meta', [ 'TC_Emails', 'inject_into_woo_order_email' ], 20, 1 );
+		add_action( 'woocommerce_email_order_meta', [ 'TC_Emails', 'inject_into_woo_order_email' ], 20, 2 );
 	}
 
 	public function enforce_before_checkout() {
@@ -89,7 +89,7 @@ class TC_Checkout {
 		}
 
 		$reorder_page_id = (int) get_option( 'tc_reorder_page_id', 0 );
-		$reorder_url     = $reorder_page_id ? get_permalink( $reorder_page_id ) : home_url( '/reorder/' );
+		$reorder_url     = self::reorder_url();
 
 		TC_Log::info( 'assessment_redirect_to_reorder', [
 			'user_id'         => get_current_user_id(),
@@ -111,6 +111,16 @@ class TC_Checkout {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Canonical reorder-page URL. Prefers the configured tc_reorder_page_id and
+	 * falls back to /reorder/ (the reorder page's slug) so every caller resolves
+	 * the same destination instead of drifting between hardcoded fallbacks.
+	 */
+	public static function reorder_url() {
+		$reorder_page_id = (int) get_option( 'tc_reorder_page_id', 0 );
+		return $reorder_page_id ? get_permalink( $reorder_page_id ) : home_url( '/reorder/' );
 	}
 
 	public function prefill_checkout_fields( $fields ) {
@@ -221,16 +231,22 @@ class TC_Checkout {
 	}
 
 	public static function attach_assessment_to_order( WC_Order $order ) {
-		if ( $order->get_meta( self::ORDER_META_RAW ) ) {
-			return;
-		}
-
 		$elig = TC_Cookie_Store::get();
 		if ( empty( $elig ) ) {
 			return;
 		}
 
 		$assessment_id = $elig['assessment_id'] ?? '';
+
+		// Idempotent by assessment identity: skip only when this order already
+		// carries the *same* assessment. A re-taken assessment (a new id in the
+		// cookie) must overwrite an earlier snapshot — e.g. a Blocks draft order
+		// stamped before the customer went back and retook the assessment.
+		$stored_id = (string) $order->get_meta( self::ORDER_META_ASSESSMENT_ID );
+		if ( $assessment_id !== '' && $stored_id === (string) $assessment_id ) {
+			return;
+		}
+
 		if ( $assessment_id ) {
 			$order->update_meta_data( self::ORDER_META_ASSESSMENT_ID, $assessment_id );
 		}

@@ -3,7 +3,7 @@
  * Plugin Name:       Together Clinic Eligibility Checker
  * Plugin URI:        https://togetherclinic.co.uk/
  * Description:       Multi-step weight-loss eligibility assessment with WooCommerce checkout integration (block + classic), patient and clinician notifications, and full audit trail.
- * Version:           1.1.5
+ * Version:           1.1.6
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Together Clinic
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TC_ELIGIBILITY_VERSION', '1.1.5' );
+define( 'TC_ELIGIBILITY_VERSION', '1.1.6' );
 define( 'TC_ELIGIBILITY_FILE', __FILE__ );
 define( 'TC_ELIGIBILITY_PATH', plugin_dir_path( __FILE__ ) );
 define( 'TC_ELIGIBILITY_URL', plugin_dir_url( __FILE__ ) );

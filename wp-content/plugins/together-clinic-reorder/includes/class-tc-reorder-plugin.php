@@ -21,6 +21,7 @@ class TC_Reorder_Plugin {
 
 		new TC_Reorder_Ajax();
 		new TC_Reorder_Checkout();
+		new TC_Reorder_Cron();
 
 		add_shortcode( self::SHORTCODE, [ $this, 'render_wizard' ] );
 
@@ -37,10 +38,17 @@ class TC_Reorder_Plugin {
 			add_option( 'tc_reorder_enforce_login', '1' );
 		}
 
+		if ( get_option( 'tc_reorder_retention_days', null ) === null ) {
+			add_option( 'tc_reorder_retention_days', 30 );
+		}
+
+		TC_Reorder_Cron::schedule();
+
 		TC_Reorder_Log::info( 'plugin_activated', [ 'version' => TC_REORDER_VERSION ] );
 	}
 
 	public static function on_deactivate() {
+		TC_Reorder_Cron::unschedule();
 		TC_Reorder_Log::info( 'plugin_deactivated' );
 	}
 
@@ -166,11 +174,13 @@ class TC_Reorder_Plugin {
 
 		nocache_headers();
 
+		// Fonts are self-hosted (see assets/fonts + assets/css/fonts.css) so that
+		// loading the reorder page never sends a patient's IP address to Google.
 		wp_enqueue_style(
 			'tc-reorder-fonts',
-			'https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap',
+			TC_REORDER_URL . 'assets/css/fonts.css',
 			[],
-			null
+			TC_REORDER_VERSION
 		);
 
 		wp_enqueue_style(

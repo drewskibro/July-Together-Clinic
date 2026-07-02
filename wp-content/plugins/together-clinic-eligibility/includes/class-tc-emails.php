@@ -118,7 +118,13 @@ class TC_Emails {
 		return $content;
 	}
 
-	public static function inject_into_woo_order_email( $order ) {
+	public static function inject_into_woo_order_email( $order, $sent_to_admin = false ) {
+		// The assessment summary contains sensitive clinical data (BMI, DOB,
+		// treatment). It must only ever appear in admin/clinician-facing order
+		// emails, never in the customer's copy.
+		if ( ! $sent_to_admin ) {
+			return;
+		}
 		if ( ! is_a( $order, 'WC_Order' ) ) {
 			return;
 		}
