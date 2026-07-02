@@ -1,4 +1,4 @@
-name: Deploy AT Health Theme to Kinsta
+name: Deploy AT Health Theme & Plugins to Kinsta
 
 on:
   push:
@@ -6,10 +6,13 @@ on:
       - main
     paths:
       - 'at-health-theme/**'
+      - 'wp-content/plugins/together-clinic-eligibility/**'
+      - 'wp-content/plugins/together-clinic-reorder/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
-    name: Deploy Theme
+    name: Deploy Theme & Plugins
     runs-on: ubuntu-latest
 
     steps:
@@ -27,6 +30,21 @@ jobs:
           target: "~/public/wp-content/themes/"
           overwrite: true
 
+      # Only the two Together Clinic plugins are shipped. The source paths are
+      # repo-relative and the target is the WordPress webroot, so each folder
+      # lands at ~/public/wp-content/plugins/<name>/ (mirrors the repo layout);
+      # no other server-side plugins are touched.
+      - name: Deploy Together Clinic plugins via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.KINSTA_SSH_HOST }}
+          username: ${{ secrets.KINSTA_SSH_USER }}
+          password: ${{ secrets.KINSTA_SSH_PASSWORD }}
+          port: ${{ secrets.KINSTA_SSH_PORT }}
+          source: "wp-content/plugins/together-clinic-eligibility/,wp-content/plugins/together-clinic-reorder/"
+          target: "~/public/"
+          overwrite: true
+
       - name: Verify deployment
         uses: appleboy/ssh-action@v1
         with:
@@ -41,5 +59,12 @@ jobs:
             echo ""
             echo "Style.css header:"
             head -5 ~/public/wp-content/themes/at-health-theme/style.css
+            echo ""
+            echo "Together Clinic plugin directories:"
+            ls -la ~/public/wp-content/plugins/together-clinic-eligibility/ ~/public/wp-content/plugins/together-clinic-reorder/
+            echo ""
+            echo "Plugin header versions:"
+            grep -m1 'Version:' ~/public/wp-content/plugins/together-clinic-eligibility/together-clinic-eligibility.php
+            grep -m1 'Version:' ~/public/wp-content/plugins/together-clinic-reorder/together-clinic-reorder.php
             echo ""
             echo "=== Deployment Complete ==="
