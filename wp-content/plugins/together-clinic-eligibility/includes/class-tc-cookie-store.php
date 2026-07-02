@@ -62,7 +62,11 @@ class TC_Cookie_Store {
 		}
 
 		if ( ! headers_sent() ) {
-			setcookie( self::COOKIE_NAME, '', time() - 3600, COOKIEPATH ?: '/', COOKIE_DOMAIN, is_ssl(), false );
+			// Clear with the same scope the front-end JS used to set the cookie
+			// (path=/, host-only, no explicit domain). Using COOKIEPATH /
+			// COOKIE_DOMAIN here can leave the cookie alive on sub-directory or
+			// custom-domain installs where those differ from what the JS wrote.
+			setcookie( self::COOKIE_NAME, '', time() - 3600, '/', '', is_ssl(), false );
 		}
 	}
 

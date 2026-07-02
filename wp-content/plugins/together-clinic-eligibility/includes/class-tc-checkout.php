@@ -89,7 +89,7 @@ class TC_Checkout {
 		}
 
 		$reorder_page_id = (int) get_option( 'tc_reorder_page_id', 0 );
-		$reorder_url     = $reorder_page_id ? get_permalink( $reorder_page_id ) : home_url( '/reorder/' );
+		$reorder_url     = self::reorder_url();
 
 		TC_Log::info( 'assessment_redirect_to_reorder', [
 			'user_id'         => get_current_user_id(),
@@ -111,6 +111,16 @@ class TC_Checkout {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Canonical reorder-page URL. Prefers the configured tc_reorder_page_id and
+	 * falls back to /reorder/ (the reorder page's slug) so every caller resolves
+	 * the same destination instead of drifting between hardcoded fallbacks.
+	 */
+	public static function reorder_url() {
+		$reorder_page_id = (int) get_option( 'tc_reorder_page_id', 0 );
+		return $reorder_page_id ? get_permalink( $reorder_page_id ) : home_url( '/reorder/' );
 	}
 
 	public function prefill_checkout_fields( $fields ) {
