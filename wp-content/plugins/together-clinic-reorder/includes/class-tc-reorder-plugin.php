@@ -166,11 +166,13 @@ class TC_Reorder_Plugin {
 
 		nocache_headers();
 
+		// Fonts are self-hosted (see assets/fonts + assets/css/fonts.css) so that
+		// loading the reorder page never sends a patient's IP address to Google.
 		wp_enqueue_style(
 			'tc-reorder-fonts',
-			'https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap',
+			TC_REORDER_URL . 'assets/css/fonts.css',
 			[],
-			null
+			TC_REORDER_VERSION
 		);
 
 		wp_enqueue_style(
