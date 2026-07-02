@@ -125,7 +125,7 @@ class TC_Cookie_Store {
 			return is_array( $decoded ) ? $decoded : [];
 		};
 
-		return [
+		$columns = [
 			'assessment_id'       => (string) ( $row['assessment_id'] ?? '' ),
 			'firstName'           => (string) ( $row['first_name'] ?? '' ),
 			'lastName'            => (string) ( $row['last_name'] ?? '' ),
@@ -172,5 +172,20 @@ class TC_Cookie_Store {
 			'selectedDose'        => (string) ( $row['selected_dose'] ?? '' ),
 			'termsAgreed'         => ! empty( $row['terms_agreed'] ),
 		];
+
+		// The raw client payload is the complete, authoritative snapshot of the
+		// submission. The individual columns are a lossy projection of it — they
+		// drop prevWeights / bariatricRecent and flatten otherConditionsList — so
+		// rehydrate from raw_payload when it is present and fall back to the
+		// column-derived values for anything it does not carry.
+		$payload = $decode_json( $row['raw_payload'] ?? null );
+		if ( ! empty( $payload ) ) {
+			$merged = array_merge( $columns, $payload );
+			// assessment_id is server-managed and never part of the client payload.
+			$merged['assessment_id'] = $columns['assessment_id'];
+			return $merged;
+		}
+
+		return $columns;
 	}
 }
