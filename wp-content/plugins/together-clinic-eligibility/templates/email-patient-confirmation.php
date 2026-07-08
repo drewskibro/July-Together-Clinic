@@ -14,9 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <h3 style="margin-top: 24px;">What happens next</h3>
 <ol>
-	<li>A clinician will review your assessment within 24 hours.</li>
-	<li>If approved, your prescription will be issued.</li>
-	<li>Your medication will be dispatched with free next-day delivery.</li>
+	<li>One of our prescribers will review your assessment within 24 hours.</li>
+	<li>If your treatment is approved, we will email you a secure payment link. <strong>No payment is taken until then.</strong></li>
+	<li>Once you have paid, your medication will be dispatched with free next-day delivery.</li>
 </ol>
 
 <h3 style="margin-top: 24px;">Your assessment summary</h3>

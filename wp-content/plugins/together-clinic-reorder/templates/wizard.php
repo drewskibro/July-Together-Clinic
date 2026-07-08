@@ -231,7 +231,8 @@ $med_name  = $prefill['previous_medication'] === 'mounjaro' ? 'Mounjaro' : 'Wego
 				<div class="icon-hero icon-hero--error">!</div>
 				<h2>Consultation Required</h2>
 				<p>Based on your response, we need to discuss your health changes before proceeding with your reorder. Please book a consultation with one of our clinicians.</p>
-				<a href="#" id="reorder-calendly-link" target="_blank" rel="noopener" class="btn-danger">Book Consultation</a>
+				<?php $tc_booking_url = get_option( 'tc_eligibility_calendly_returning', '' ); ?>
+				<a href="<?php echo esc_url( $tc_booking_url ?: home_url( '/contact/' ) ); ?>" id="reorder-calendly-link" target="_blank" rel="noopener" class="btn-danger">Book Consultation</a>
 				<small>This consultation is required to ensure your safety and treatment effectiveness</small>
 			</div>
 			<button data-action="back-to-health-changed" class="btn btn-secondary" style="width:100%;">Back</button>

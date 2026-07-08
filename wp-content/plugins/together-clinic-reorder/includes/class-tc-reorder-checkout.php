@@ -62,6 +62,84 @@ class TC_Reorder_Checkout {
 		TC_Reorder_Cookie_Store::clear();
 	}
 
+	/**
+	 * Creates the order at reorder submission (review-first model): born in the
+	 * awaiting-review status with the clinical payload attached, paid later via
+	 * the pay link sent on prescriber approval. No cart or checkout involved.
+	 *
+	 * @return WC_Order|WP_Error
+	 */
+	public static function create_from_submission( array $payload, $assessment_id, $user_id, $prefill ) {
+		$treatment = $payload['currentMedication'] ?? '';
+		$dose      = $payload['selectedDose'] ?? '';
+
+		$product_id = TC_Reorder_Pricing::get_product_id( $treatment, $dose );
+		$product    = $product_id ? wc_get_product( $product_id ) : false;
+
+		if ( ! $product || ! $product->exists() ) {
+			TC_Reorder_Log::error( 'review_order_product_missing', [
+				'assessment_id' => $assessment_id,
+				'treatment'     => $treatment,
+				'dose'          => $dose,
+			] );
+			return new WP_Error(
+				'tc_no_product',
+				sprintf( 'No product is configured for %s %s. Please contact us and we will complete your reorder.', ucfirst( $treatment ), $dose )
+			);
+		}
+
+		$order = wc_create_order( [ 'customer_id' => (int) $user_id ] );
+		if ( is_wp_error( $order ) ) {
+			TC_Reorder_Log::error( 'review_order_create_failed', [
+				'assessment_id' => $assessment_id,
+				'error'         => $order->get_error_message(),
+			] );
+			return $order;
+		}
+
+		$order->add_product( $product, 1 );
+		$order->set_created_via( 'tc_reorder_submission' );
+
+		// Addresses: the reorder check-in doesn't capture an address, so copy
+		// from the previous qualifying order, falling back to payload basics.
+		$previous = ! empty( $prefill['previous_order_id'] ) ? wc_get_order( (int) $prefill['previous_order_id'] ) : false;
+		if ( $previous ) {
+			$order->set_address( $previous->get_address( 'billing' ), 'billing' );
+			$order->set_address( $previous->get_address( 'shipping' ), 'shipping' );
+		}
+		if ( ! $order->get_billing_email() && ! empty( $payload['email'] ) ) {
+			$order->set_billing_email( sanitize_email( $payload['email'] ) );
+		}
+		if ( ! $order->get_billing_first_name() && ! empty( $payload['firstName'] ) ) {
+			$order->set_billing_first_name( sanitize_text_field( $payload['firstName'] ) );
+			$order->set_billing_last_name( sanitize_text_field( $payload['lastName'] ?? '' ) );
+		}
+
+		// Attaches _rrqr_* meta from the session/DB row (session was saved just
+		// before this call) and back-links the order onto the submissions row.
+		self::attach_assessment_to_order( $order );
+
+		$order->update_meta_data( '_tc_review_flags', [] );
+		$order->calculate_totals();
+		$order->save();
+
+		$status = class_exists( 'TC_Review_Status' ) ? TC_Review_Status::STATUS : 'on-hold';
+		$order->update_status(
+			$status,
+			'Order created automatically from the reorder check-in. Awaiting prescriber review — no payment has been taken.'
+		);
+
+		TC_Reorder_Log::info( 'review_order_created', [
+			'order_id'      => $order->get_id(),
+			'assessment_id' => $assessment_id,
+			'treatment'     => $treatment,
+			'dose'          => $dose,
+			'user_id'       => (int) $user_id,
+		] );
+
+		return $order;
+	}
+
 	public static function attach_assessment_to_order( WC_Order $order ) {
 		$data = TC_Reorder_Cookie_Store::get();
 		if ( empty( $data ) ) {

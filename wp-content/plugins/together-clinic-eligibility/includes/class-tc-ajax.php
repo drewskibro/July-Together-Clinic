@@ -97,12 +97,24 @@ class TC_Ajax {
 
 		TC_Cookie_Store::save_to_session( array_merge( $payload, [ 'assessment_id' => $assessment_id ] ) );
 
+		// Review-first model: the order is created here, at submission, in the
+		// awaiting-review status. Payment happens later via the pay link the
+		// prescriber's approval sends — there is no cart or checkout step.
+		$order    = TC_Review_Order::create_from_assessment( $payload, $assessment_id, $user_id );
+		$order_id = 0;
+		if ( is_wp_error( $order ) ) {
+			wp_send_json_error( [ 'message' => $order->get_error_message() ], 500 );
+		} else {
+			$order_id = $order->get_id();
+		}
+
 		TC_Emails::send_patient_confirmation( $payload, $assessment_id );
-		TC_Emails::send_clinician_notification( $payload, $assessment_id, $eligibility );
+		TC_Emails::send_clinician_notification( $payload, $assessment_id, $eligibility, $order_id );
 
 		TC_Log::info( 'submission_eligible', [
 			'assessment_id' => $assessment_id,
 			'user_id'       => $user_id,
+			'order_id'      => $order_id,
 			'treatment'     => $payload['selectedTreatment'] ?? '',
 			'dose'          => $payload['selectedDose'] ?? '',
 		] );
@@ -112,7 +124,7 @@ class TC_Ajax {
 		wp_send_json_success( [
 			'eligible'      => true,
 			'assessment_id' => $assessment_id,
-			'redirect'      => $this->checkout_url(),
+			'order_id'      => $order_id,
 			'nonce'         => wp_create_nonce( self::NONCE_ACTION ),
 		] );
 	}
@@ -302,7 +314,4 @@ class TC_Ajax {
 		} ) );
 	}
 
-	private function checkout_url() {
-		return function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : home_url( '/checkout/' );
-	}
 }

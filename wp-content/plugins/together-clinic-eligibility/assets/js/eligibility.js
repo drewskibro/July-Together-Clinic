@@ -843,20 +843,8 @@
 			state.isSubmitting = false;
 		}).catch(function (e) {
 			state.isSubmitting = false;
-			if (btn) { btn.disabled = false; btn.textContent = 'Submit Assessment & Continue to Checkout'; }
+			if (btn) { btn.disabled = false; btn.textContent = 'Submit Assessment for Review'; }
 			alert(e.message || 'Something went wrong submitting your assessment. Please try again.');
-		});
-	}
-
-	function continueToCheckout() {
-		var btn = $('continue-to-checkout-button');
-		if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
-
-		ajax('tc_eligibility_add_to_cart', {}).then(function (data) {
-			window.location.href = data.checkout_url || cfg.checkoutUrl || '/checkout/';
-		}).catch(function (e) {
-			if (btn) { btn.disabled = false; btn.textContent = 'Continue to Checkout →'; }
-			alert(e.message || 'Could not proceed to checkout. Please contact us.');
 		});
 	}
 
@@ -913,7 +901,6 @@
 			case 'save-address': saveAddress(); break;
 			case 'select-treatment': selectTreatment(value); break;
 			case 'submit-assessment': submitAssessment(); break;
-			case 'continue-to-checkout': continueToCheckout(); break;
 			case 'review-answers': reviewAnswers(); break;
 		}
 	}

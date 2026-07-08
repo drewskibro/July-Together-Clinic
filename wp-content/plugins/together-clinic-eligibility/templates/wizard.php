@@ -611,10 +611,10 @@ $logo_img     = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png';
 			<div class="success-timeline">
 				<h3 style="margin-bottom:16px;">What happens next</h3>
 				<div class="timeline-item"><div class="timeline-number">1</div><div class="timeline-content"><p class="timeline-title">Clinician Review</p><p class="timeline-desc">Your assessment will be reviewed within 24 hours</p></div></div>
-				<div class="timeline-item"><div class="timeline-number">2</div><div class="timeline-content"><p class="timeline-title">Prescription Issued</p><p class="timeline-desc">If approved, your prescription is issued instantly</p></div></div>
+				<div class="timeline-item"><div class="timeline-number">2</div><div class="timeline-content"><p class="timeline-title">Secure Payment Link</p><p class="timeline-desc">If approved, we email you a secure link to pay &mdash; nothing is charged before then</p></div></div>
 				<div class="timeline-item"><div class="timeline-number">3</div><div class="timeline-content"><p class="timeline-title">Fast Delivery</p><p class="timeline-desc">Free next-day delivery to your door</p></div></div>
 			</div>
-			<button class="button button-primary" id="submit-button" data-action="submit-assessment" disabled>Submit Assessment &amp; Continue to Checkout</button>
+			<button class="button button-primary" id="submit-button" data-action="submit-assessment" disabled>Submit Assessment for Review</button>
 		</div>
 
 		<!-- Screen: Confirmed -->
@@ -629,11 +629,13 @@ $logo_img     = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png';
 				</div>
 				<span class="confirmed-treatment-badge">Selected</span>
 			</div>
-			<button class="button button-primary" id="continue-to-checkout-button" data-action="continue-to-checkout" style="margin-bottom:16px;">Continue to Checkout &rarr;</button>
+			<div class="info-box" style="text-align:left;margin-bottom:16px;">
+				<p><strong>No payment is taken now.</strong> Once a prescriber approves your treatment, we will email you a secure payment link. Your order is only dispatched after review and payment.</p>
+			</div>
 			<div class="success-timeline">
 				<h3 style="margin-bottom:16px;">What happens next</h3>
-				<div class="timeline-item"><div class="timeline-number">1</div><div class="timeline-content"><p class="timeline-title">Clinician Review</p><p class="timeline-desc">A clinician will review your assessment within 24 hours</p></div></div>
-				<div class="timeline-item"><div class="timeline-number">2</div><div class="timeline-content"><p class="timeline-title">Prescription Issued</p><p class="timeline-desc">If approved, your prescription will be issued</p></div></div>
+				<div class="timeline-item"><div class="timeline-number">1</div><div class="timeline-content"><p class="timeline-title">Prescriber Review</p><p class="timeline-desc">A prescriber will review your assessment within 24 hours</p></div></div>
+				<div class="timeline-item"><div class="timeline-number">2</div><div class="timeline-content"><p class="timeline-title">Secure Payment Link</p><p class="timeline-desc">If approved, we email you a secure link to pay &mdash; nothing is charged before then</p></div></div>
 				<div class="timeline-item"><div class="timeline-number">3</div><div class="timeline-content"><p class="timeline-title">Fast Delivery</p><p class="timeline-desc">Your medication will be dispatched with free next-day delivery</p></div></div>
 			</div>
 			<div class="confirmed-contact-box">

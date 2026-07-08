@@ -105,6 +105,16 @@ $bmi_warn    = $bmi > 0 && ( $bmi < 27 || $bmi > 50 );
 	<tr><th align="left">Allergies</th><td><?php echo nl2br( esc_html( $payload['allergiesList'] ?? ( $payload['allergies'] ?? 'None reported' ) ) ); ?></td></tr>
 </table>
 
+<?php if ( ! empty( $order_id ) ) : ?>
+	<?php $tc_review_order = wc_get_order( $order_id ); ?>
+	<?php if ( $tc_review_order ) : ?>
+		<p style="margin-top: 24px; background:#fef3c7; padding:12px; border-left:4px solid #f59e0b;">
+			<strong>Awaiting your review:</strong> order #<?php echo esc_html( $tc_review_order->get_order_number() ); ?> has been created and is held pending prescriber sign-off. No payment has been taken.
+			<br><a href="<?php echo esc_url( $tc_review_order->get_edit_order_url() ); ?>">Review this order &rarr;</a>
+		</p>
+	<?php endif; ?>
+<?php endif; ?>
+
 <p style="margin-top: 24px;">
 	<a href="<?php echo esc_url( admin_url( 'admin.php?page=tc-eligibility-settings' ) ); ?>">Open admin dashboard &rarr;</a>
 </p>

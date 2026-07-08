@@ -37,7 +37,7 @@ class TC_Emails {
 		return $sent;
 	}
 
-	public static function send_clinician_notification( array $payload, $assessment_id, $eligibility ) {
+	public static function send_clinician_notification( array $payload, $assessment_id, $eligibility, $order_id = 0 ) {
 		if ( get_option( self::OPT_SEND_CLINICIAN, '1' ) !== '1' ) {
 			TC_Log::info( 'clinician_email_skipped kill_switch_off', [ 'assessment_id' => $assessment_id ] );
 			return false;
@@ -66,6 +66,7 @@ class TC_Emails {
 			'payload'       => $payload,
 			'eligibility'   => $eligibility,
 			'assessment_id' => $assessment_id,
+			'order_id'      => (int) $order_id,
 		] );
 
 		$headers = self::build_headers();

@@ -240,6 +240,7 @@ class TC_Reorder_Plugin {
 			'checkoutUrl'  => wc_get_checkout_url(),
 			'homeUrl'      => home_url( '/' ),
 			'assessmentUrl' => $this->assessment_url( true ),
+			'calendlyReturning' => esc_url_raw( get_option( 'tc_eligibility_calendly_returning', '' ) ),
 			'currency'     => get_woocommerce_currency_symbol(),
 			'prefill'      => $prefill ? [
 				'firstName'           => $prefill['first_name'],
