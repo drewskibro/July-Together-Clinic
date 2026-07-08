@@ -20,6 +20,8 @@ class TC_Eligibility_Plugin {
 	private function __construct() {
 		TC_DB::maybe_upgrade();
 
+		TC_Review_Status::init();
+
 		new TC_Ajax();
 		new TC_Checkout();
 		new TC_Checkout_Blocks();
