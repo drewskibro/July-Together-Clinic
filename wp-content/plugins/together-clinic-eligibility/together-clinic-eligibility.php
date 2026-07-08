@@ -30,6 +30,7 @@ require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-log.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-cookie-store.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-variation-map.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-review-status.php';
+require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-review-order.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-eligibility-rules.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-emails.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-returning-customer.php';
