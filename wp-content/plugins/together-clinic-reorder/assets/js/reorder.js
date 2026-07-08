@@ -339,7 +339,7 @@
 			doseCardsHtml +
 			'<div class="btn-group">' +
 				'<button data-action="previous" class="btn btn-secondary">Back</button>' +
-				'<button id="reorder-submit-btn" data-action="submit-reorder" class="btn btn-primary btn-flex" disabled>Proceed to Checkout &rarr;</button>' +
+				'<button id="reorder-submit-btn" data-action="submit-reorder" class="btn btn-primary btn-flex" disabled>Submit for Review &rarr;</button>' +
 			'</div>';
 
 		container.querySelector('#reorder-submit-btn').disabled = !state.data.selectedDose;
@@ -382,24 +382,35 @@
 				if (data.code === 'health_changed') { pushScreen(13); return; }
 				if (data.code === 'pregnancy')      { pushScreen(14); return; }
 				alert(data.reason || 'We can\'t process this reorder.');
-				if (btn) { btn.disabled = false; btn.textContent = 'Proceed to Checkout →'; }
+				if (btn) { btn.disabled = false; btn.textContent = 'Submit for Review →'; }
 				return;
 			}
 
 			if (data.nonce) cfg.nonce = data.nonce;
-			setCookie(state.assessmentId);
-			ajax('rrqr_add_to_cart', {}).then(function (cartData) {
-				window.location.href = cartData.checkout_url || cfg.checkoutUrl || '/checkout/';
-			}).catch(function (e) {
-				state.isSubmitting = false;
-				if (btn) { btn.disabled = false; btn.textContent = 'Proceed to Checkout →'; }
-				alert(e.message || 'Could not proceed to checkout. Please contact us.');
-			});
+			state.isSubmitting = false;
+			renderSubmittedForReview();
 		}).catch(function (e) {
 			state.isSubmitting = false;
-			if (btn) { btn.disabled = false; btn.textContent = 'Proceed to Checkout →'; }
+			if (btn) { btn.disabled = false; btn.textContent = 'Submit for Review →'; }
 			alert(e.message || 'Something went wrong. Please try again.');
 		});
+	}
+
+	function renderSubmittedForReview() {
+		var email = (cfg.prefill && cfg.prefill.email) || state.data.email || '';
+		root().innerHTML =
+			'<div class="consult-card" style="text-align:center;">' +
+				'<div style="width:64px;height:64px;margin:0 auto 16px;border-radius:50%;background:#dcfce7;color:#16a34a;display:flex;align-items:center;justify-content:center;font-size:30px;">&#10003;</div>' +
+				'<h2>Reorder submitted for review</h2>' +
+				'<p>Thank you. Your reorder has been sent to one of our prescribers' +
+					(email ? ', and a confirmation email is on its way to <strong>' + escapeHtml(email) + '</strong>.' : '.') +
+				'</p>' +
+				'<div style="background:#f7f4f9;border-radius:8px;padding:16px;text-align:left;margin:16px 0;">' +
+					'<p style="margin:0;"><strong>No payment is taken now.</strong> Once your prescriber approves your treatment (usually within 24 hours), we will email you a secure payment link. Your medication is dispatched after review and payment.</p>' +
+				'</div>' +
+				'<small>Questions? Contact us at <a href="mailto:care@togetherclinic.co.uk">care@togetherclinic.co.uk</a></small>' +
+			'</div>';
+		window.scrollTo({ top: 0, behavior: 'smooth' });
 	}
 
 	function escapeHtml(s) {

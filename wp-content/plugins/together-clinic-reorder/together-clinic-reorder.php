@@ -33,6 +33,7 @@ require_once TC_REORDER_PATH . 'includes/class-tc-reorder-rules.php';
 require_once TC_REORDER_PATH . 'includes/class-tc-reorder-ajax.php';
 require_once TC_REORDER_PATH . 'includes/class-tc-reorder-checkout.php';
 require_once TC_REORDER_PATH . 'includes/class-tc-reorder-cron.php';
+require_once TC_REORDER_PATH . 'includes/class-tc-reorder-emails.php';
 require_once TC_REORDER_PATH . 'includes/class-tc-reorder-plugin.php';
 
 register_activation_hook( __FILE__, [ 'TC_Reorder_DB', 'create_table' ] );

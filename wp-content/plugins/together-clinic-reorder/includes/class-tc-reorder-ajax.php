@@ -120,9 +120,21 @@ class TC_Reorder_Ajax {
 			'selectedDose'    => $payload['selectedDose'],
 		] );
 
+		// Review-first model: create the order here, at submission, in the
+		// awaiting-review status. Payment happens later via the pay link the
+		// prescriber's approval sends — there is no cart or checkout step.
+		$order = TC_Reorder_Checkout::create_from_submission( $payload, $assessment_id, $user_id, $prefill );
+		if ( is_wp_error( $order ) ) {
+			wp_send_json_error( [ 'message' => $order->get_error_message() ], 500 );
+		}
+
+		TC_Reorder_Emails::send_patient_confirmation( $payload, $assessment_id );
+		TC_Reorder_Emails::send_clinician_notification( $payload, $assessment_id, $prefill, $order );
+
 		TC_Reorder_Log::info( 'submission_complete', [
 			'assessment_id' => $assessment_id,
 			'user_id'       => $user_id,
+			'order_id'      => $order->get_id(),
 			'treatment'     => $payload['currentMedication'],
 			'selected_dose' => $payload['selectedDose'],
 		] );
@@ -131,8 +143,9 @@ class TC_Reorder_Ajax {
 
 		wp_send_json_success( [
 			'ok'            => true,
+			'review'        => true,
 			'assessment_id' => $assessment_id,
-			'redirect'      => wc_get_checkout_url(),
+			'order_id'      => $order->get_id(),
 			'nonce'         => wp_create_nonce( self::NONCE_ACTION ),
 		] );
 	}
