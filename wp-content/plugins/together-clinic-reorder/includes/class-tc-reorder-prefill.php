@@ -43,12 +43,38 @@ class TC_Reorder_Prefill {
 		];
 	}
 
-	public static function last_qualifying_order_for( $user_id ) {
+	/**
+	 * The dose-gate anchor: the most recent PAID order. Deliberately narrower
+	 * than the prefill's qualifying set — an unpaid or unapproved order
+	 * (awaiting-review, on-hold, pending) must never raise a patient's dose
+	 * ceiling.
+	 *
+	 * @return array { order: WC_Order|null, medication: string, dose: string }
+	 */
+	public static function paid_baseline_for_user( $user_id ) {
+		$statuses = class_exists( 'TC_Dose_Ladder' )
+			? TC_Dose_Ladder::PAID_BASELINE_STATUSES
+			: [ 'processing', 'completed' ];
+		$statuses = apply_filters( 'tc_reorder_paid_baseline_statuses', $statuses );
+
+		$order = self::last_qualifying_order_for( $user_id, $statuses );
+		if ( ! $order ) {
+			return [ 'order' => null, 'medication' => '', 'dose' => '' ];
+		}
+
+		list( $medication, $dose ) = self::extract_medication_and_dose( $order );
+
+		return [ 'order' => $order, 'medication' => $medication, 'dose' => $dose ];
+	}
+
+	public static function last_qualifying_order_for( $user_id, $statuses = null ) {
 		if ( ! function_exists( 'wc_get_orders' ) ) {
 			return null;
 		}
 
-		$statuses = apply_filters( 'tc_reorder_qualifying_order_statuses', [ 'completed', 'processing', 'on-hold' ] );
+		if ( null === $statuses ) {
+			$statuses = apply_filters( 'tc_reorder_qualifying_order_statuses', [ 'completed', 'processing', 'on-hold' ] );
+		}
 
 		try {
 			$orders = wc_get_orders( [

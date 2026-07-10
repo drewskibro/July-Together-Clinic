@@ -71,7 +71,13 @@ class TC_Reorder_Checkout {
 	 */
 	public static function create_from_submission( array $payload, $assessment_id, $user_id, $prefill ) {
 		$treatment = $payload['currentMedication'] ?? '';
-		$dose      = $payload['selectedDose'] ?? '';
+
+		// The ±1 gate: propose + flag, never block. The supplied dose is
+		// clamped to the safe band around the paid-order baseline; every
+		// deviation lands in _tc_review_flags for the prescriber.
+		$gate  = self::apply_dose_gate( $payload, $user_id );
+		$dose  = $gate['dose'];
+		$flags = $gate['flags'];
 
 		$product_id = TC_Reorder_Pricing::get_product_id( $treatment, $dose );
 		$product    = $product_id ? wc_get_product( $product_id ) : false;
@@ -119,7 +125,7 @@ class TC_Reorder_Checkout {
 		// before this call) and back-links the order onto the submissions row.
 		self::attach_assessment_to_order( $order );
 
-		$order->update_meta_data( '_tc_review_flags', [] );
+		$order->update_meta_data( '_tc_review_flags', $flags );
 		$order->calculate_totals();
 		$order->save();
 
@@ -138,6 +144,104 @@ class TC_Reorder_Checkout {
 		] );
 
 		return $order;
+	}
+
+	/**
+	 * The reorder ±1 rule, anchored on the most recent PAID order — never on
+	 * the patient's self-report or an unpaid/unapproved order. Allowed doses
+	 * are the baseline, one step up and one step down (clamped at ladder
+	 * ends, unpurchasable rungs skipped). Requests outside the band are
+	 * clamped to the nearest allowed dose and flagged; an unverifiable
+	 * baseline proceeds on the requested dose with a flag. Nothing blocks —
+	 * the prescriber reviews every order before payment.
+	 *
+	 * (The admin ?preview_reorder=1 path never reaches this: its synthetic
+	 * prefill cannot pass save_partial's has_previous_order check. The
+	 * preview skip lives in the wizard's dose-option filtering instead.)
+	 *
+	 * @return array { dose: string, flags: array }
+	 */
+	private static function apply_dose_gate( array $payload, $user_id ) {
+		$treatment = (string) ( $payload['currentMedication'] ?? '' );
+		$requested = (string) ( $payload['selectedDose'] ?? '' );
+		$flags     = [];
+
+		if ( ! class_exists( 'TC_Dose_Ladder' ) ) {
+			$flags['dose_gate_unavailable'] = sprintf( 'Dose ladder unavailable; supplied requested dose %s.', $requested );
+			return [ 'dose' => $requested, 'flags' => $flags ];
+		}
+
+		$baseline = TC_Reorder_Prefill::paid_baseline_for_user( $user_id );
+
+		if ( ! $baseline['order'] || ! $baseline['dose'] ) {
+			$flags['dose_unverified'] = sprintf( 'No paid order found to anchor the dose check; supplied requested dose %s.', $requested );
+			return [ 'dose' => $requested, 'flags' => $flags ];
+		}
+
+		$created = $baseline['order']->get_date_created();
+		if ( $created ) {
+			$age_days                  = max( 0, (int) floor( ( time() - $created->getTimestamp() ) / DAY_IN_SECONDS ) );
+			$flags['reference_order'] = sprintf(
+				'#%s (%d day(s) old): %s %s',
+				$baseline['order']->get_order_number(),
+				$age_days,
+				ucfirst( $baseline['medication'] ),
+				$baseline['dose']
+			);
+		}
+
+		if ( $baseline['medication'] !== $treatment ) {
+			$flags['dose_unverified'] = sprintf(
+				'Paid history is %s but this reorder is for %s; supplied requested dose %s.',
+				ucfirst( $baseline['medication'] ),
+				ucfirst( $treatment ),
+				$requested
+			);
+			return [ 'dose' => $requested, 'flags' => $flags ];
+		}
+
+		$allowed = TC_Dose_Ladder::allowed_reorder_doses( $treatment, $baseline['dose'] );
+
+		if ( ! empty( $allowed['skipped'] ) ) {
+			$flags['dose_gap_skipped'] = sprintf(
+				'Unpurchasable rung(s) skipped when computing the dose band: %s.',
+				implode( ', ', $allowed['skipped'] )
+			);
+		}
+
+		if ( empty( $allowed['doses'] ) ) {
+			$flags['dose_unverified'] = sprintf(
+				'Baseline dose %s is not on the %s ladder; supplied requested dose %s.',
+				$baseline['dose'],
+				ucfirst( $treatment ),
+				$requested
+			);
+			return [ 'dose' => $requested, 'flags' => $flags ];
+		}
+
+		if ( in_array( $requested, $allowed['doses'], true ) ) {
+			return [ 'dose' => $requested, 'flags' => $flags ];
+		}
+
+		$clamped = TC_Dose_Ladder::clamp_to_allowed( $treatment, $allowed['doses'], $requested );
+
+		$flags['dose_out_of_range'] = sprintf(
+			'Requested %s; paid baseline %s (allowed: %s); supplied %s.',
+			$requested,
+			$baseline['dose'],
+			implode( ' / ', $allowed['doses'] ),
+			$clamped
+		);
+
+		TC_Reorder_Log::warn( 'dose_out_of_range_clamped', [
+			'user_id'   => (int) $user_id,
+			'treatment' => $treatment,
+			'requested' => $requested,
+			'baseline'  => $baseline['dose'],
+			'supplied'  => $clamped,
+		] );
+
+		return [ 'dose' => $clamped, 'flags' => $flags ];
 	}
 
 	public static function attach_assessment_to_order( WC_Order $order ) {

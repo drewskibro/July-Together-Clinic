@@ -232,6 +232,34 @@ class TC_Reorder_Plugin {
 			$dose_options_with_prices = TC_Reorder_Pricing::get_dose_options_with_prices( $prefill['previous_medication'] );
 		}
 
+		// Render only the in-range doses (current, one up, one down) so a
+		// patient can't ordinarily select outside the safe band. Anchored on
+		// the paid-order baseline when one exists; the server-side gate at
+		// order creation remains the enforcement either way. The admin
+		// preview keeps the full list.
+		if ( $dose_options_with_prices && ! self::is_admin_preview() && class_exists( 'TC_Dose_Ladder' ) ) {
+			$anchor   = '';
+			$baseline = TC_Reorder_Prefill::paid_baseline_for_user( $user_id );
+			if ( $baseline['order'] && $baseline['medication'] === TC_Reorder_Pricing::normalize_treatment( $prefill['previous_medication'] ) ) {
+				$anchor = $baseline['dose'];
+			} elseif ( ! empty( $prefill['previous_dose'] ) ) {
+				$anchor = $prefill['previous_dose'];
+			}
+
+			if ( $anchor ) {
+				$allowed = TC_Dose_Ladder::allowed_reorder_doses( $prefill['previous_medication'], $anchor );
+				if ( ! empty( $allowed['doses'] ) ) {
+					$allowed_doses            = $allowed['doses'];
+					$dose_options_with_prices = array_values( array_filter(
+						$dose_options_with_prices,
+						function ( $option ) use ( $allowed_doses ) {
+							return in_array( $option['dose'], $allowed_doses, true );
+						}
+					) );
+				}
+			}
+		}
+
 		wp_localize_script( 'tc-reorder', 'tcReorder', [
 			'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 			'nonce'        => wp_create_nonce( TC_Reorder_Ajax::NONCE_ACTION ),
