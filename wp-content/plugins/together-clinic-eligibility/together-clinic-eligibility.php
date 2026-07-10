@@ -28,6 +28,7 @@ define( 'TC_ELIGIBILITY_BASENAME', plugin_basename( __FILE__ ) );
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-db.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-log.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-cookie-store.php';
+require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-dose-ladder.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-variation-map.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-review-status.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-review-order.php';

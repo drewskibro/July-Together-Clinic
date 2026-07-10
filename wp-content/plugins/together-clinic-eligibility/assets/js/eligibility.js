@@ -332,9 +332,17 @@
 		var group = $('dose-group');
 		if (!group) return;
 		group.innerHTML = '';
-		var doses = state.userData.currentMedication === 'wegovy'
-			? [['0.25mg', 'starter dose'], ['0.5mg', ''], ['1mg', ''], ['1.7mg', ''], ['2.4mg', 'maximum dose']]
-			: [['2.5mg', 'starter dose'], ['5mg', ''], ['7.5mg', ''], ['10mg', ''], ['12.5mg', ''], ['15mg', 'maximum dose']];
+
+		// The dose list comes from the server's canonical ladder; the inline
+		// copy is only a fallback for stale cached configs.
+		var ladders = cfg.doseLadders || {
+			wegovy: ['0.25mg', '0.5mg', '1mg', '1.7mg', '2.4mg'],
+			mounjaro: ['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg']
+		};
+		var ladder = ladders[state.userData.currentMedication] || [];
+		var doses = ladder.map(function (dose, i) {
+			return [dose, i === 0 ? 'starter dose' : (i === ladder.length - 1 ? 'maximum dose' : '')];
+		});
 
 		doses.forEach(function (d) {
 			var label = document.createElement('label');
