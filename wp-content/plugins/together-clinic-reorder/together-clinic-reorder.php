@@ -1,59 +1,41 @@
 <?php
 /**
- * Plugin Name:       Together Clinic Reorder
+ * Plugin Name:       Together Clinic Reorder (merged into Eligibility Checker)
  * Plugin URI:        https://togetherclinic.co.uk/
- * Description:       Multi-step reorder form for verified returning patients. Pulls medication / dose from previous order, reads live prices from WooCommerce, attaches rrqr_data to cart for the eligibility plugin's checkout bypass.
- * Version:           1.2.0
+ * Description:       This plugin's functionality now lives inside the Together Clinic Eligibility Checker plugin (v2.0.0+) as its reorder module. This shell deactivates itself when the host plugin is active and can then be deleted. Kept for one release as the rollback path.
+ * Version:           2.0.0
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Together Clinic
  * License:           GPL-2.0-or-later
  * Text Domain:       together-clinic-reorder
- *
- * WC requires at least: 8.0
- * WC tested up to:      9.4
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TC_REORDER_VERSION', '1.2.0' );
-define( 'TC_REORDER_FILE', __FILE__ );
-define( 'TC_REORDER_PATH', plugin_dir_path( __FILE__ ) );
-define( 'TC_REORDER_URL', plugin_dir_url( __FILE__ ) );
-define( 'TC_REORDER_BASENAME', plugin_basename( __FILE__ ) );
-
-require_once TC_REORDER_PATH . 'includes/class-tc-reorder-log.php';
-require_once TC_REORDER_PATH . 'includes/class-tc-reorder-db.php';
-require_once TC_REORDER_PATH . 'includes/class-tc-reorder-cookie-store.php';
-require_once TC_REORDER_PATH . 'includes/class-tc-reorder-pricing.php';
-require_once TC_REORDER_PATH . 'includes/class-tc-reorder-prefill.php';
-require_once TC_REORDER_PATH . 'includes/class-tc-reorder-rules.php';
-require_once TC_REORDER_PATH . 'includes/class-tc-reorder-ajax.php';
-require_once TC_REORDER_PATH . 'includes/class-tc-reorder-checkout.php';
-require_once TC_REORDER_PATH . 'includes/class-tc-reorder-cron.php';
-require_once TC_REORDER_PATH . 'includes/class-tc-reorder-emails.php';
-require_once TC_REORDER_PATH . 'includes/class-tc-reorder-plugin.php';
-
-register_activation_hook( __FILE__, [ 'TC_Reorder_DB', 'create_table' ] );
-register_activation_hook( __FILE__, [ 'TC_Reorder_Plugin', 'on_activate' ] );
-register_deactivation_hook( __FILE__, [ 'TC_Reorder_Plugin', 'on_deactivate' ] );
-
-add_action( 'before_woocommerce_init', function () {
-	if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
-		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
-		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'cart_checkout_blocks', __FILE__, true );
+/*
+ * The reorder module (classes, templates, assets, options, table, shortcode,
+ * AJAX actions — all names unchanged) is loaded by together-clinic-eligibility
+ * since its 2.0.0 release. This file intentionally loads nothing.
+ *
+ * WordPress loads together-clinic-eligibility before this file (alphabetical),
+ * so if the module is present its classes already exist by the time this runs.
+ */
+add_action( 'admin_init', function () {
+	if ( class_exists( 'TC_Reorder_Plugin' ) ) {
+		// Host plugin provides the module — retire this shell.
+		deactivate_plugins( plugin_basename( __FILE__ ) );
+		add_action( 'admin_notices', function () {
+			echo '<div class="notice notice-info"><p><strong>Together Clinic Reorder</strong> is now part of the Together Clinic Eligibility Checker plugin and has deactivated itself. It is safe to delete this plugin.</p></div>';
+		} );
 	}
 } );
 
-add_action( 'plugins_loaded', function () {
-	if ( ! class_exists( 'WooCommerce' ) ) {
-		add_action( 'admin_notices', function () {
-			echo '<div class="notice notice-error"><p><strong>Together Clinic Reorder</strong> requires WooCommerce to be installed and active.</p></div>';
-		} );
+add_action( 'admin_notices', function () {
+	if ( class_exists( 'TC_Reorder_Plugin' ) ) {
 		return;
 	}
-
-	TC_Reorder_Plugin::instance();
+	echo '<div class="notice notice-error"><p><strong>Together Clinic Reorder</strong> no longer contains the reorder functionality — it moved into the <strong>Together Clinic Eligibility Checker</strong> plugin (v2.0.0+). Please install/activate that plugin; this shell can then be deleted.</p></div>';
 } );

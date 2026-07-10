@@ -9,6 +9,9 @@ class TC_Reorder_Cron {
 
 	public function __construct() {
 		add_action( self::HOOK_PURGE, [ __CLASS__, 'run_purge' ] );
+		// Self-heal the schedule: deploys here are file copies (SCP) that
+		// never fire activation hooks.
+		add_action( 'init', [ __CLASS__, 'schedule' ] );
 	}
 
 	public static function schedule() {

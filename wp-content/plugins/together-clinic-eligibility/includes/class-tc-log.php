@@ -8,19 +8,23 @@ class TC_Log {
 	const PREFIX = '[tc-eligibility]';
 
 	public static function info( $msg, $context = [] ) {
-		self::write( 'info', $msg, $context );
+		self::channel( self::PREFIX, 'info', $msg, $context );
 	}
 
 	public static function warn( $msg, $context = [] ) {
-		self::write( 'warn', $msg, $context );
+		self::channel( self::PREFIX, 'warn', $msg, $context );
 	}
 
 	public static function error( $msg, $context = [] ) {
-		self::write( 'error', $msg, $context );
+		self::channel( self::PREFIX, 'error', $msg, $context );
 	}
 
-	private static function write( $level, $msg, $context ) {
-		$parts = [ self::PREFIX, strtoupper( $level ), $msg ];
+	/**
+	 * The single log-formatting implementation. Lane-specific log classes
+	 * (TC_Reorder_Log) delegate here with their own prefix.
+	 */
+	public static function channel( $prefix, $level, $msg, $context = [] ) {
+		$parts = [ $prefix, strtoupper( $level ), $msg ];
 
 		if ( ! empty( $context ) ) {
 			$flat = [];

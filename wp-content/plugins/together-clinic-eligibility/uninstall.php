@@ -7,8 +7,10 @@ if ( ! defined( 'TC_ELIGIBILITY_UNINSTALL_DROP_TABLE' ) ) {
 	define( 'TC_ELIGIBILITY_UNINSTALL_DROP_TABLE', false );
 }
 
-if ( wp_next_scheduled( 'tc_eligibility_purge_stale' ) ) {
-	wp_clear_scheduled_hook( 'tc_eligibility_purge_stale' );
+foreach ( [ 'tc_eligibility_purge_stale', 'tc_review_daily', 'tc_reorder_purge_stale' ] as $tc_hook ) {
+	if ( wp_next_scheduled( $tc_hook ) ) {
+		wp_clear_scheduled_hook( $tc_hook );
+	}
 }
 
 $options = [
@@ -27,6 +29,10 @@ $options = [
 	'tc_eligibility_min_bmi_south_asian',
 	'tc_eligibility_retention_days',
 	'tc_eligibility_variation_map',
+	// Reorder module (folded-in plugin).
+	'tc_reorder_db_version',
+	'tc_reorder_enforce_login',
+	'tc_reorder_retention_days',
 ];
 
 foreach ( $options as $opt ) {
@@ -36,4 +42,5 @@ foreach ( $options as $opt ) {
 if ( TC_ELIGIBILITY_UNINSTALL_DROP_TABLE ) {
 	global $wpdb;
 	$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'tc_eligibility_submissions' );
+	$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'tc_reorder_submissions' );
 }

@@ -67,12 +67,22 @@ class TC_Eligibility_Plugin {
 
 		TC_Cron::schedule();
 
+		// Reorder module lifecycle (folded-in plugin, Phase 3). on_activate()
+		// creates the reorder table, seeds its option defaults and schedules
+		// its purge cron.
+		if ( class_exists( 'TC_Reorder_Plugin' ) ) {
+			TC_Reorder_Plugin::on_activate();
+		}
+
 		TC_Log::info( 'plugin_activated', [ 'version' => TC_ELIGIBILITY_VERSION ] );
 	}
 
 	public static function on_deactivate() {
 		TC_Cron::unschedule();
 		TC_Review_Cron::unschedule();
+		if ( class_exists( 'TC_Reorder_Cron' ) ) {
+			TC_Reorder_Cron::unschedule();
+		}
 		TC_Log::info( 'plugin_deactivated' );
 	}
 
