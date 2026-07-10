@@ -147,6 +147,37 @@ class TC_Dose_Ladder {
 	}
 
 	/**
+	 * The nearest purchasable dose to the given one (searching outward by
+	 * ladder distance, preferring the lower dose on ties), or '' when the
+	 * treatment has no purchasable dose at all. Used so a proposal whose
+	 * exact rung is missing from the catalogue degrades to the closest safe
+	 * dose (propose + flag) instead of failing the submission.
+	 */
+	public static function nearest_available( $treatment, $dose ) {
+		if ( self::is_available( $treatment, $dose ) ) {
+			return $dose;
+		}
+
+		$ladder = self::ladder( $treatment );
+		$index  = self::index_of( $treatment, $dose );
+		if ( $index === false ) {
+			$index = 0;
+		}
+
+		for ( $distance = 1; $distance < count( $ladder ); $distance++ ) {
+			foreach ( [ -1, 1 ] as $direction ) {
+				$candidate_index = $index + ( $distance * $direction );
+				if ( $candidate_index >= 0 && $candidate_index < count( $ladder )
+					&& self::is_available( $treatment, $ladder[ $candidate_index ] ) ) {
+					return $ladder[ $candidate_index ];
+				}
+			}
+		}
+
+		return '';
+	}
+
+	/**
 	 * The switching-dose conversion matrix (BUILD-BRIEF-v3 §3). Ranges mean
 	 * the system supplies the conservative (lower) end and the prescriber
 	 * confirms or adjusts before the patient pays.

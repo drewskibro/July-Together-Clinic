@@ -69,32 +69,74 @@ class TC_Ajax {
 
 		$payload = $this->normalize_payload( $payload );
 
-		// Switching patients start on the matrix-converted dose, not the
-		// starter the wizard defaults to. The system supplies the conservative
-		// end of any range; the prescriber confirms or adjusts before payment.
+		// Server-side dose policy for the eligibility lane — never trust the
+		// request's selectedDose. Switching patients get the matrix-converted
+		// dose; everyone else gets the starter. Deviations are supplied at the
+		// safe dose and flagged for the prescriber (propose + flag, never block).
 		$review_flags = [];
+		if ( $payload['selectedTreatment'] && $payload['userType'] !== 'switching' ) {
+			$requested = $payload['selectedDose'];
+			$starter   = TC_Dose_Ladder::starter( $payload['selectedTreatment'] );
+			$available = TC_Dose_Ladder::nearest_available( $payload['selectedTreatment'], $starter );
+			$supplied  = $available ?: $starter;
+
+			if ( $requested && $requested !== $supplied ) {
+				$review_flags['dose_out_of_range'] = sprintf(
+					'Requested %s but new patients start on %s; supplied %s.',
+					$requested,
+					$starter,
+					$supplied
+				);
+				TC_Log::warn( 'new_patient_dose_clamped', [
+					'assessment_id' => $assessment_id,
+					'requested'     => $requested,
+					'supplied'      => $supplied,
+				] );
+			} elseif ( $available && $available !== $starter ) {
+				$review_flags['dose_catalogue_fallback'] = sprintf(
+					'Starter dose %s is not purchasable in the catalogue; supplied %s — adjust before approval.',
+					$starter,
+					$available
+				);
+			}
+
+			$payload['selectedDose'] = $supplied;
+		}
 		if ( $payload['userType'] === 'switching' && $payload['selectedTreatment'] ) {
-			$proposal                = TC_Dose_Ladder::propose_start_dose(
+			$proposal = TC_Dose_Ladder::propose_start_dose(
 				$payload['currentMedication'],
 				$payload['currentDose'],
 				$payload['selectedTreatment']
 			);
-			$payload['selectedDose'] = $proposal['dose'];
+
+			// Propose, never block: if the matrix dose has no purchasable
+			// product, degrade to the nearest available rung and flag it —
+			// the prescriber can adjust the line item before approval.
+			$supplied  = $proposal['dose'];
+			$available = TC_Dose_Ladder::nearest_available( $payload['selectedTreatment'], $supplied );
+			$fallback_note = '';
+			if ( $available && $available !== $supplied ) {
+				$fallback_note = sprintf( ' Intended %s is not purchasable in the catalogue; supplied %s instead — adjust before approval.', $supplied, $available );
+				$supplied      = $available;
+			}
+			$payload['selectedDose'] = $supplied;
 
 			if ( $proposal['rule'] === 'same_drug_continue' ) {
 				$review_flags['switch_proposed'] = sprintf(
-					'Same-medication provider switch: continuing at declared %s %s.',
+					'Same-medication provider switch: continuing at declared %s %s.%s',
 					ucfirst( $payload['selectedTreatment'] ),
-					$proposal['dose']
+					$proposal['dose'],
+					$fallback_note
 				);
 			} else {
 				$review_flags['switch_proposed'] = sprintf(
-					'Switching from %s %s: supplied %s %s%s. Confirm or adjust the dose before approval.',
+					'Switching from %s %s: supplied %s %s%s. Confirm or adjust the dose before approval.%s',
 					ucfirst( $payload['currentMedication'] ?: 'unknown medication' ),
 					$payload['currentDose'] ?: '(dose not recognised)',
 					ucfirst( $payload['selectedTreatment'] ),
 					$proposal['dose'],
-					$proposal['range'] ? ' (matrix range ' . $proposal['range'] . ')' : ''
+					$proposal['range'] ? ' (matrix range ' . $proposal['range'] . ')' : '',
+					$fallback_note
 				);
 			}
 		}
@@ -157,7 +199,10 @@ class TC_Ajax {
 			'order_id'       => $order_id,
 			'doseSupplied'   => (string) ( $payload['selectedDose'] ?? '' ),
 			'treatmentName'  => ucfirst( (string) ( $payload['selectedTreatment'] ?? '' ) ),
-			'priceFormatted' => ( $order_id && ! is_wp_error( $order ) ) ? wp_strip_all_tags( wc_price( $order->get_total() ) ) : '',
+			'priceFormatted' => ( $order_id && ! is_wp_error( $order ) )
+				// Decode entities (&pound; etc): the JS renders this via textContent.
+				? html_entity_decode( wp_strip_all_tags( wc_price( $order->get_total() ) ), ENT_QUOTES, 'UTF-8' )
+				: '',
 			'nonce'          => wp_create_nonce( self::NONCE_ACTION ),
 		] );
 	}

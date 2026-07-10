@@ -178,10 +178,14 @@ class TC_Reorder_Checkout {
 			return [ 'dose' => $requested, 'flags' => $flags ];
 		}
 
-		$created = $baseline['order']->get_date_created();
+		// Context for the prescriber, attached only when a genuine warning
+		// exists — an unconditional entry would light the admin flags panel
+		// red on every routine in-band reorder.
+		$reference = '';
+		$created   = $baseline['order']->get_date_created();
 		if ( $created ) {
-			$age_days                  = max( 0, (int) floor( ( time() - $created->getTimestamp() ) / DAY_IN_SECONDS ) );
-			$flags['reference_order'] = sprintf(
+			$age_days  = max( 0, (int) floor( ( time() - $created->getTimestamp() ) / DAY_IN_SECONDS ) );
+			$reference = sprintf(
 				'#%s (%d day(s) old): %s %s',
 				$baseline['order']->get_order_number(),
 				$age_days,
@@ -189,6 +193,12 @@ class TC_Reorder_Checkout {
 				$baseline['dose']
 			);
 		}
+		$with_reference = function ( array $result_flags ) use ( $reference ) {
+			if ( $result_flags && $reference ) {
+				return array_merge( [ 'reference_order' => $reference ], $result_flags );
+			}
+			return $result_flags;
+		};
 
 		if ( $baseline['medication'] !== $treatment ) {
 			$flags['dose_unverified'] = sprintf(
@@ -197,7 +207,7 @@ class TC_Reorder_Checkout {
 				ucfirst( $treatment ),
 				$requested
 			);
-			return [ 'dose' => $requested, 'flags' => $flags ];
+			return [ 'dose' => $requested, 'flags' => $with_reference( $flags ) ];
 		}
 
 		$allowed = TC_Dose_Ladder::allowed_reorder_doses( $treatment, $baseline['dose'] );
@@ -216,11 +226,11 @@ class TC_Reorder_Checkout {
 				ucfirst( $treatment ),
 				$requested
 			);
-			return [ 'dose' => $requested, 'flags' => $flags ];
+			return [ 'dose' => $requested, 'flags' => $with_reference( $flags ) ];
 		}
 
 		if ( in_array( $requested, $allowed['doses'], true ) ) {
-			return [ 'dose' => $requested, 'flags' => $flags ];
+			return [ 'dose' => $requested, 'flags' => $with_reference( $flags ) ];
 		}
 
 		$clamped = TC_Dose_Ladder::clamp_to_allowed( $treatment, $allowed['doses'], $requested );
@@ -241,7 +251,7 @@ class TC_Reorder_Checkout {
 			'supplied'  => $clamped,
 		] );
 
-		return [ 'dose' => $clamped, 'flags' => $flags ];
+		return [ 'dose' => $clamped, 'flags' => $with_reference( $flags ) ];
 	}
 
 	public static function attach_assessment_to_order( WC_Order $order ) {

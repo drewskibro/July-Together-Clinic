@@ -23,7 +23,7 @@ class TC_Review_Order {
 		$treatment = $payload['selectedTreatment'] ?? '';
 		$dose      = $payload['selectedDose'] ?? '';
 		if ( ! $dose ) {
-			$dose = ( $treatment === 'wegovy' ) ? '0.25mg' : '2.5mg';
+			$dose = TC_Dose_Ladder::starter( $treatment );
 		}
 
 		$variation_id = TC_Variation_Map::get_variation_id( $treatment, $dose );
