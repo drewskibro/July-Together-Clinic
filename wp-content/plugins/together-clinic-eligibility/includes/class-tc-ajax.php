@@ -69,6 +69,36 @@ class TC_Ajax {
 
 		$payload = $this->normalize_payload( $payload );
 
+		// Switching patients start on the matrix-converted dose, not the
+		// starter the wizard defaults to. The system supplies the conservative
+		// end of any range; the prescriber confirms or adjusts before payment.
+		$review_flags = [];
+		if ( $payload['userType'] === 'switching' && $payload['selectedTreatment'] ) {
+			$proposal                = TC_Dose_Ladder::propose_start_dose(
+				$payload['currentMedication'],
+				$payload['currentDose'],
+				$payload['selectedTreatment']
+			);
+			$payload['selectedDose'] = $proposal['dose'];
+
+			if ( $proposal['rule'] === 'same_drug_continue' ) {
+				$review_flags['switch_proposed'] = sprintf(
+					'Same-medication provider switch: continuing at declared %s %s.',
+					ucfirst( $payload['selectedTreatment'] ),
+					$proposal['dose']
+				);
+			} else {
+				$review_flags['switch_proposed'] = sprintf(
+					'Switching from %s %s: supplied %s %s%s. Confirm or adjust the dose before approval.',
+					ucfirst( $payload['currentMedication'] ?: 'unknown medication' ),
+					$payload['currentDose'] ?: '(dose not recognised)',
+					ucfirst( $payload['selectedTreatment'] ),
+					$proposal['dose'],
+					$proposal['range'] ? ' (matrix range ' . $proposal['range'] . ')' : ''
+				);
+			}
+		}
+
 		$eligibility = TC_Eligibility_Rules::evaluate( $payload );
 
 		TC_DB::update_complete( $assessment_id, $payload, $eligibility );
@@ -100,7 +130,7 @@ class TC_Ajax {
 		// Review-first model: the order is created here, at submission, in the
 		// awaiting-review status. Payment happens later via the pay link the
 		// prescriber's approval sends — there is no cart or checkout step.
-		$order    = TC_Review_Order::create_from_assessment( $payload, $assessment_id, $user_id );
+		$order    = TC_Review_Order::create_from_assessment( $payload, $assessment_id, $user_id, $review_flags );
 		$order_id = 0;
 		if ( is_wp_error( $order ) ) {
 			wp_send_json_error( [ 'message' => $order->get_error_message() ], 500 );
@@ -122,10 +152,13 @@ class TC_Ajax {
 		nocache_headers();
 
 		wp_send_json_success( [
-			'eligible'      => true,
-			'assessment_id' => $assessment_id,
-			'order_id'      => $order_id,
-			'nonce'         => wp_create_nonce( self::NONCE_ACTION ),
+			'eligible'       => true,
+			'assessment_id'  => $assessment_id,
+			'order_id'       => $order_id,
+			'doseSupplied'   => (string) ( $payload['selectedDose'] ?? '' ),
+			'treatmentName'  => ucfirst( (string) ( $payload['selectedTreatment'] ?? '' ) ),
+			'priceFormatted' => ( $order_id && ! is_wp_error( $order ) ) ? wp_strip_all_tags( wc_price( $order->get_total() ) ) : '',
+			'nonce'          => wp_create_nonce( self::NONCE_ACTION ),
 		] );
 	}
 

@@ -846,7 +846,7 @@
 
 			$('confirmed-name').textContent = state.userData.firstName || '';
 			$('confirmed-email').textContent = state.userData.email || '';
-			updateConfirmedTreatmentBanner();
+			updateConfirmedTreatmentBanner(data);
 			showScreen('confirmed');
 			state.isSubmitting = false;
 		}).catch(function (e) {
@@ -856,9 +856,17 @@
 		});
 	}
 
-	function updateConfirmedTreatmentBanner() {
+	function updateConfirmedTreatmentBanner(info) {
 		var name = state.selectedTreatment === 'mounjaro' ? 'Mounjaro' : 'Wegovy';
 		var price = state.selectedTreatment === 'mounjaro' ? '£159/month · Starting dose (2.5mg)' : '£109/month · Starting dose (0.25mg)';
+
+		// The server reports the dose it actually supplied (switchers start on
+		// the converted dose, not the starter) and the order's real price.
+		if (info && info.doseSupplied && info.priceFormatted) {
+			name = info.treatmentName || name;
+			price = info.priceFormatted + '/month · ' + info.doseSupplied;
+		}
+
 		if ($('confirmed-treatment-name')) $('confirmed-treatment-name').textContent = name;
 		if ($('confirmed-treatment-price')) $('confirmed-treatment-price').textContent = price;
 	}
