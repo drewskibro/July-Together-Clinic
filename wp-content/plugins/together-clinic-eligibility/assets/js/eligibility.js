@@ -332,9 +332,17 @@
 		var group = $('dose-group');
 		if (!group) return;
 		group.innerHTML = '';
-		var doses = state.userData.currentMedication === 'wegovy'
-			? [['0.25mg', 'starter dose'], ['0.5mg', ''], ['1mg', ''], ['1.7mg', ''], ['2.4mg', 'maximum dose']]
-			: [['2.5mg', 'starter dose'], ['5mg', ''], ['7.5mg', ''], ['10mg', ''], ['12.5mg', ''], ['15mg', 'maximum dose']];
+
+		// The dose list comes from the server's canonical ladder; the inline
+		// copy is only a fallback for stale cached configs.
+		var ladders = cfg.doseLadders || {
+			wegovy: ['0.25mg', '0.5mg', '1mg', '1.7mg', '2.4mg'],
+			mounjaro: ['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg']
+		};
+		var ladder = ladders[state.userData.currentMedication] || [];
+		var doses = ladder.map(function (dose, i) {
+			return [dose, i === 0 ? 'starter dose' : (i === ladder.length - 1 ? 'maximum dose' : '')];
+		});
 
 		doses.forEach(function (d) {
 			var label = document.createElement('label');
@@ -838,7 +846,7 @@
 
 			$('confirmed-name').textContent = state.userData.firstName || '';
 			$('confirmed-email').textContent = state.userData.email || '';
-			updateConfirmedTreatmentBanner();
+			updateConfirmedTreatmentBanner(data);
 			showScreen('confirmed');
 			state.isSubmitting = false;
 		}).catch(function (e) {
@@ -848,9 +856,17 @@
 		});
 	}
 
-	function updateConfirmedTreatmentBanner() {
+	function updateConfirmedTreatmentBanner(info) {
 		var name = state.selectedTreatment === 'mounjaro' ? 'Mounjaro' : 'Wegovy';
 		var price = state.selectedTreatment === 'mounjaro' ? '£159/month · Starting dose (2.5mg)' : '£109/month · Starting dose (0.25mg)';
+
+		// The server reports the dose it actually supplied (switchers start on
+		// the converted dose, not the starter) and the order's real price.
+		if (info && info.doseSupplied && info.priceFormatted) {
+			name = info.treatmentName || name;
+			price = info.priceFormatted + '/month · ' + info.doseSupplied;
+		}
+
 		if ($('confirmed-treatment-name')) $('confirmed-treatment-name').textContent = name;
 		if ($('confirmed-treatment-price')) $('confirmed-treatment-price').textContent = price;
 	}

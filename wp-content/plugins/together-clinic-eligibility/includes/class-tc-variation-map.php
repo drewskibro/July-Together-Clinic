@@ -8,23 +8,14 @@ class TC_Variation_Map {
 	const OPTION_KEY = 'tc_eligibility_variation_map';
 
 	public static function defaults() {
-		return [
-			'wegovy' => [
-				'0.25mg' => 0,
-				'0.5mg'  => 0,
-				'1mg'    => 0,
-				'1.7mg'  => 0,
-				'2.4mg'  => 0,
-			],
-			'mounjaro' => [
-				'2.5mg'  => 0,
-				'5mg'    => 0,
-				'7.5mg'  => 0,
-				'10mg'   => 0,
-				'12.5mg' => 0,
-				'15mg'   => 0,
-			],
-		];
+		// Dose keys and their order come from the canonical ladder, so the
+		// settings screen, pricing and the ±1 gate can never disagree on what
+		// doses exist or what "one step" means.
+		$defaults = [];
+		foreach ( TC_Dose_Ladder::LADDERS as $treatment => $doses ) {
+			$defaults[ $treatment ] = array_fill_keys( $doses, 0 );
+		}
+		return $defaults;
 	}
 
 	public static function all() {

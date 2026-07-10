@@ -110,6 +110,18 @@ class TC_Reorder_Pricing {
 	}
 
 	private static function defaults() {
+		// The canonical ladder is the single source of dose keys and order.
+		// The hardcoded copy below survives only as a standalone fallback for
+		// when the eligibility plugin is inactive (removed when the plugins
+		// merge in Phase 3).
+		if ( class_exists( 'TC_Dose_Ladder' ) ) {
+			$defaults = [];
+			foreach ( TC_Dose_Ladder::LADDERS as $treatment => $doses ) {
+				$defaults[ $treatment ] = array_fill_keys( $doses, 0 );
+			}
+			return $defaults;
+		}
+
 		return [
 			'wegovy' => [
 				'0.25mg' => 0,

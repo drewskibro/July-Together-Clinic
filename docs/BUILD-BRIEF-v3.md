@@ -161,6 +161,7 @@ The approval email carries the payment link. Deliverability (SPF/DKIM/DMARC on t
 | 1a | Order-at-submit + `awaiting-review` + notifications | Every treatment order is born held, and a prescriber hears about it | staging site |
 | 1b | Review queue actions + pay-link + reminders | Approve / adjust / reject actually work end-to-end | 1a |
 | 2 | Dose module (ladder + ±1 + switching matrix) | The system proposes the clinically right dose and flags deviations | 1a (flags land in a queue that exists) |
+| 2.5 | Payment timing: authorise-at-submission (Option B, §9) | Card held at submission, captured on approval; pay-link becomes the fallback | 2; owner's Stripe connection (test mode) |
 | 3 | Fold reorder into the eligibility plugin | One plugin, one shared infrastructure | best after 2 |
 | 4 | Screen-0 router, one predicate, one authority | One front door; the SPWL loop becomes impossible | 3 |
 | 5 | Security & GDPR | Close the account takeover; privacy exporters/erasers; retention for unpaid orders | 1b (pay links remove the conversion excuse for auto-login) |
@@ -359,8 +360,9 @@ A sibling project with the same two-plugin architecture produced months of firef
 
 | Decision | Status |
 |---|---|
-| v2's Stripe authorise/capture model | **Dropped** (superseded by review-then-pay; no Stripe config change needed) |
-| Pay links for ALL lanes at launch | **Adopted**; instant-pay for reorders reconsidered only on post-launch drop-off data |
+| **Payment timing (site owner decision, post-v3):** authorise-at-submission for ALL lanes (Option B) | **Adopted** — supersedes the two rows below. The patient's card is authorised (held, not charged) at submission; prescriber approval captures; rejection releases the hold. Switchers are authorised at the matrix-proposed dose; if the prescriber adjusts to a *more expensive* dose, the hold is released and the existing pay-link machinery serves as the automatic fallback. Requires WooCommerce Stripe "issue an authorization on checkout" + the prescriber SLA well inside Stripe's 7-day hold window. Implemented as **Phase 2.5** (after the dose module; needs the owner's Stripe connection to test). |
+| v2's Stripe authorise/capture model | ~~Dropped~~ **Partially reinstated by the Option-B decision above** — but on the v3 chassis (order exists at submission; the review gate is unchanged), without v2's partial-capture machinery |
+| Pay links for ALL lanes at launch | ~~Adopted~~ **Superseded** — pay-link machinery is retained as the fallback path (upward dose adjustments, expired holds) |
 | One plugin (reorder folds into eligibility) | **Adopted** (Phase 3) |
 | Custom `awaiting-review` status vs core `pending` | **Custom** (stock-hold auto-cancel exemption) |
 | Dose baseline statuses | **Paid only** (`processing`/`completed`) for the gate; named shared constant; prefill set may stay wider, deliberately |

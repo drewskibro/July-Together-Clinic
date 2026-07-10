@@ -209,6 +209,7 @@ class TC_Eligibility_Plugin {
 			'homeUrl'         => home_url( '/' ),
 			'minBmiDefault'   => (float) get_option( 'tc_eligibility_min_bmi_default', 27 ),
 			'minBmiAsian'     => (float) get_option( 'tc_eligibility_min_bmi_south_asian', 23 ),
+			'doseLadders'     => TC_Dose_Ladder::ladders(),
 			'assets'          => [
 				'wegovy'   => TC_ELIGIBILITY_URL . 'assets/img/wegovy.jpg',
 				'mounjaro' => TC_ELIGIBILITY_URL . 'assets/img/mounjaro.png',

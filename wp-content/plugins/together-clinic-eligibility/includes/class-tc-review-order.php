@@ -16,13 +16,14 @@ class TC_Review_Order {
 	 * @param array  $payload       Normalised assessment payload.
 	 * @param string $assessment_id UUID of the submissions-table row.
 	 * @param int    $user_id       Patient user ID (0 for guest).
+	 * @param array  $flags         Review flags for the prescriber (e.g. switch_proposed).
 	 * @return WC_Order|WP_Error
 	 */
-	public static function create_from_assessment( array $payload, $assessment_id, $user_id = 0 ) {
+	public static function create_from_assessment( array $payload, $assessment_id, $user_id = 0, array $flags = [] ) {
 		$treatment = $payload['selectedTreatment'] ?? '';
 		$dose      = $payload['selectedDose'] ?? '';
 		if ( ! $dose ) {
-			$dose = ( $treatment === 'wegovy' ) ? '0.25mg' : '2.5mg';
+			$dose = TC_Dose_Ladder::starter( $treatment );
 		}
 
 		$variation_id = TC_Variation_Map::get_variation_id( $treatment, $dose );
@@ -59,7 +60,7 @@ class TC_Review_Order {
 		// the submissions row.
 		TC_Checkout::attach_assessment_to_order( $order );
 
-		$order->update_meta_data( TC_Review_Status::FLAGS_META, [] );
+		$order->update_meta_data( TC_Review_Status::FLAGS_META, $flags );
 		$order->calculate_totals();
 		$order->save();
 
