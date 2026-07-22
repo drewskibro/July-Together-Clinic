@@ -136,7 +136,8 @@
                 </p>
                 <div class="flex flex-wrap justify-center gap-5 text-xs text-gray-500">
                     <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'terms' ) ) ); ?>" class="hover:text-gray-300 transition-colors">Terms</a>
-                    <a href="<?php echo esc_url( ah_option( 'privacy_url', '#' ) ); ?>" class="hover:text-gray-300 transition-colors">Privacy</a>
+                    <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'privacy-policy' ) ) ); ?>" class="hover:text-gray-300 transition-colors">Privacy</a>
+                    <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'refund-policy' ) ) ); ?>" class="hover:text-gray-300 transition-colors">Refund Policy</a>
                     <a href="<?php echo esc_url( ah_option( 'cookies_url', '#' ) ); ?>" class="hover:text-gray-300 transition-colors">Cookies</a>
                     <a href="<?php echo esc_url( ah_option( 'accessibility_url', '#' ) ); ?>" class="hover:text-gray-300 transition-colors">Accessibility</a>
                 </div>
