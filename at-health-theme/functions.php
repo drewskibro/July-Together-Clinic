@@ -132,6 +132,90 @@ function ah_booking_url() {
 }
 
 /**
+ * Default Terms & Conditions content (client-supplied, July 2025).
+ * Used as the default_value for the tm_content ACF field so the Terms
+ * page renders out of the box and remains editable in WP Admin.
+ * Headings/paragraphs/lists are styled by .tm-content in terms.css.
+ */
+function ah_terms_default_content() {
+    return <<<'TERMS_HTML'
+<p><strong>Last updated: July 2025</strong></p>
+
+<h2>1. Introduction</h2>
+<p>Welcome to Together Clinic. By accessing and using our website at www.togetherclinic.co.uk, you agree to comply with and be bound by the following Terms &amp; Conditions. These terms, together with our Privacy Policy, govern At Health Ltd's relationship with you in relation to this website and any services provided through it.</p>
+<p>Please read these Terms &amp; Conditions carefully before using our website. If you do not agree with any part of these terms, you must not use our website or services.</p>
+
+<h2>2. Company Details</h2>
+<p><strong>Company Name:</strong> At Health Ltd (trading as Together Clinic)<br>
+<strong>Website:</strong> www.togetherclinic.co.uk<br>
+<strong>Email:</strong> support@togetherclinic.co.uk<br>
+<strong>Superintendent Pharmacist:</strong> Ahmed Nizar Al-Liabi (GPhC No.: 2208502)<br>
+<strong>GPhC Registration Status:</strong> Registered | Expiry: 31 July 2027<br>
+<strong>GPhC Annotations:</strong> Independent Prescriber, Superintendent<br>
+<strong>GPhC Register Link:</strong> <a href="https://www.pharmacyregulation.org/registers/pharmacist/2208502" target="_blank" rel="noopener noreferrer">https://www.pharmacyregulation.org/registers/pharmacist/2208502</a></p>
+
+<h2>3. Use of the Website</h2>
+<p><strong>Content:</strong> The content of this website is for your general information and use only. It is subject to change without notice.</p>
+<p><strong>Accuracy:</strong> Neither we nor any third parties provide any warranty or guarantee as to the accuracy, timeliness, performance, completeness, or suitability of the information and materials found or offered on this website for any particular purpose. You acknowledge that such information and materials may contain inaccuracies or errors, and we expressly exclude liability for any such inaccuracies or errors to the fullest extent permitted by law.</p>
+<p><strong>Medical Information:</strong> The content on this website does not constitute medical advice and should not be relied upon as such. Always seek the advice of a qualified healthcare professional regarding any medical condition or treatment.</p>
+
+<h2>4. User Responsibilities</h2>
+<p><strong>Conduct:</strong> Your use of any information or materials on this website is entirely at your own risk, for which we shall not be liable. It shall be your own responsibility to ensure that any products, services, or information available through this website meet your specific requirements.</p>
+<p><strong>Accuracy of Information:</strong> When providing information to us (including during registration, consultation, or ordering processes), you must ensure that all information provided is accurate, complete, and up to date. We shall not be liable for any issues arising from incorrect or incomplete information provided by you.</p>
+<p><strong>Prohibited Use:</strong> You must not misuse this website. This includes, but is not limited to: committing or encouraging a criminal offence; transmitting or distributing any virus, trojan, worm, logic bomb, or other material which is malicious, technologically harmful, in breach of confidence, or in any way offensive or obscene; accessing or attempting to access any accounts or data belonging to other users; or attempting to gain unauthorised access to the server on which our website is stored.</p>
+<p><strong>Age Requirement:</strong> By using this website, you confirm that you are 18 years of age or older. Our services are not intended for individuals under the age of 18.</p>
+
+<h2>5. Pharmaceutical &amp; Clinical Services</h2>
+<p><strong>Regulated Activity:</strong> Together Clinic operates as a regulated pharmacy service under the supervision of our Superintendent Pharmacist, Ahmed Nizar Al-Liabi (GPhC No.: 2208502). All clinical and prescribing services are provided in accordance with GPhC standards and applicable UK legislation.</p>
+<p><strong>Prescriptions:</strong> Any prescription-only medicines (POMs) dispensed or prescribed through Together Clinic will only be provided following an appropriate clinical assessment by a suitably qualified prescriber. We reserve the right to decline to supply any medicine where we consider it clinically inappropriate to do so.</p>
+<p><strong>Clinical Judgement:</strong> Our clinicians and pharmacists retain full clinical autonomy. The provision of a service does not guarantee that a prescription or treatment will be issued. Clinical decisions are made in the best interest of the patient at all times.</p>
+<p><strong>Consultation Accuracy:</strong> You must provide honest and complete information during any consultation or health assessment. Providing false or misleading information may result in a clinically inappropriate prescription being issued, for which Together Clinic cannot accept liability.</p>
+
+<h2>6. Ordering, Payments &amp; Cancellations</h2>
+<p><strong>Order Acceptance:</strong> Submission of an order or consultation request does not constitute a binding contract until we have confirmed acceptance. We reserve the right to decline any order at our discretion.</p>
+<p><strong>Pricing:</strong> All prices displayed on our website are inclusive of VAT where applicable. We reserve the right to change prices at any time without prior notice. Any price changes will be communicated to you before your order is confirmed.</p>
+<p><strong>Cancellations &amp; Refunds:</strong> Cancellation and refund rights are subject to our separate Refund and Cancellation Policy, which is available on our website and forms part of these Terms &amp; Conditions. Your statutory rights under the Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013 are not affected.</p>
+<p><strong>Prescription Medicines:</strong> Please note that, in accordance with GPhC guidance, once a prescription-only medicine has been dispensed and dispatched, we are unable to accept returns for reasons of patient safety. This does not affect your statutory rights where goods are faulty or not as described.</p>
+
+<h2>7. Intellectual Property</h2>
+<p><strong>Ownership:</strong> This website contains material which is owned by or licensed to At Health Ltd. This material includes, but is not limited to, the design, layout, look, appearance, graphics, and written content. Reproduction is prohibited other than in accordance with the copyright notice, which forms part of these Terms &amp; Conditions.</p>
+<p><strong>Third-Party Rights:</strong> All trademarks reproduced in this website that are not the property of, or licensed to, At Health Ltd are acknowledged on the website.</p>
+<p><strong>Permitted Use:</strong> You may print or download extracts from this website for your own personal, non-commercial use only. You must not modify, copy, reproduce, republish, upload, post, transmit, or distribute any content from this website for any commercial purpose without our prior written consent.</p>
+
+<h2>8. Limitation of Liability</h2>
+<p><strong>Exclusion:</strong> To the extent permitted by law, At Health Ltd (trading as Together Clinic) shall not be liable for any indirect or consequential loss or damage, including any loss of profit, business, revenue, goodwill, or anticipated savings, incurred by any user in connection with our website or in connection with the use, inability to use, or results of the use of our website, its content, or any websites linked to it.</p>
+<p><strong>Force Majeure:</strong> Together Clinic will not be held responsible for any delay or failure to comply with our obligations under these terms if the delay or failure arises from any cause which is beyond our reasonable control.</p>
+<p><strong>Website Availability:</strong> We do not guarantee that our website will be secure or free from bugs or viruses. We will not be liable for any loss or damage caused by a virus, distributed denial-of-service attack, or other technologically harmful material that may infect your computer equipment, computer programs, data, or other proprietary material due to your use of our website.</p>
+<p>Nothing in these Terms &amp; Conditions shall exclude or limit our liability for death or personal injury caused by our negligence, fraud or fraudulent misrepresentation, or any other liability that cannot be excluded or limited by applicable law.</p>
+
+<h2>9. Data Protection &amp; Privacy</h2>
+<p>At Health Ltd is committed to protecting your personal data. Our Privacy Policy sets out how we collect, use, and store your personal information in compliance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018. By using our website and services, you acknowledge that you have read and understood our Privacy Policy.</p>
+<p>As a healthcare provider, we process special category health data. This processing is carried out under Article 9(2)(h) UK GDPR (healthcare purposes) and in accordance with the applicable codes of conduct of the General Pharmaceutical Council.</p>
+
+<h2>10. Third-Party Links</h2>
+<p>Our website may contain links to third-party websites. These links are provided for your convenience only. We have no control over the content of those websites and accept no responsibility for them or for any loss or damage that may arise from your use of them. Our inclusion of any link does not imply our endorsement of the linked site or its operator.</p>
+
+<h2>11. Governing Law</h2>
+<p>These Terms &amp; Conditions are governed by and construed in accordance with the laws of England and Wales. You agree, as do we, to submit to the exclusive jurisdiction of the courts of England and Wales in relation to any dispute or claim arising in connection with these terms or your use of our website or services.</p>
+
+<h2>12. Changes to These Terms &amp; Conditions</h2>
+<p>At Health Ltd reserves the right to amend these Terms &amp; Conditions at any time. Any changes will be posted on this page with an updated revision date. Your continued use of our website following any changes shall constitute your acceptance of those changes. We encourage you to review this page periodically.</p>
+
+<h2>13. Complaints</h2>
+<p>If you have a complaint about any aspect of our service, please contact us in the first instance at support@togetherclinic.co.uk. We aim to acknowledge all complaints within two working days and to resolve them within 14 working days.</p>
+<p>If you are dissatisfied with our response, you may also raise concerns with the General Pharmaceutical Council (GPhC) at www.pharmacyregulation.org, or with the relevant Responsible Body. For disputes relating to online purchases, you may also refer your complaint to an ADR (Alternative Dispute Resolution) provider.</p>
+
+<h2>14. Contact Information</h2>
+<p>If you have any questions about these Terms &amp; Conditions, please contact us:</p>
+<p><strong>Company:</strong> At Health Ltd (t/a Together Clinic)<br>
+<strong>Website:</strong> www.togetherclinic.co.uk<br>
+<strong>Email:</strong> support@togetherclinic.co.uk</p>
+
+<p>&copy; At Health Ltd. All rights reserved. Together Clinic is a trading name of At Health Ltd.</p>
+TERMS_HTML;
+}
+
+/**
  * Get logo URL with fallback chain: ACF option > Customizer > theme SVG.
  */
 function ah_logo_url() {
