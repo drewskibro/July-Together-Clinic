@@ -741,3 +741,14 @@ acf_add_local_field_group( array(
     ),
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-refund-policy.php' ) ) ),
 ) );
+
+// N3: Privacy Policy
+acf_add_local_field_group( array(
+    'key'   => 'group_ah_n3_privacy_policy',
+    'title' => 'N3 — Privacy Policy: All Fields',
+    'fields' => array(
+        array( 'key' => 'field_ah_pp_title', 'label' => 'Title', 'name' => 'pp_title', 'type' => 'text', 'default_value' => 'Privacy Policy' ),
+        array( 'key' => 'field_ah_pp_content', 'label' => 'Policy Content', 'name' => 'pp_content', 'type' => 'wysiwyg', 'instructions' => 'Full privacy policy. If left blank, the standard WordPress content editor is used as fallback.', 'default_value' => ah_privacy_policy_default_content() ),
+    ),
+    'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-privacy-policy.php' ) ) ),
+) );

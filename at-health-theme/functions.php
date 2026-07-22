@@ -395,6 +395,214 @@ REFUND_HTML;
 }
 
 /**
+ * Default Privacy Policy content (client-supplied, July 2025).
+ * Used as the default_value for the pp_content ACF field.
+ * Base typography styled by .tm-content; blue info box by .rp-stages;
+ * processors table by .tm-table-wrap / .tm-content table (all in terms.css).
+ *
+ * NOTE: the source document's internal "Action required before publishing"
+ * dev-note (booking-system provider TBC) is deliberately NOT rendered here —
+ * it is an instruction to the client, not policy text. The booking-system
+ * processor row is marked "To be confirmed" and must be completed before
+ * this policy goes live.
+ */
+function ah_privacy_policy_default_content() {
+    return <<<'PRIVACY_HTML'
+<p><strong>Last updated: July 2025</strong></p>
+
+<h2>1. Introduction</h2>
+<p>Together Clinic is operated by At Health Ltd, a GPhC-registered online pharmacy and independent prescribing service. We are committed to protecting your privacy and handling your personal information responsibly, securely and transparently.</p>
+<p>This Privacy Policy explains how we collect, use, store, share and protect your personal information when you visit our website at www.togetherclinic.co.uk, book a consultation, request a prescription, purchase medication or otherwise interact with us online.</p>
+<p>Because Together Clinic provides prescription medication and clinical healthcare services — including weight management treatments — some of the personal information we process is classified as special category health data under UK data protection law. We take our obligations in respect of this data extremely seriously.</p>
+<p>By using our website and services, you acknowledge that you have read and understood this Privacy Policy. Please read it carefully before submitting any personal information to us.</p>
+
+<h2>2. Who We Are — Data Controller</h2>
+<p>At Health Ltd (trading as Together Clinic) is the Data Controller responsible for your personal information. As Data Controller, we determine how and why your personal data is processed, and we are responsible for ensuring that processing is carried out in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
+<p><strong>Company:</strong> At Health Ltd (t/a Together Clinic)<br>
+<strong>Website:</strong> www.togetherclinic.co.uk<br>
+<strong>Email:</strong> support@togetherclinic.co.uk<br>
+<strong>Superintendent Pharmacist:</strong> Ahmed Nizar Al-Liabi (GPhC No.: 2208502, Independent Prescriber)</p>
+<p>If you have any questions about how we handle your personal data, or wish to exercise your data protection rights, please contact us at support@togetherclinic.co.uk.</p>
+
+<h2>3. Information We Collect</h2>
+
+<h3>3.1 Personal Information You Provide</h3>
+<p>We collect personal information that you provide directly to us, including when you register, book a consultation, complete a health assessment or place an order. This may include:</p>
+<ul>
+<li>Full name and date of birth</li>
+<li>Contact details — email address, telephone number, postal address</li>
+<li>Account login credentials</li>
+<li>Consultation and health assessment responses</li>
+<li>Medical history, current medications and health conditions</li>
+<li>Prescription and treatment information</li>
+<li>Payment information (processed securely via Stripe — we do not store full card details)</li>
+<li>Identity verification documents (where required)</li>
+<li>GP details and NHS number (where relevant)</li>
+<li>Communications with our clinical and support teams</li>
+</ul>
+
+<h3>3.2 Special Category Health Data</h3>
+<p>As a clinical prescribing service offering weight management treatments and other prescription medications, we necessarily process special category health data about you. This includes information about your physical health, medical history, weight, BMI, existing conditions and current treatments.</p>
+<div class="rp-stages">
+  <p>Special category health data receives additional legal protection under UK GDPR. We process this data only where we have a lawful basis to do so, and handle it with the highest standards of confidentiality in accordance with GPhC and NHS guidelines.</p>
+</div>
+
+<h3>3.3 Technical Information Collected Automatically</h3>
+<p>When you visit our website, we may automatically collect certain technical information, including:</p>
+<ul>
+<li>IP address and approximate location</li>
+<li>Browser type, version and language</li>
+<li>Device type and operating system</li>
+<li>Pages visited, links clicked and time spent on pages</li>
+<li>Referring URL (how you arrived at our website)</li>
+<li>Date and time of access</li>
+<li>Cookie identifiers and session data</li>
+</ul>
+<p>This information is used to maintain website security, analyse usage patterns and improve the performance and usability of our website.</p>
+
+<h2>4. How We Use Your Information</h2>
+<p>We use your personal information for the following purposes:</p>
+<ul>
+<li>To create and manage your patient account</li>
+<li>To conduct clinical consultations and health assessments</li>
+<li>To issue, process and manage prescriptions</li>
+<li>To dispense and deliver prescription medications</li>
+<li>To process payments for consultations and medication orders</li>
+<li>To manage your treatment plan, including repeat prescriptions and dose adjustments</li>
+<li>To send you appointment confirmations, order updates and clinical communications</li>
+<li>To verify your identity where required for regulatory compliance</li>
+<li>To respond to your enquiries and provide patient support</li>
+<li>To comply with our legal, regulatory and professional obligations as a GPhC-registered pharmacy</li>
+<li>To prevent fraud, misuse of our services and protect patient safety</li>
+<li>To improve our website, services and clinical processes</li>
+<li>To send you marketing communications about our services where you have given your explicit consent</li>
+</ul>
+<p>You may withdraw your consent to marketing communications at any time by contacting us at support@togetherclinic.co.uk or by using the unsubscribe link in any marketing email.</p>
+
+<h2>5. Legal Basis for Processing</h2>
+<p>We process your personal information on one or more of the following lawful bases under UK GDPR:</p>
+<ul>
+<li><strong>Contract.</strong> Processing is necessary to provide our services to you — including conducting consultations, issuing prescriptions and delivering medication.</li>
+<li><strong>Legal obligation.</strong> Processing is necessary to comply with our obligations as a GPhC-registered pharmacy, under MHRA regulations, the Human Medicines Regulations 2012, and other applicable legislation.</li>
+<li><strong>Legitimate interests.</strong> Processing is necessary for our legitimate interests in operating and improving our services, preventing fraud and maintaining website security, where these interests are not overridden by your data protection rights.</li>
+<li><strong>Consent.</strong> Where we rely on consent — including for marketing communications and, where required, for the processing of special category health data — we will ask for your explicit consent at the appropriate time. You may withdraw consent at any time.</li>
+</ul>
+
+<h3>5.1 Special Category Health Data</h3>
+<p>Where we process special category health data, we do so under Article 9(2)(h) UK GDPR — processing necessary for the purposes of preventive or occupational medicine, medical diagnosis, the provision of health or social care or treatment — and/or with your explicit consent under Article 9(2)(a). All such processing is carried out under the obligation of professional secrecy in accordance with GPhC standards.</p>
+
+<h2>6. Sharing Your Information</h2>
+<p>We do not sell, rent or trade your personal information. We may share your information with carefully selected third-party organisations only where necessary to deliver our services, operate our systems or comply with legal obligations.</p>
+<p>All third-party providers are required to process your personal information securely, confidentially and in accordance with applicable data protection law. Where required, we have Data Processing Agreements in place with our providers.</p>
+
+<h3>6.1 Third-Party Service Providers</h3>
+<p>The third parties we currently work with include:</p>
+<div class="tm-table-wrap">
+<table>
+  <thead>
+    <tr><th>Provider</th><th>Purpose</th><th>Privacy Policy</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Stripe</td><td>Payment processing for consultations and medication orders</td><td><a href="https://stripe.com/gb/privacy" target="_blank" rel="noopener noreferrer">stripe.com/gb/privacy</a></td></tr>
+    <tr><td>Gildhart (PharmoDigital Ltd)</td><td>Digital marketing, website design and management</td><td><a href="https://gildhart.com" target="_blank" rel="noopener noreferrer">gildhart.com</a></td></tr>
+    <tr><td>Google Analytics</td><td>Website traffic and usage analytics</td><td><a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">policies.google.com/privacy</a></td></tr>
+    <tr><td>Kinsta</td><td>Website hosting and infrastructure</td><td><a href="https://kinsta.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">kinsta.com/legal/privacy-policy</a></td></tr>
+    <tr><td>Booking system</td><td>Appointment scheduling</td><td>To be confirmed</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>6.2 Clinical and Regulatory Disclosure</h3>
+<p>We may also share your personal information in the following circumstances:</p>
+<ul>
+<li>With your GP or other treating clinicians where clinically necessary or where you have requested this.</li>
+<li>With the General Pharmaceutical Council (GPhC), MHRA or other regulatory bodies where required by law or for inspection purposes.</li>
+<li>With law enforcement or other authorities where required by law, court order or to protect the safety of patients or the public.</li>
+<li>With our professional indemnity insurers where necessary in connection with a claim or complaint.</li>
+</ul>
+
+<h2>7. Cookies</h2>
+<p>Our website uses cookies and similar technologies to provide core functionality, analyse how visitors use our website, remember your preferences and support our marketing activity.</p>
+
+<h3>7.1 What Are Cookies?</h3>
+<p>Cookies are small text files placed on your device when you visit a website. They allow the website to recognise your device on subsequent visits and store certain information about your preferences or activity.</p>
+
+<h3>7.2 Types of Cookies We Use</h3>
+<ul>
+<li><strong>Strictly necessary cookies:</strong> Essential for the website to function. These cannot be disabled and do not require your consent. They include cookies that manage your session, maintain security and support the checkout process.</li>
+<li><strong>Analytics cookies:</strong> Used to collect anonymised information about how visitors use our website (e.g. pages visited, time spent, referral source). We use Google Analytics for this purpose. You can opt out of Google Analytics tracking at tools.google.com/dlpage/gaoptout.</li>
+<li><strong>Functional cookies:</strong> Allow the website to remember choices you have made (such as your preferred language or login status) to provide a more personalised experience.</li>
+<li><strong>Marketing cookies:</strong> Used to track visits across websites and deliver advertising relevant to your interests. These are only set with your consent.</li>
+</ul>
+
+<h3>7.3 Managing Cookies</h3>
+<p>When you first visit our website, you will be presented with a cookie consent banner allowing you to accept or decline non-essential cookies. You can update your preferences at any time via the cookie settings link in our website footer.</p>
+<p>You can also manage or delete cookies through your browser settings. Note that disabling certain cookies may affect the functionality of our website. For more information, visit www.allaboutcookies.org.</p>
+
+<h2>8. Data Security</h2>
+<p>We implement appropriate technical, organisational and physical safeguards to protect your personal information against accidental loss, unauthorised access, misuse, alteration or disclosure. These measures include:</p>
+<ul>
+<li>Encryption of data in transit using TLS/SSL</li>
+<li>Encrypted storage of sensitive personal and health data</li>
+<li>Access controls restricting data access to authorised personnel only</li>
+<li>Regular security assessments and staff training</li>
+<li>Secure payment processing via Stripe — we do not store full card details on our systems</li>
+</ul>
+<p>While we take all reasonable steps to protect your information, no method of internet transmission or electronic storage is completely secure. If you have concerns about the security of your data, please contact us at support@togetherclinic.co.uk.</p>
+<p>In the event of a personal data breach that is likely to result in a high risk to your rights and freedoms, we will notify you without undue delay in accordance with our obligations under UK GDPR.</p>
+
+<h2>9. Data Retention</h2>
+<p>We retain your personal information only for as long as necessary to fulfil the purposes for which it was collected, or to comply with our legal, regulatory and professional obligations.</p>
+<ul>
+<li><strong>Patient health and prescription records:</strong> Retained for a minimum of 8 years from the date of last treatment in accordance with NHS and GPhC guidance (or until the patient's 25th birthday if they were a child at the time of treatment, whichever is longer).</li>
+<li><strong>Financial and transaction records:</strong> Retained for 7 years in accordance with HMRC requirements.</li>
+<li><strong>Marketing consent records:</strong> Retained for as long as you remain an active subscriber, plus a reasonable period to evidence consent in the event of a complaint.</li>
+<li><strong>Website analytics data:</strong> Retained in anonymised or aggregated form for up to 26 months (standard Google Analytics retention).</li>
+<li><strong>General enquiry and contact data:</strong> Retained for up to 2 years from the date of last contact, unless a longer period is required.</li>
+</ul>
+<p>When your personal information is no longer required, it will be securely deleted or anonymised.</p>
+
+<h2>10. Your Rights Under UK GDPR</h2>
+<p>Under UK GDPR, you have the following rights in relation to your personal information:</p>
+<ul>
+<li><strong>Right of access.</strong> You may request a copy of the personal information we hold about you (a Subject Access Request).</li>
+<li><strong>Right to rectification.</strong> You may request that we correct any inaccurate or incomplete personal information.</li>
+<li><strong>Right to erasure.</strong> You may request that we delete your personal information where there is no longer a lawful basis for us to hold it — subject to our legal and regulatory retention obligations (see Section 9).</li>
+<li><strong>Right to restrict processing.</strong> You may request that we limit how we use your personal information in certain circumstances.</li>
+<li><strong>Right to object.</strong> You may object to processing based on our legitimate interests, including the use of your data for direct marketing purposes.</li>
+<li><strong>Right to data portability.</strong> Where processing is based on consent or contract and carried out by automated means, you may request a copy of your data in a structured, commonly used and machine-readable format.</li>
+<li><strong>Right to withdraw consent.</strong> Where we rely on consent as our lawful basis, you may withdraw that consent at any time without affecting the lawfulness of processing carried out before withdrawal.</li>
+</ul>
+<p>To exercise any of these rights, please contact us at support@togetherclinic.co.uk. We will respond to your request within one calendar month. In some cases, we may need to verify your identity before processing your request.</p>
+<p>If you are not satisfied with our response, you have the right to lodge a complaint with the Information Commissioner's Office (ICO) at www.ico.org.uk or by calling 0303 123 1113.</p>
+
+<h2>11. Children's Privacy</h2>
+<p>Our services are intended for adults aged 18 and over. We do not knowingly collect personal information from individuals under the age of 18. If you believe that we have inadvertently collected information from a minor, please contact us immediately at support@togetherclinic.co.uk and we will take steps to delete it.</p>
+
+<h2>12. International Data Transfers</h2>
+<p>We aim to process and store your personal information within the United Kingdom and the European Economic Area (EEA). Where any of our third-party providers process data outside the UK or EEA, we ensure that appropriate safeguards are in place — such as Standard Contractual Clauses approved by the ICO — to protect your personal information in accordance with UK GDPR.</p>
+
+<h2>13. Third-Party Links</h2>
+<p>Our website may contain links to third-party websites, platforms or services. We are not responsible for the privacy practices or content of those websites. We encourage you to review the privacy policies of any third-party sites before providing your personal information.</p>
+
+<h2>14. Changes to This Privacy Policy</h2>
+<p>We may update this Privacy Policy from time to time to reflect changes in legislation, technology, our services or the third parties we work with. Any material changes will be published on this page together with an updated "Last Updated" date. Where changes are significant, we may also notify you by email.</p>
+<p>We encourage you to review this page periodically to stay informed about how we protect your personal information.</p>
+
+<h2>15. Contact Us</h2>
+<p>If you have any questions about this Privacy Policy, wish to exercise your data protection rights, or have a concern about how we handle your personal information, please contact us:</p>
+<p><strong>Company:</strong> At Health Ltd (t/a Together Clinic)<br>
+<strong>Website:</strong> www.togetherclinic.co.uk<br>
+<strong>Email:</strong> support@togetherclinic.co.uk</p>
+<p>You also have the right to raise a concern directly with the Information Commissioner's Office (ICO):</p>
+<p><strong>ICO website:</strong> www.ico.org.uk<br>
+<strong>ICO helpline:</strong> 0303 123 1113</p>
+
+<p>&copy; At Health Ltd. All rights reserved. Together Clinic is a trading name of At Health Ltd.</p>
+PRIVACY_HTML;
+}
+
+/**
  * Get logo URL with fallback chain: ACF option > Customizer > theme SVG.
  */
 function ah_logo_url() {
@@ -471,6 +679,7 @@ add_action( 'wp_enqueue_scripts', function () {
         'page-templates/page-reorder.php'          => 'reorder',
         'page-templates/page-terms.php'            => 'terms',
         'page-templates/page-refund-policy.php'    => 'terms', // shares terms.css (.tm-content + callouts)
+        'page-templates/page-privacy-policy.php'   => 'terms', // shares terms.css (.tm-content + table)
     );
 
     foreach ( $page_assets as $template => $slug ) {
