@@ -726,7 +726,7 @@ acf_add_local_field_group( array(
     'title' => 'N1 — Terms: All Fields',
     'fields' => array(
         array( 'key' => 'field_ah_tm_title', 'label' => 'Title', 'name' => 'tm_title', 'type' => 'text', 'default_value' => 'Terms and Conditions' ),
-        array( 'key' => 'field_ah_tm_content', 'label' => 'Terms Content', 'name' => 'tm_content', 'type' => 'wysiwyg', 'instructions' => 'Full terms and conditions. If left blank, the standard WordPress content editor is used as fallback.' ),
+        array( 'key' => 'field_ah_tm_content', 'label' => 'Terms Content', 'name' => 'tm_content', 'type' => 'wysiwyg', 'instructions' => 'Full terms and conditions. If left blank, the standard WordPress content editor is used as fallback.', 'default_value' => ah_terms_default_content() ),
     ),
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-terms.php' ) ) ),
 ) );
