@@ -730,3 +730,14 @@ acf_add_local_field_group( array(
     ),
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-terms.php' ) ) ),
 ) );
+
+// N2: Refund & Cancellation Policy
+acf_add_local_field_group( array(
+    'key'   => 'group_ah_n2_refund_policy',
+    'title' => 'N2 — Refund Policy: All Fields',
+    'fields' => array(
+        array( 'key' => 'field_ah_rp_title', 'label' => 'Title', 'name' => 'rp_title', 'type' => 'text', 'default_value' => 'Refund & Cancellation Policy' ),
+        array( 'key' => 'field_ah_rp_content', 'label' => 'Policy Content', 'name' => 'rp_content', 'type' => 'wysiwyg', 'instructions' => 'Full refund & cancellation policy. If left blank, the standard WordPress content editor is used as fallback.', 'default_value' => ah_refund_policy_default_content() ),
+    ),
+    'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-refund-policy.php' ) ) ),
+) );

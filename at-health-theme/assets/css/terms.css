@@ -63,3 +63,44 @@
 .tm-toc a:hover {
     text-decoration: underline;
 }
+
+/* ── Refund Policy callout boxes (shared: page-refund-policy.php) ── */
+.tm-content .rp-notice {
+    background: #fffbeb;
+    border: 1px solid #f0c897;
+    border-left: 4px solid #b45309;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 32px 0;
+}
+.tm-content .rp-notice-title {
+    font-weight: 700;
+    color: #b45309;
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+.tm-content .rp-notice p {
+    color: #7a4a1a;
+    margin-bottom: 10px;
+}
+.tm-content .rp-notice p:last-child {
+    margin-bottom: 0;
+}
+
+.tm-content .rp-stages {
+    background: #e8f0f7;
+    border: 1px solid #1a3c5e;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 32px 0;
+}
+.tm-content .rp-stages p {
+    color: #1a3c5e;
+    margin-bottom: 12px;
+}
+.tm-content .rp-stages p:last-child {
+    margin-bottom: 0;
+}
+.tm-content .rp-stages strong {
+    color: #1a3c5e;
+}

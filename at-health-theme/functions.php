@@ -216,6 +216,185 @@ TERMS_HTML;
 }
 
 /**
+ * Default Refund & Cancellation Policy content (client-supplied, July 2025).
+ * Used as the default_value for the rp_content ACF field.
+ * Base typography styled by .tm-content; callouts by .rp-notice / .rp-stages
+ * (both in terms.css, shared by the Terms and Refund Policy pages).
+ */
+function ah_refund_policy_default_content() {
+    return <<<'REFUND_HTML'
+<p><strong>Last updated: July 2025</strong></p>
+
+<p>Together Clinic is operated by At Health Ltd, a GPhC-registered online pharmacy and independent prescribing service. All consultations, prescriptions, and medication orders are subject to clinical review and are governed by applicable UK pharmacy law, MHRA regulations, and GPhC standards of practice.</p>
+<p>Please read this policy carefully before booking a consultation or placing an order. By proceeding, you confirm that you have read and understood the terms below.</p>
+
+<div class="rp-notice">
+  <p class="rp-notice-title">⚠ Important Notice</p>
+  <p>Together Clinic uses a pending payment authorisation model. Your card is authorised when you order, but no money is taken until your prescription is approved.</p>
+  <p>If your prescription is not approved for any reason, your authorisation is released and no charge is made to your account.</p>
+  <p>Once a prescription is approved and payment is captured, dispensed medications cannot be returned in accordance with GPhC and MHRA regulations.</p>
+</div>
+
+<h2>1. Cancellation of Consultations</h2>
+<p>The following cancellation terms apply to booked clinical consultations with Together Clinic.</p>
+
+<h3>1.1 Cancellation by You</h3>
+<ul>
+<li>You may cancel or reschedule a consultation at any time before your appointment, free of charge, by contacting us at support@togetherclinic.co.uk.</li>
+<li>If you cancel a paid consultation before it takes place, a full refund will be issued to your original payment method within 2–5 working days.</li>
+<li>If you fail to attend a booked consultation without prior notice (a "no-show"), no refund will be issued. You will need to rebook and pay for a new appointment if you wish to proceed.</li>
+<li>If you cancel a consultation at short notice (less than 24 hours before the scheduled time), we reserve the right to apply a cancellation fee of up to the full consultation cost. Any applicable fee will be communicated to you at the time of booking.</li>
+</ul>
+
+<h3>1.2 Cancellation by Together Clinic</h3>
+<ul>
+<li>In the rare event that we are required to cancel or reschedule your consultation, we will notify you as soon as possible and offer an alternative appointment at no additional charge, or a full refund if you prefer.</li>
+</ul>
+
+<h3>1.3 Consultations That Do Not Result in a Prescription</h3>
+<ul>
+<li>Our prescribers retain full clinical autonomy and a prescription cannot be guaranteed following a consultation. If your consultation is completed but a prescription is not issued on clinical grounds, a full refund of any amount paid will be processed to your original payment method within 2–5 working days.</li>
+<li>If your consultation cannot be completed due to technical difficulties on our part, a full refund or complimentary rebook will be offered.</li>
+</ul>
+
+<h2>2. How Payment Works — Pending Authorisation Model</h2>
+<p>Together Clinic uses a pending payment authorisation model. When you submit an order, your payment card is authorised but no money is taken from your account at that point. Your payment is only captured (i.e. the funds actually collected) once a clinician has completed your clinical review and a prescription has been approved and issued.</p>
+<p>This means that if your prescription is not approved for any reason — including on clinical grounds — your payment authorisation is simply released and no charge is made to your account. There is nothing to refund because no payment has been taken.</p>
+
+<div class="rp-stages">
+  <p><strong>Stage 1 — Pending clinical review:</strong> Payment authorised but not taken. Cancellation allowed — authorisation released immediately.</p>
+  <p><strong>Stage 2 — Prescription approved, payment captured:</strong> Cancellation no longer possible. Dispensing begins.</p>
+  <p><strong>Stage 3 — Dispensed and dispatched:</strong> Cancellation not possible. Return not permitted.</p>
+</div>
+
+<h3>2.1 Payment Hold Period</h3>
+<ul>
+<li>Your payment authorisation will be held for a maximum of 7 days from the date of your order, pending completion of your clinical review.</li>
+<li>If your clinical review is not completed within 7 days, the payment authorisation will lapse automatically, your order will be cancelled, and no charge will be made to your account. You will receive email notification if this occurs.</li>
+<li>If you wish to proceed after a lapsed authorisation, you will need to place a new order.</li>
+</ul>
+
+<h3>2.2 Cancellation Before Prescription Is Approved</h3>
+<ul>
+<li>You may cancel your order at any time before your prescription has been approved and payment captured. Please contact us at support@togetherclinic.co.uk as soon as possible.</li>
+<li>Upon cancellation at this stage, your payment authorisation will be released immediately. No charge will be made to your account. Depending on your card issuer, the released authorisation may take 2–5 working days to no longer show as pending on your statement.</li>
+</ul>
+
+<h3>2.3 After Prescription Is Approved and Payment Captured</h3>
+<ul>
+<li>Once a clinician has approved your prescription and payment has been captured, pharmacy dispensing begins immediately. Cancellation is no longer available at this stage.</li>
+<li>This applies regardless of whether the medication has been physically dispatched.</li>
+</ul>
+
+<h3>2.4 After Dispatch</h3>
+<ul>
+<li>Once your order has left the pharmacy, cancellation is not possible. This is in accordance with UK medication safety regulations and MHRA guidance.</li>
+<li>Prescription medications are dispensed specifically for you as an individual patient and cannot be returned to stock, resold, or reused. This is a regulatory requirement, not a commercial decision.</li>
+</ul>
+
+<h2>3. Automatic Cancellations</h2>
+<p>We may need to request additional information from you before we can complete your clinical review — for example, identity verification, GP details, or supplementary medical information. If this is not received within the required timeframe, your order will be automatically cancelled and your payment authorisation released as follows:</p>
+<ul>
+<li>All prescription orders: payment authorisation released and order cancelled after 7 days if outstanding information is not provided.</li>
+</ul>
+<p>Because no payment is captured until your prescription is approved, no refund is required when an order is automatically cancelled at this stage — the authorisation simply lapses and no charge is made.</p>
+<p>You will receive email notification of any automatic cancellation. Once cancelled, orders cannot be reinstated — you will need to place a new order if you wish to proceed.</p>
+
+<h2>4. Refunds</h2>
+<p>Because Together Clinic uses a pending payment authorisation model, a refund in the traditional sense is only relevant once payment has actually been captured — i.e. after your prescription has been approved and dispensing has begun. In most cases where an order does not proceed (cancellation before approval, clinical decline, lapsed authorisation), no charge is ever made and no refund is therefore required.</p>
+
+<h3>4.1 How Refunds Are Processed</h3>
+<ul>
+<li>All refunds are issued to the original payment method used at checkout.</li>
+<li>Refunds typically appear in your account within 2–5 working days. Depending on your bank or card issuer, processing may occasionally take up to 10 working days.</li>
+<li>You will receive an email confirmation once your refund has been initiated.</li>
+<li>We do not issue refunds in cash or via an alternative payment method.</li>
+</ul>
+
+<h3>4.2 When No Charge Is Made (No Refund Required)</h3>
+<ul>
+<li>Your order is cancelled before your prescription is approved — payment authorisation is released and no charge is made.</li>
+<li>Your prescription is not approved on clinical grounds — payment authorisation is released and no charge is made.</li>
+<li>Your order is automatically cancelled due to a lapsed authorisation or outstanding information (see Section 3) — no charge is made.</li>
+<li>A consultation is cancelled before it takes place (see Section 1) — no charge is made.</li>
+</ul>
+
+<h3>4.3 When a Refund Will Be Issued</h3>
+<ul>
+<li>Your medication arrives damaged, incorrect, or is confirmed lost in transit (see Section 5) — a refund or replacement will be offered.</li>
+<li>A Together Clinic error has resulted in an incorrect charge being applied after payment capture.</li>
+</ul>
+
+<h3>4.4 When a Refund Will Not Be Issued</h3>
+<ul>
+<li>Payment has been captured and medication has been dispensed and dispatched.</li>
+<li>You fail to attend a booked consultation without prior notice.</li>
+<li>You change your mind after payment has been captured and dispensing has begun.</li>
+</ul>
+
+<h2>5. Damaged, Incorrect, or Lost Orders</h2>
+<p>Replacements or refunds may be issued in the following circumstances:</p>
+<ul>
+<li>Your medication arrives visibly damaged or compromised.</li>
+<li>The incorrect medication or dosage has been supplied.</li>
+<li>Your order is confirmed as lost by the courier or delivery service.</li>
+</ul>
+<p>To report an issue, please contact us at support@togetherclinic.co.uk with your order reference and, where possible, photographic evidence of any damage or discrepancy. We aim to investigate and resolve all such cases within 5 working days.</p>
+<p>For certain prescription medicines — particularly injectables or cold-chain products — a clinical review may be required before a replacement can be approved. Where this is the case, we will notify you promptly.</p>
+
+<h2>6. Repeat &amp; Subscription Orders</h2>
+<p>Where Together Clinic offers ongoing treatment plans or subscription-based medication supply, the following additional terms apply.</p>
+
+<h3>6.1 Pausing or Cancelling a Repeat Order</h3>
+<ul>
+<li>You may pause or cancel a repeat order at any time, provided the next scheduled order has not yet entered clinical review.</li>
+<li>To avoid being charged for an upcoming order, please contact us at least 5 working days before your next scheduled dispatch date.</li>
+<li>If your repeat order has already entered clinical review or been prescribed, it is subject to the same cancellation rules as standard orders (see Section 2).</li>
+</ul>
+
+<h3>6.2 Payment and Refunds on Repeat Orders</h3>
+<ul>
+<li>Each repeat order follows the same pending authorisation model as a standard order. Payment is authorised when your repeat order is queued and captured only once your prescription is approved.</li>
+<li>If a repeat order is cancelled before clinical review is completed, the authorisation is released and no charge is made.</li>
+<li>If a repeat order has been prescribed and dispensed, it is not eligible for a refund.</li>
+</ul>
+
+<h3>6.3 Dose or Treatment Adjustments</h3>
+<ul>
+<li>If your prescriber adjusts your prescribed dose or treatment between repeat orders, your upcoming order will be updated accordingly before dispatch.</li>
+<li>Any resulting overpayment will be refunded to your original payment method. Any underpayment will be collected before dispatch.</li>
+</ul>
+
+<h3>6.4 Missed or Delayed Doses</h3>
+<ul>
+<li>If you need to skip or delay a repeat order, please contact us in advance. Medications that have already been dispensed cannot be refunded or held for future delivery.</li>
+</ul>
+
+<h2>7. Your Rights Under UK Consumer Law</h2>
+<p>Prescription medications are exempt from the standard 14-day right to cancel that applies to most distance purchases under Regulation 28(1)(b) of the Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013. This exemption applies because prescription medicines are prepared and dispensed specifically for an individual patient following a clinical assessment and cannot be resold or reused.</p>
+<p>Non-prescription products (such as supplements or over-the-counter items, if offered) are not exempt from the 14-day cancellation right and may be returned within 14 days of receipt in their original, unopened condition for a full refund, provided they are not sealed goods unsealed after delivery where return is inappropriate for health or hygiene reasons.</p>
+<p>Nothing in this policy limits or excludes your statutory rights under the Consumer Rights Act 2015 or any other applicable legislation, including your right to a repair, replacement, or refund where goods are faulty or not as described.</p>
+
+<h2>8. Complaints</h2>
+<p>If you are dissatisfied with how your cancellation or refund request has been handled, please contact us at support@togetherclinic.co.uk. We aim to acknowledge all complaints within two working days and to resolve them within 14 working days.</p>
+<p>If you remain dissatisfied following our response, you may raise a concern with the General Pharmaceutical Council (GPhC) at www.pharmacyregulation.org, or seek independent advice from Citizens Advice (www.citizensadvice.org.uk). For unresolved disputes relating to online purchases, you may also refer your complaint to an approved Alternative Dispute Resolution (ADR) provider.</p>
+
+<h2>9. Contact Us</h2>
+<p>To request a cancellation or refund, or if you have any questions about this policy, please contact our team:</p>
+<p><strong>Company:</strong> At Health Ltd (t/a Together Clinic)<br>
+<strong>Website:</strong> www.togetherclinic.co.uk<br>
+<strong>Email:</strong> support@togetherclinic.co.uk</p>
+<p>Early contact gives us the best chance of resolving your request before a prescription has been issued.</p>
+
+<h2>10. Regulatory Information</h2>
+<p>Together Clinic is operated by At Health Ltd, a pharmacy registered with the General Pharmaceutical Council (GPhC). Our Superintendent Pharmacist is Ahmed Nizar Al-Liabi (GPhC No.: 2208502, Independent Prescriber).</p>
+<p><strong>GPhC Register:</strong> <a href="https://www.pharmacyregulation.org/registers/pharmacist/2208502" target="_blank" rel="noopener noreferrer">https://www.pharmacyregulation.org/registers/pharmacist/2208502</a></p>
+
+<p>&copy; At Health Ltd. All rights reserved. Together Clinic is a trading name of At Health Ltd.</p>
+REFUND_HTML;
+}
+
+/**
  * Get logo URL with fallback chain: ACF option > Customizer > theme SVG.
  */
 function ah_logo_url() {
@@ -291,6 +470,7 @@ add_action( 'wp_enqueue_scripts', function () {
         'page-templates/page-health-hub.php'       => 'health-hub',
         'page-templates/page-reorder.php'          => 'reorder',
         'page-templates/page-terms.php'            => 'terms',
+        'page-templates/page-refund-policy.php'    => 'terms', // shares terms.css (.tm-content + callouts)
     );
 
     foreach ( $page_assets as $template => $slug ) {
