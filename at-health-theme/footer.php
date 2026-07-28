@@ -9,7 +9,7 @@
                         <img src="<?php echo esc_url( ah_logo_url() ); ?>" alt="<?php echo esc_attr( ah_company_name() ); ?>" class="h-11 brightness-0 invert opacity-90" />
                     </a>
                     <div class="hidden sm:block w-px h-8 bg-white/10"></div>
-                    <p class="hidden sm:block text-gray-500 text-sm font-medium">
+                    <p class="hidden sm:block text-gray-400 text-sm font-medium">
                         <?php echo esc_html( ah_option( 'footer_tagline', 'Medical Weight Loss, Delivered' ) ); ?>
                     </p>
                 </div>
@@ -66,7 +66,7 @@
                             </div>
                             <div>
                                 <p class="text-white text-sm font-medium">Hours</p>
-                                <p class="text-[11px] text-gray-500"><?php echo esc_html( ah_business_hours() ); ?></p>
+                                <p class="text-[11px] text-gray-400"><?php echo esc_html( ah_business_hours() ); ?></p>
                             </div>
                         </div>
                         <a href="mailto:<?php echo esc_attr( ah_email() ); ?>" class="flex items-center gap-3 group">
@@ -77,14 +77,15 @@
                             </div>
                             <div>
                                 <p class="text-white text-sm font-medium group-hover:text-purple-300 transition-colors"><?php echo esc_html( ah_email() ); ?></p>
-                                <p class="text-[11px] text-gray-500"><?php echo esc_html( ah_option( 'email_response_time', 'Reply within 4 hours' ) ); ?></p>
+                                <p class="text-[11px] text-gray-400"><?php echo esc_html( ah_option( 'email_response_time', 'Reply within 4 hours' ) ); ?></p>
                             </div>
                         </a>
-                        <p class="text-[11px] text-gray-500 leading-relaxed"><?php echo esc_html( ah_no_phone_notice() ); ?></p>
+                        <p class="text-[11px] text-gray-400 leading-relaxed"><?php echo esc_html( ah_no_phone_notice() ); ?></p>
 
                         <!-- Newsletter -->
                         <form class="mt-6 flex gap-2" action="#" method="post">
-                            <input type="email" name="email" placeholder="Your email"
+                            <label for="footer-newsletter-email" class="sr-only">Email address</label>
+                            <input type="email" id="footer-newsletter-email" name="email" placeholder="Your email"
                                 class="flex-1 min-w-0 bg-white/[0.04] border border-white/[0.08] text-white text-sm px-4 py-2.5 rounded-lg focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/20 transition-all placeholder-gray-600" />
                             <button type="submit"
                                 class="flex-shrink-0 bg-white/[0.08] hover:bg-purple-600 border border-white/[0.08] hover:border-purple-500 text-gray-300 hover:text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-all">
@@ -131,10 +132,10 @@
         <!-- Bottom Bar -->
         <div class="ah-container-wide py-6">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                <p class="text-gray-500 text-xs">
+                <p class="text-gray-400 text-xs">
                     &copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php echo esc_html( ah_option( 'company_legal_name', 'Together Clinic Ltd' ) ); ?>. All rights reserved. <?php echo esc_html( ah_option( 'company_registration', 'Company registered in England & Wales.' ) ); ?>
                 </p>
-                <div class="flex flex-wrap justify-center gap-5 text-xs text-gray-500">
+                <div class="flex flex-wrap justify-center gap-5 text-xs text-gray-400">
                     <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'terms' ) ) ); ?>" class="hover:text-gray-300 transition-colors">Terms</a>
                     <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'privacy-policy' ) ) ); ?>" class="hover:text-gray-300 transition-colors">Privacy</a>
                     <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'refund-policy' ) ) ); ?>" class="hover:text-gray-300 transition-colors">Refund Policy</a>
