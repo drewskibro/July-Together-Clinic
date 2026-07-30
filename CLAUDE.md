@@ -85,6 +85,24 @@ records, and anything else that identifies a patient or their treatment.
 
 ---
 
+## Host: Kinsta — established facts
+
+**All our sites run on Kinsta.** These are confirmed, not assumptions — don't
+re-derive them or ask the host to reconfirm:
+
+| Fact | Consequence |
+|---|---|
+| **Runs nginx**, not Apache | `.htaccess` is **completely inert**. Never rely on it for access control — writing `Deny from all` achieves nothing and creates false confidence. This was a contributing factor in the sister-site incident. |
+| **`wp-content/uploads/` is served directly** | Anything written there is publicly fetchable by anyone with the URL. No login, no exploit required. |
+| **Webroot is `/www/<site>_<id>/public/`** | `ABSPATH` maps here. `dirname(ABSPATH)` is the site root — the parent of `public/`. |
+| **`/private` exists but is unusable** | `open_basedir` cannot be widened to cover it on the standard tier. PHP cannot read or write there. Don't ask for it. |
+| **`additional/` works** | Support will create `/www/<site>_<id>/additional/` and add it to `open_basedir` on request. This is the storage pattern to use. |
+| **Cloudflare CDN sits in front** | Static assets get very long cache TTLs (a ten-year `max-age` was observed). Any file fetched during an exposure window persists at the edge after the origin is fixed — **purging the CDN is mandatory**, not optional. |
+| **Cache clearing** | MyKinsta → Sites → Tools → Clear cache, or `wp kinsta cache purge --all` via WP-CLI. Clears page cache *and* CDN. |
+| **Support is responsive via MyKinsta chat** | Directory/`open_basedir` requests are routine and usually handled quickly. |
+
+---
+
 ## 0. Establish storage BEFORE building the feature
 
 This site is pre-launch. That's a significant advantage: the sister site had
@@ -94,21 +112,75 @@ upload feature rather than before it.
 
 **Do this before writing any upload code:**
 
-1. **Identify the host and web server.** Nginx or Apache? This determines
-   whether directory-level protections do anything at all (see §1).
-2. **Establish a writable directory outside the web root**, and confirm it
-   with the host before building. On Kinsta this meant support creating
-   `/www/<site>/additional/` and adding it to PHP's `open_basedir` — the
-   default `/private` directory was *not* reachable by PHP. Assume nothing;
-   get it confirmed in writing.
-3. **Prove it works both ways** before the first real upload:
-   - PHP can write to it — `is_writable()` returns true
-   - It is genuinely unreachable — no URL maps to it (see §3)
-4. **Only then** build the upload feature against it.
+### Step 1 — Request the storage directory from Kinsta
 
-If the host cannot provide writable storage outside the web root, that is a
-blocking architectural decision to escalate — not something to work around
-with a fallback (see §1, fail closed).
+The host is Kinsta (see the facts table above — nginx, `additional/` works,
+`/private` doesn't). PHP cannot create this directory itself; `open_basedir`
+deliberately prevents that, so it must come from support.
+
+Send this — it's the exact request that worked on the sister site:
+
+> Hi — we need to store sensitive files outside the web root for this site.
+> Could you please:
+>
+> 1. Create `/www/<site-path>/additional/secure-uploads/`
+> 2. Add `/www/<site-path>/additional/` to the site's `open_basedir` so PHP
+>    can read and write there
+> 3. Confirm it's writable by the site's PHP user
+>
+> Could you confirm the exact path once created?
+
+**Do not ask for `/private`** — it gets refused and costs a round-trip.
+**Object storage (S3/R2) is not required** and adds unnecessary complexity.
+Plain local filesystem outside the web root is the proven solution.
+
+Get the confirmed path in writing.
+
+### Step 2 — Verify it empirically, both ways
+
+Before the first real upload:
+
+- **PHP can write to it** — `is_writable()` returns true
+- **Nothing serves it** — request the plausible URL and confirm 404:
+  ```bash
+  curl -I https://<site>/additional/secure-uploads/testfile.jpg
+  # MUST be 404. A 200 means the directory is being served after all.
+  ```
+
+You can't prove a negative exhaustively, but confirming the obvious candidate
+URL rules out a misconfigured alias or an unexpected server rule.
+
+### Step 3 — Build against it
+
+Now write the upload code.
+
+### While waiting on the host: build behind a fail-closed abstraction
+
+Waiting for a support ticket does **not** mean all work stops. Everything
+except the write path — the gated view endpoint, MIME validation, capability
+checks, admin UI, retention logic — is independent of the final directory.
+
+Put the path behind a single function that **refuses to store until
+configured**:
+
+```php
+function secure_doc_dir() {
+    $dir = defined( 'SECURE_DOC_DIR' ) ? SECURE_DOC_DIR : '';
+    if ( ! $dir || ! is_dir( $dir ) || ! wp_is_writable( $dir ) ) {
+        return new WP_Error( 'no_secure_storage',
+            'Secure storage is not configured. Uploads are disabled.' );
+    }
+    return trailingslashit( $dir );
+}
+```
+
+Work continues, and there is no code path that can silently write to a public
+location if the feature ships before the host confirms. Wiring up the real
+directory then becomes a one-line change, not a refactor.
+
+If the host ultimately cannot provide writable storage outside the web root,
+that is a blocking architectural decision to escalate — not something to work
+around with a fallback (see §1, fail closed).
 
 ---
 
