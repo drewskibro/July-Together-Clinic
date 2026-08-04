@@ -81,18 +81,23 @@ class TC_Reorder_Pricing {
 	}
 
 	public static function normalize_treatment( $treatment ) {
+		// TC_Variation_Map always exists now the reorder module is loaded by
+		// the eligibility plugin; the fallback below is standalone-era residue
+		// kept for the shell-plugin rollback path. It must mirror the
+		// canonical behaviour: EXACT alias match only, never substring
+		// (PLAYBOOK §2.1 — "wegovy tablets" must not collapse to 'wegovy').
 		if ( class_exists( 'TC_Variation_Map' ) ) {
 			return TC_Variation_Map::normalize_treatment( $treatment );
 		}
 
 		$treatment = strtolower( trim( (string) $treatment ) );
-		if ( strpos( $treatment, 'mounjaro' ) !== false || strpos( $treatment, 'tirzepatide' ) !== false ) {
-			return 'mounjaro';
-		}
-		if ( strpos( $treatment, 'wegovy' ) !== false || strpos( $treatment, 'semaglutide' ) !== false ) {
-			return 'wegovy';
-		}
-		return $treatment;
+		$aliases   = [
+			'wegovy'      => 'wegovy',
+			'mounjaro'    => 'mounjaro',
+			'semaglutide' => 'wegovy',
+			'tirzepatide' => 'mounjaro',
+		];
+		return isset( $aliases[ $treatment ] ) ? $aliases[ $treatment ] : $treatment;
 	}
 
 	public static function normalize_dose( $dose ) {
