@@ -17,6 +17,7 @@
 		selectedTreatment: '',
 		selectedWegovyDose: '0.25mg',
 		selectedMounjaroDose: '2.5mg',
+		selectedTabletsDose: '1.5mg',
 		isSubmitting: false,
 		ineligibleReason: ''
 	};
@@ -199,7 +200,12 @@
 			selectedTreatment: state.selectedTreatment,
 			selectedWegovyDose: state.selectedWegovyDose,
 			selectedMounjaroDose: state.selectedMounjaroDose,
-			selectedDose: state.selectedTreatment === 'wegovy' ? state.selectedWegovyDose : state.selectedMounjaroDose,
+			selectedTabletsDose: state.selectedTabletsDose,
+			selectedDose: (function () {
+				if (state.selectedTreatment === 'mounjaro') return state.selectedMounjaroDose;
+				if (state.selectedTreatment === 'wegovy-tablets') return state.selectedTabletsDose;
+				return state.selectedWegovyDose;
+			})(),
 			termsAgreed: state.agreementChecks.every(Boolean),
 			bariatricRecent: u.bariatricRecent || ''
 		};
@@ -337,7 +343,8 @@
 		// copy is only a fallback for stale cached configs.
 		var ladders = cfg.doseLadders || {
 			wegovy: ['0.25mg', '0.5mg', '1mg', '1.7mg', '2.4mg'],
-			mounjaro: ['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg']
+			mounjaro: ['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg'],
+			'wegovy-tablets': ['1.5mg', '4mg', '9mg', '25mg']
 		};
 		var ladder = ladders[state.userData.currentMedication] || [];
 		var doses = ladder.map(function (dose, i) {
@@ -811,8 +818,10 @@
 	function updateTreatmentCards() {
 		var w = $('wegovy-card');
 		var m = $('mounjaro-card');
+		var t = $('wegovy-tablets-card');
 		if (w) w.classList.toggle('selected', state.selectedTreatment === 'wegovy');
 		if (m) m.classList.toggle('selected', state.selectedTreatment === 'mounjaro');
+		if (t) t.classList.toggle('selected', state.selectedTreatment === 'wegovy-tablets');
 	}
 
 	function updateSubmitButton() {
@@ -866,8 +875,14 @@
 	}
 
 	function updateConfirmedTreatmentBanner(info) {
-		var name = state.selectedTreatment === 'mounjaro' ? 'Mounjaro' : 'Wegovy';
-		var price = state.selectedTreatment === 'mounjaro' ? '£159/month · Starting dose (2.5mg)' : '£109/month · Starting dose (0.25mg)';
+		var names = { wegovy: 'Wegovy', mounjaro: 'Mounjaro', 'wegovy-tablets': 'Wegovy Tablets' };
+		var prices = {
+			wegovy: '£109/month · Starting dose (0.25mg)',
+			mounjaro: '£159/month · Starting dose (2.5mg)',
+			'wegovy-tablets': '£99/month · Starting dose (1.5mg)'
+		};
+		var name = names[state.selectedTreatment] || 'Wegovy';
+		var price = prices[state.selectedTreatment] || prices.wegovy;
 
 		// The server reports the dose it actually supplied (switchers start on
 		// the converted dose, not the starter) and the order's real price.

@@ -49,7 +49,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <?php endif; ?>
 
 <h4 style="margin-top:20px;border-bottom:2px solid #e5e7eb;padding-bottom:8px;">Treatment</h4>
-<p><strong>Selected:</strong> <?php echo esc_html( ucfirst( $payload['selectedTreatment'] ?? '' ) . ' ' . ( $payload['selectedDose'] ?? '' ) ); ?></p>
+<p><strong>Selected:</strong> <?php echo esc_html( TC_Variation_Map::treatment_label( $payload['selectedTreatment'] ?? '' ) . ' ' . ( $payload['selectedDose'] ?? '' ) ); ?></p>
 
 <h4 style="margin-top:20px;border-bottom:2px solid #e5e7eb;padding-bottom:8px;">Health metrics</h4>
 <p><strong>Age band:</strong> <?php echo esc_html( $payload['ageBand'] ?? '' ); ?></p>

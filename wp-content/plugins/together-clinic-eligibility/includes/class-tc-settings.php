@@ -229,7 +229,7 @@ class TC_Settings {
 					<?php
 					$expected_skus = TC_Variation_Map::expected_sku_map();
 					foreach ( $map as $treatment => $doses ) : ?>
-						<tr><th colspan="2"><strong><?php echo esc_html( ucfirst( $treatment ) ); ?></strong></th></tr>
+						<tr><th colspan="2"><strong><?php echo esc_html( TC_Variation_Map::treatment_label( $treatment ) ); ?></strong></th></tr>
 						<?php foreach ( $doses as $dose => $variation_id ) :
 							$expected_sku = $expected_skus[ $treatment ][ $dose ] ?? '';
 							?>

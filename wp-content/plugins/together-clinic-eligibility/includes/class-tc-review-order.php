@@ -37,7 +37,7 @@ class TC_Review_Order {
 			] );
 			return new WP_Error(
 				'tc_no_product',
-				sprintf( 'No product is configured for %s %s. Please contact us and we will complete your order.', ucfirst( $treatment ), $dose )
+				sprintf( 'No product is configured for %s %s. Please contact us and we will complete your order.', TC_Variation_Map::treatment_label( $treatment ), $dose )
 			);
 		}
 

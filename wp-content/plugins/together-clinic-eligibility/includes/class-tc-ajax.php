@@ -124,16 +124,16 @@ class TC_Ajax {
 			if ( $proposal['rule'] === 'same_drug_continue' ) {
 				$review_flags['switch_proposed'] = sprintf(
 					'Same-medication provider switch: continuing at declared %s %s.%s',
-					ucfirst( $payload['selectedTreatment'] ),
+					TC_Variation_Map::treatment_label( $payload['selectedTreatment'] ),
 					$proposal['dose'],
 					$fallback_note
 				);
 			} else {
 				$review_flags['switch_proposed'] = sprintf(
 					'Switching from %s %s: supplied %s %s%s. Confirm or adjust the dose before approval.%s',
-					ucfirst( $payload['currentMedication'] ?: 'unknown medication' ),
+					( TC_Variation_Map::treatment_label( $payload['currentMedication'] ) ?: 'unknown medication' ),
 					$payload['currentDose'] ?: '(dose not recognised)',
-					ucfirst( $payload['selectedTreatment'] ),
+					TC_Variation_Map::treatment_label( $payload['selectedTreatment'] ),
 					$proposal['dose'],
 					$proposal['range'] ? ' (matrix range ' . $proposal['range'] . ')' : '',
 					$fallback_note
@@ -198,7 +198,7 @@ class TC_Ajax {
 			'assessment_id'  => $assessment_id,
 			'order_id'       => $order_id,
 			'doseSupplied'   => (string) ( $payload['selectedDose'] ?? '' ),
-			'treatmentName'  => ucfirst( (string) ( $payload['selectedTreatment'] ?? '' ) ),
+			'treatmentName'  => TC_Variation_Map::treatment_label( (string) ( $payload['selectedTreatment'] ?? '' ) ),
 			'priceFormatted' => ( $order_id && ! is_wp_error( $order ) )
 				// Decode entities (&pound; etc): the JS renders this via textContent.
 				? html_entity_decode( wp_strip_all_tags( wc_price( $order->get_total() ) ), ENT_QUOTES, 'UTF-8' )
@@ -236,7 +236,7 @@ class TC_Ajax {
 		$treatment = $cookie['selectedTreatment'];
 		$dose      = $cookie['selectedDose'] ?? '';
 		if ( ! $dose ) {
-			$dose = $treatment === 'wegovy' ? '0.25mg' : '2.5mg';
+			$dose = TC_Dose_Ladder::starter( $treatment ) ?: '0.25mg';
 		}
 
 		$variation_id = TC_Variation_Map::get_variation_id( $treatment, $dose );
