@@ -223,8 +223,9 @@ class TC_Eligibility_Plugin {
 			'minBmiAsian'     => (float) get_option( 'tc_eligibility_min_bmi_south_asian', 23 ),
 			'doseLadders'     => TC_Dose_Ladder::ladders(),
 			'assets'          => [
-				'wegovy'   => TC_ELIGIBILITY_URL . 'assets/img/wegovy.jpg',
-				'mounjaro' => TC_ELIGIBILITY_URL . 'assets/img/mounjaro.png',
+				'wegovy'         => TC_ELIGIBILITY_URL . 'assets/img/wegovy.jpg',
+				'mounjaro'       => TC_ELIGIBILITY_URL . 'assets/img/mounjaro.png',
+				'wegovy-tablets' => TC_ELIGIBILITY_URL . 'assets/img/wegovy-tablets.jpg',
 			],
 		] );
 	}

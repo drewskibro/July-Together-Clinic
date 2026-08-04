@@ -142,7 +142,7 @@ class TC_Emails {
 		echo '<table cellspacing="0" cellpadding="6" border="1" style="width: 100%; font-size: 13px;">';
 		printf( '<tr><th align="left">Patient type</th><td>%s</td></tr>', esc_html( ( $payload['userType'] ?? '' ) === 'switching' ? 'Switching provider' : 'New to treatment' ) );
 		printf( '<tr><th align="left">Selected treatment</th><td>%s %s</td></tr>',
-			esc_html( ucfirst( $payload['selectedTreatment'] ?? '' ) ),
+			esc_html( TC_Variation_Map::treatment_label( $payload['selectedTreatment'] ?? '' ) ),
 			esc_html( $payload['selectedDose'] ?? '' )
 		);
 		printf( '<tr><th align="left">BMI</th><td>%s</td></tr>', esc_html( number_format( (float) ( $payload['bmi'] ?? 0 ), 1 ) ) );

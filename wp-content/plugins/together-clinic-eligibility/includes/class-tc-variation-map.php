@@ -125,7 +125,34 @@ class TC_Variation_Map {
 				'12.5mg' => 'MJ-12.5',
 				'15mg'   => 'MJ-15',
 			],
+			// Distinct WGT- prefix so oral SKUs can never collide with the WG-
+			// injection SKUs (the molecule-collision guard applies to SKUs too).
+			'wegovy-tablets' => [
+				'1.5mg' => 'WGT-1.5',
+				'4mg'   => 'WGT-4',
+				'9mg'   => 'WGT-9',
+				'25mg'  => 'WGT-25',
+			],
 		] );
+	}
+
+	/**
+	 * Human-readable treatment name for display. Keeps a single source of truth
+	 * for names so nothing renders the raw id (e.g. "Wegovy-tablets") via
+	 * ucfirst(). Empty in, empty out — so callers can fall back to their own
+	 * placeholder. Filterable for future treatments.
+	 */
+	public static function treatment_label( $treatment ) {
+		$treatment = self::normalize_treatment( $treatment );
+		if ( $treatment === '' ) {
+			return '';
+		}
+		$labels = apply_filters( 'tc_treatment_labels', [
+			'wegovy'         => 'Wegovy',
+			'mounjaro'       => 'Mounjaro',
+			'wegovy-tablets' => 'Wegovy Tablets',
+		] );
+		return isset( $labels[ $treatment ] ) ? $labels[ $treatment ] : ucfirst( $treatment );
 	}
 
 	public static function autodetect_from_skus() {

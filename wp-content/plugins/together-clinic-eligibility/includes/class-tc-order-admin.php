@@ -85,7 +85,7 @@ class TC_Order_Admin {
 		$previous_order_id = (int) $order->get_meta( '_rrqr_previous_order_id' );
 
 		$rows = [
-			'Medication'                    => ucfirst( (string) ( $payload['currentMedication'] ?? '' ) ),
+			'Medication'                    => TC_Variation_Map::treatment_label( (string) ( $payload['currentMedication'] ?? '' ) ),
 			'Current dose (order history)'  => (string) ( $payload['currentDose'] ?? '' ),
 			'Requested dose'                => (string) ( $payload['selectedDose'] ?? '' ),
 			'Weight now'                    => ! empty( $payload['currentWeight'] ) ? $payload['currentWeight'] . ' kg' : '',

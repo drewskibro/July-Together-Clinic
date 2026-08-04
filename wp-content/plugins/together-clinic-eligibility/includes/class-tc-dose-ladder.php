@@ -20,8 +20,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class TC_Dose_Ladder {
 
 	const LADDERS = [
-		'wegovy'   => [ '0.25mg', '0.5mg', '1mg', '1.7mg', '2.4mg' ],
-		'mounjaro' => [ '2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg' ],
+		'wegovy'         => [ '0.25mg', '0.5mg', '1mg', '1.7mg', '2.4mg' ],
+		'mounjaro'       => [ '2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg' ],
+		// Oral semaglutide — a DISTINCT treatment from injectable Wegovy (same
+		// molecule, different form, different titration), with its own id and
+		// ladder. Never an alias of 'wegovy' (see the molecule-collision note in
+		// TC_Variation_Map). Titration order confirmed with the prescriber.
+		'wegovy-tablets' => [ '1.5mg', '4mg', '9mg', '25mg' ],
 	];
 
 	/**
