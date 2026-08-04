@@ -5,6 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class TC_My_Account {
 
+	/** Memoised per request: does the current user have a reorderable order? */
+	private $reorder_available = null;
+
 	public function __construct() {
 		add_action( 'template_redirect', [ $this, 'redirect_shop' ], 10 );
 		add_filter( 'woocommerce_return_to_shop_redirect', [ $this, 'filter_return_url' ] );
@@ -86,7 +89,7 @@ class TC_My_Account {
 	 * honest and avoids a pointless redirect.
 	 */
 	public function add_reorder_menu_item( $items ) {
-		if ( ! $this->is_returning_customer() ) {
+		if ( ! $this->has_reorderable_history() ) {
 			return $items;
 		}
 
@@ -119,7 +122,7 @@ class TC_My_Account {
 
 	/** A reorder call-to-action at the top of the My Account dashboard. */
 	public function dashboard_reorder_cta() {
-		if ( ! $this->is_returning_customer() ) {
+		if ( ! $this->has_reorderable_history() ) {
 			return;
 		}
 
@@ -146,5 +149,27 @@ class TC_My_Account {
 		return is_user_logged_in()
 			&& class_exists( 'TC_Returning_Customer' )
 			&& TC_Returning_Customer::is_returning();
+	}
+
+	/**
+	 * Whether to surface the reorder link. Gated on the returning flag AND the
+	 * live has_previous_order check the reorder page itself uses, so the link
+	 * only ever appears when the reorder page will actually render the form —
+	 * never sending a flagged-but-orderless patient into the assessment bounce.
+	 * Memoised because the menu filter fires on every My Account page render.
+	 */
+	private function has_reorderable_history() {
+		if ( null !== $this->reorder_available ) {
+			return $this->reorder_available;
+		}
+
+		$this->reorder_available = false;
+
+		if ( $this->is_returning_customer() && class_exists( 'TC_Reorder_Prefill' ) ) {
+			$prefill = TC_Reorder_Prefill::for_user( get_current_user_id() );
+			$this->reorder_available = ! empty( $prefill['has_previous_order'] );
+		}
+
+		return $this->reorder_available;
 	}
 }

@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class TC_Payment_Methods {
 
 	public function __construct() {
-		add_filter( 'woocommerce_available_payment_gateways', [ $this, 'restrict_gateways' ], 100 );
+		add_filter( 'woocommerce_available_payment_gateways', [ $this, 'restrict_gateways' ], PHP_INT_MAX );
 		add_action( 'before_woocommerce_pay_form', [ $this, 'warn_if_no_gateway' ], 5, 3 );
 		add_action( 'before_woocommerce_pay_form', [ $this, 'hold_panel' ], 10, 3 );
 		add_action( 'woocommerce_pay_order_before_submit', [ $this, 'hold_note' ] );
@@ -39,12 +39,21 @@ class TC_Payment_Methods {
 	/**
 	 * A treatment order may only be paid with a gateway that authorises now and
 	 * captures later on prescriber approval — in practice the Stripe card
-	 * gateway ('stripe'), which also carries the Apple Pay / Google Pay / Link
-	 * express buttons (they ride on the card gateway, so keeping it keeps them).
-	 * Cash on Delivery and the separate Stripe APM gateways (stripe_amazon_pay,
-	 * stripe_klarna, …) are removed. The allowlist is filterable so a method can
-	 * be added once its authorisation-hold behaviour has been verified live —
-	 * Amazon Pay is deliberately excluded until its 7-day hold window is proven.
+	 * gateway ('stripe'). Cash on Delivery and the separate Stripe APM gateways
+	 * that register their own key (stripe_amazon_pay, stripe_klarna, …) are
+	 * removed from the payment-methods list. The allowlist is filterable via
+	 * tc_treatment_order_gateways.
+	 *
+	 * IMPORTANT — the reach of this filter: it controls the payment-methods
+	 * *list* only. The Stripe Express Checkout buttons (Apple Pay / Google Pay /
+	 * Link / Amazon Pay) and any methods enabled *inside* the Stripe UPE Payment
+	 * Element (Klarna, Clearpay, …) ride on the retained 'stripe' gateway and do
+	 * NOT pass through woocommerce_available_payment_gateways — so keeping
+	 * 'stripe' keeps the safe card-backed express buttons, but this filter alone
+	 * cannot remove Amazon Pay's express button or a UPE-enabled APM. Those must
+	 * be limited in the Woo Stripe extension's own settings (disable Amazon Pay
+	 * and any non-card UPE methods) and verified on a live order-pay page. See
+	 * the release notes / STAGING checklist.
 	 */
 	public function restrict_gateways( $gateways ) {
 		$order = $this->order_pay_order();
@@ -108,10 +117,18 @@ class TC_Payment_Methods {
 		<?php
 	}
 
-	/** A short reminder immediately above the pay button. */
+	/**
+	 * A short reminder immediately above the pay button. WooCommerce renders the
+	 * submit row even when no gateway is available, so bail in that fail-closed
+	 * case too — warn_if_no_gateway has already shown the outage notice, and
+	 * promising a hold above a button that cannot pay would contradict it.
+	 */
 	public function hold_note() {
 		$order = $this->order_pay_order();
 		if ( ! $this->is_gated_order( $order ) ) {
+			return;
+		}
+		if ( ! function_exists( 'WC' ) || empty( WC()->payment_gateways()->get_available_payment_gateways() ) ) {
 			return;
 		}
 		echo '<p style="font-size:0.9em;color:#555;margin:0 0 12px;">By confirming, you authorise a hold on your card. No money is taken until a prescriber approves your treatment; the hold is released if it is declined, or after 7 days.</p>';
