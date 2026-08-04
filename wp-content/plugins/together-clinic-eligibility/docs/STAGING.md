@@ -93,3 +93,20 @@ Re-enable by setting to `1`.
 - [ ] Block checkout page contains `<!-- wp:woocommerce/checkout -->`
 - [ ] Stripe webhook configured for `payment_intent.succeeded` / `payment_intent.payment_failed`
 - [ ] Plugin version header bumped on every release
+
+### Payment methods for treatment orders (authorise-at-submission)
+
+`TC_Payment_Methods` restricts an awaiting-review treatment order's order-pay
+page to the Stripe **card** gateway (`woocommerce_available_payment_gateways`
+allowlist `['stripe']`). That filter controls the payment-methods *list* only —
+it removes Cash on Delivery and any separate Stripe APM gateway. It **cannot**
+reach the Stripe Express Checkout buttons or methods enabled *inside* the Stripe
+UPE Payment Element, which ride on the retained `stripe` gateway. Lock those down
+in the extension and verify on a real order-pay page:
+
+- [ ] Stripe → **Transaction preferences**: "Issue an authorisation on checkout, and capture later" is ON (manual capture). Without it the card is charged immediately, before prescriber review.
+- [ ] Stripe → **Express checkouts**: **Amazon Pay disabled** (its authorisation hold window is not confirmed to be the 7 days the patient copy promises). Apple Pay / Google Pay / Link may stay — they are card-backed and honour manual capture.
+- [ ] Stripe → **Payment methods / UPE**: only **Card** enabled (no Klarna / Clearpay / Bancontact / iDEAL etc.) — non-card APMs rendered inside the Payment Element bypass the gateways allowlist and do not follow the capture-on-approval / void-on-rejection model.
+- [ ] **Verify live** on a real awaiting-review treatment order's order-pay URL: the only submit path is the card Payment Element; no Cash on Delivery; no Amazon Pay express button; the "This is an authorisation, not a payment" panel shows.
+- [ ] **End-to-end (test mode first):** submit → Stripe shows an *uncaptured* authorisation and the order note says the card was authorised; approve → order → processing → Stripe captures; a second run → reject → order → cancelled → Stripe voids the hold.
+- [ ] Confirm Cash on Delivery serves no purpose on this store — disable it globally, or rely on the treatment-order filter (it is removed there either way).
