@@ -21,6 +21,7 @@ class TC_Eligibility_Plugin {
 		TC_DB::maybe_upgrade();
 
 		TC_Review_Status::init();
+		TC_Review_Payment::init();
 
 		new TC_Review_Actions();
 		new TC_Review_Cron();

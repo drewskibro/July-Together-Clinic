@@ -55,15 +55,35 @@ class TC_Variation_Map {
 		update_option( self::OPTION_KEY, $clean, false );
 	}
 
+	/**
+	 * Alias → canonical treatment id. EXACT match only, never substring.
+	 *
+	 * Substring matching here caused the molecule-collision class of bug
+	 * (PLAYBOOK §2.1): "wegovy tablets" contains "wegovy", so an oral
+	 * product would silently inherit the injection's ladder, pricing and
+	 * reorder history. Same molecule in a different form is a DIFFERENT
+	 * treatment with its own id.
+	 *
+	 * The molecule aliases below exist only for historic payloads
+	 * (pre-2.x raw meta) written when injections were the only form.
+	 * Never add a molecule alias for a new treatment — give it its own
+	 * stable id and register that id here and in TC_Dose_Ladder.
+	 */
+	const TREATMENT_ALIASES = [
+		'wegovy'      => 'wegovy',
+		'mounjaro'    => 'mounjaro',
+		'semaglutide' => 'wegovy',   // legacy payloads only (injection era)
+		'tirzepatide' => 'mounjaro', // legacy payloads only (injection era)
+	];
+
 	public static function normalize_treatment( $treatment ) {
 		$treatment = strtolower( trim( (string) $treatment ) );
-		if ( strpos( $treatment, 'mounjaro' ) !== false || strpos( $treatment, 'tirzepatide' ) !== false ) {
-			return 'mounjaro';
-		}
-		if ( strpos( $treatment, 'wegovy' ) !== false || strpos( $treatment, 'semaglutide' ) !== false ) {
-			return 'wegovy';
-		}
-		return $treatment;
+		$aliases   = apply_filters( 'tc_treatment_aliases', self::TREATMENT_ALIASES );
+
+		// Exact match only. Unknown values pass through unchanged and fail
+		// safe downstream: ladder() returns [], get_variation_id() returns 0,
+		// so nothing can be sold or dose-laddered against the wrong product.
+		return isset( $aliases[ $treatment ] ) ? $aliases[ $treatment ] : $treatment;
 	}
 
 	public static function normalize_dose( $dose ) {

@@ -203,6 +203,11 @@ class TC_Ajax {
 				// Decode entities (&pound; etc): the JS renders this via textContent.
 				? html_entity_decode( wp_strip_all_tags( wc_price( $order->get_total() ) ), ENT_QUOTES, 'UTF-8' )
 				: '',
+			// Phase 2.5 (authorise-at-submission): the wizard redirects here so
+			// the patient authorises their card immediately. Manual capture is
+			// enabled on the gateway, so this holds funds without charging;
+			// the prescriber's approval captures, rejection releases.
+			'pay_url'        => ( $order_id && ! is_wp_error( $order ) ) ? $order->get_checkout_payment_url() : '',
 			'nonce'          => wp_create_nonce( self::NONCE_ACTION ),
 		] );
 	}
