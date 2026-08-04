@@ -844,6 +844,15 @@
 			if (data.nonce) cfg.nonce = data.nonce;
 			setCookie(state.assessmentId);
 
+			// Phase 2.5 (authorise-at-submission): send the patient straight to
+			// the secure order-pay page. The card is authorised there, not
+			// charged — capture happens only on prescriber approval. Keep
+			// isSubmitting true so a slow navigation can't double-submit.
+			if (data.pay_url) {
+				window.location.href = data.pay_url;
+				return;
+			}
+
 			$('confirmed-name').textContent = state.userData.firstName || '';
 			$('confirmed-email').textContent = state.userData.email || '';
 			updateConfirmedTreatmentBanner(data);
