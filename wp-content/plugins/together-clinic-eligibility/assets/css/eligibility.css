@@ -1,0 +1,909 @@
+.tc-eligibility * {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.tc-eligibility {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+	color: #374151;
+	background-color: #fdf8f4;
+	padding-bottom: 40px;
+}
+
+.tc-eligibility .tc-container {
+	max-width: 672px;
+	margin: 0 auto;
+	padding: 16px 24px 40px;
+}
+
+.tc-eligibility .progress-section {
+	margin-bottom: 32px;
+}
+
+.tc-eligibility .progress-bar-container {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 32px;
+}
+
+.tc-eligibility .progress-percentage {
+	color: #111827;
+	font-size: 14px;
+	font-weight: bold;
+	min-width: 35px;
+}
+
+.tc-eligibility .progress-bar {
+	flex: 1;
+	height: 4px;
+	background: #e5e7eb;
+	border-radius: 9999px;
+	overflow: hidden;
+}
+
+.tc-eligibility .progress-fill {
+	height: 100%;
+	background: #111827;
+	transition: width 0.3s ease;
+}
+
+.tc-eligibility .screen {
+	display: none;
+}
+
+.tc-eligibility .screen.active {
+	display: block;
+}
+
+.tc-eligibility h1,
+.tc-eligibility h2 {
+	color: #111827;
+	font-weight: 600;
+}
+
+.tc-eligibility h1 {
+	font-size: 28px;
+	margin-bottom: 32px;
+	line-height: 1.2;
+}
+
+.tc-eligibility h2 {
+	font-size: 24px;
+	margin-bottom: 24px;
+	line-height: 1.2;
+}
+
+.tc-eligibility h3 {
+	font-size: 18px;
+	font-weight: 600;
+	color: #111827;
+	margin-bottom: 12px;
+}
+
+.tc-eligibility p {
+	font-size: 15px;
+	line-height: 1.6;
+	color: #6b7280;
+	margin-bottom: 24px;
+}
+
+.tc-eligibility .checkbox-group {
+	background: white;
+	border: 2px solid #e5e7eb;
+	border-radius: 12px;
+	padding: 24px;
+	margin-bottom: 32px;
+}
+
+.tc-eligibility .checkbox-item {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 16px;
+	cursor: pointer;
+}
+
+.tc-eligibility .checkbox-item:last-child {
+	margin-bottom: 0;
+}
+
+.tc-eligibility .checkbox-item input[type="checkbox"] {
+	width: 20px;
+	height: 20px;
+	accent-color: #8e88d0;
+	cursor: pointer;
+	flex-shrink: 0;
+	margin-top: 4px;
+}
+
+.tc-eligibility .checkbox-item label,
+.tc-eligibility .checkbox-item span {
+	flex: 1;
+	cursor: pointer;
+	font-size: 15px;
+	line-height: 1.6;
+	color: #374151;
+}
+
+.tc-eligibility .button {
+	display: inline-block;
+	padding: 16px 48px;
+	border-radius: 8px;
+	font-size: 16px;
+	font-weight: 600;
+	border: none;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	text-decoration: none;
+	text-align: center;
+}
+
+.tc-eligibility .button-primary {
+	background-color: #8e88d0;
+	color: white;
+	width: 100%;
+}
+
+.tc-eligibility .button-primary:hover:not(:disabled) {
+	background-color: #7a74be;
+}
+
+.tc-eligibility .button-primary:disabled {
+	background-color: #e5e7eb;
+	color: #9ca3af;
+	cursor: not-allowed;
+}
+
+.tc-eligibility .button-secondary {
+	background-color: white;
+	color: #374151;
+	border: 2px solid #e5e7eb;
+	width: 100%;
+}
+
+.tc-eligibility .button-secondary:hover {
+	border-color: #8e88d0;
+	color: #8e88d0;
+}
+
+.tc-eligibility .button-group {
+	display: flex;
+	gap: 16px;
+	margin-top: 24px;
+}
+
+.tc-eligibility .button-group .button-secondary {
+	flex: 0 0 auto;
+	width: auto;
+	padding: 16px 48px;
+}
+
+.tc-eligibility .button-group .button-primary {
+	flex: 1;
+}
+
+.tc-eligibility .radio-group,
+.tc-eligibility .checkbox-group-form {
+	margin-bottom: 24px;
+}
+
+.tc-eligibility .radio-item,
+.tc-eligibility .checkbox-form-item {
+	display: block;
+	background: white;
+	border: 2px solid #e5e7eb;
+	border-radius: 12px;
+	padding: 20px;
+	margin-bottom: 12px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.tc-eligibility .radio-item:hover,
+.tc-eligibility .checkbox-form-item:hover {
+	border-color: #8e88d0;
+}
+
+.tc-eligibility .pathway-card {
+	display: block;
+	width: 100%;
+	background: white;
+	border: 2px solid #8e88d0;
+	border-radius: 12px;
+	padding: 28px 24px;
+	margin-bottom: 16px;
+	cursor: pointer;
+	text-align: left;
+	transition: all 0.2s ease;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.tc-eligibility .pathway-card:hover {
+	border-color: #7b74c4;
+	box-shadow: 0 4px 12px rgba(142, 136, 208, 0.2);
+	transform: translateY(-1px);
+}
+
+.tc-eligibility .pathway-icon {
+	width: 44px;
+	height: 44px;
+	border-radius: 10px;
+	background: #ededf8;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 16px;
+	color: #8e88d0;
+}
+
+.tc-eligibility .pathway-title {
+	display: block;
+	font-size: 17px;
+	font-weight: 700;
+	color: #111827;
+	margin-bottom: 4px;
+}
+
+.tc-eligibility .pathway-subtitle {
+	display: block;
+	font-size: 14px;
+	color: #8e88d0;
+}
+
+.tc-eligibility .radio-item input[type="radio"],
+.tc-eligibility .checkbox-form-item input[type="checkbox"] {
+	margin-right: 12px;
+	accent-color: #8e88d0;
+	cursor: pointer;
+}
+
+.tc-eligibility .form-group {
+	margin-bottom: 20px;
+}
+
+.tc-eligibility .form-label {
+	display: block;
+	color: #374151;
+	font-weight: 600;
+	margin-bottom: 8px;
+	font-size: 14px;
+}
+
+.tc-eligibility .form-input,
+.tc-eligibility .form-textarea,
+.tc-eligibility .form-select {
+	width: 100%;
+	padding: 16px;
+	border: 2px solid #e5e7eb;
+	border-radius: 12px;
+	font-size: 14px;
+	font-family: inherit;
+	transition: border-color 0.2s ease;
+}
+
+.tc-eligibility .form-input:focus,
+.tc-eligibility .form-textarea:focus,
+.tc-eligibility .form-select:focus {
+	outline: none;
+	border-color: #8e88d0;
+}
+
+.tc-eligibility .form-textarea {
+	resize: vertical;
+	min-height: 150px;
+}
+
+.tc-eligibility .form-grid-2 {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+}
+
+.tc-eligibility .error-message {
+	color: #dc2626;
+	font-size: 14px;
+	margin-bottom: 16px;
+}
+
+.tc-eligibility .testimonial-box {
+	background: #ebe9f8;
+	border-radius: 16px;
+	padding: 24px;
+	margin-top: 32px;
+}
+
+.tc-eligibility .testimonial-header {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 16px;
+}
+
+.tc-eligibility .testimonial-name {
+	color: #111827;
+	font-weight: bold;
+	font-size: 15px;
+}
+
+.tc-eligibility .stars {
+	display: flex;
+	gap: 2px;
+	margin-top: 4px;
+}
+
+.tc-eligibility .star {
+	color: #fbbf24;
+}
+
+.tc-eligibility .testimonial-text {
+	color: #374151;
+	font-size: 15px;
+	line-height: 1.6;
+	font-style: italic;
+}
+
+.tc-eligibility .info-box {
+	background-color: #f9fafb;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	padding: 16px;
+	margin-bottom: 24px;
+	font-size: 14px;
+}
+
+.tc-eligibility .info-label {
+	color: #6b7280;
+	font-size: 12px;
+	margin-bottom: 4px;
+}
+
+.tc-eligibility .ineligible-screen {
+	text-align: center;
+}
+
+.tc-eligibility .ineligible-icon {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background-color: #fee2e2;
+	color: #dc2626;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 40px;
+	font-weight: bold;
+	margin: 0 auto 24px;
+}
+
+.tc-eligibility .two-col-buttons {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	margin-bottom: 24px;
+}
+
+.tc-eligibility .two-col-buttons .button {
+	width: 100%;
+	padding: 24px 16px;
+	font-weight: 600;
+}
+
+.tc-eligibility .unit-selector {
+	display: flex;
+	gap: 16px;
+	margin-bottom: 16px;
+}
+
+.tc-eligibility .unit-option {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+}
+
+.tc-eligibility .unit-option input[type="radio"] {
+	accent-color: #8e88d0;
+}
+
+.tc-eligibility .grid-input-group {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 16px;
+}
+
+.tc-eligibility .grid-input-group > div {
+	flex: 1;
+}
+
+.tc-eligibility .confirmed-screen {
+	text-align: center;
+}
+
+.tc-eligibility .confirmed-success-icon {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #8e88d0, #6d67b8);
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto 24px;
+	box-shadow: 0 8px 24px rgba(142, 136, 208, 0.35);
+}
+
+.tc-eligibility .confirmed-treatment-banner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+	border: 1px solid #ddd6fe;
+	border-radius: 14px;
+	padding: 16px 20px;
+	margin-bottom: 24px;
+	text-align: left;
+}
+
+.tc-eligibility .confirmed-treatment-name {
+	font-size: 17px;
+	font-weight: 700;
+	color: #1f1f2e;
+}
+
+.tc-eligibility .confirmed-treatment-price {
+	font-size: 13px;
+	color: #7c6fcd;
+	font-weight: 600;
+	margin-top: 2px;
+}
+
+.tc-eligibility .confirmed-treatment-badge {
+	background: #8e88d0;
+	color: white;
+	font-size: 11px;
+	font-weight: 700;
+	padding: 5px 12px;
+	border-radius: 9999px;
+}
+
+.tc-eligibility .confirmed-contact-box {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	background: #f9fafb;
+	border: 1px solid #e5e7eb;
+	border-radius: 10px;
+	padding: 14px 18px;
+	margin-top: 24px;
+	text-align: left;
+}
+
+.tc-eligibility .confirmed-contact-box a {
+	color: #8e88d0;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.tc-eligibility .dob-identity-card {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+	border: 1px solid #ddd6fe;
+	border-radius: 14px;
+	padding: 16px 20px;
+	margin-bottom: 24px;
+}
+
+.tc-eligibility .dob-identity-avatar {
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background-color: #8e88d0;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 18px;
+	font-weight: 700;
+	flex-shrink: 0;
+}
+
+.tc-eligibility .dob-identity-label {
+	font-size: 11px;
+	font-weight: 600;
+	color: #7c6fcd;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin-bottom: 3px;
+}
+
+.tc-eligibility .dob-identity-value {
+	font-size: 15px;
+	font-weight: 600;
+	color: #1f1f2e;
+}
+
+.tc-eligibility .dob-identity-email {
+	font-size: 13px;
+	color: #6b7280;
+	margin-top: 2px;
+}
+
+.tc-eligibility .dob-trust-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	color: #6b7280;
+	margin-top: 12px;
+	padding: 10px 14px;
+	background: #f9fafb;
+	border-radius: 8px;
+	border: 1px solid #e5e7eb;
+}
+
+.tc-eligibility .treatment-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	margin-bottom: 16px;
+}
+
+.tc-eligibility .treatment-card {
+	background: white;
+	border: 2px solid #e5e7eb;
+	border-radius: 16px;
+	padding: 24px;
+	text-align: left;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	margin-bottom: 0;
+}
+
+.tc-eligibility .treatment-card.selected {
+	border-color: #8e88d0;
+	border-width: 3px;
+	box-shadow: 0 10px 15px -3px rgba(142, 136, 208, 0.1);
+}
+
+.tc-eligibility .treatment-card:hover {
+	border-color: #c5c1e8;
+	box-shadow: 0 4px 8px -2px rgba(142, 136, 208, 0.1);
+}
+
+.tc-eligibility .treatment-card.selected:hover {
+	border-color: #8e88d0;
+}
+
+.tc-eligibility .treatment-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: start;
+	margin-bottom: 12px;
+}
+
+.tc-eligibility .treatment-title {
+	font-size: 20px;
+	font-weight: 600;
+	color: #111827;
+}
+
+.tc-eligibility .treatment-tag {
+	background-color: #ebe9f8;
+	color: #8e88d0;
+	font-size: 11px;
+	font-weight: 600;
+	padding: 6px 12px;
+	border-radius: 9999px;
+}
+
+.tc-eligibility .treatment-price {
+	font-size: 22px;
+	font-weight: bold;
+	color: #111827;
+	margin-bottom: 4px;
+}
+
+.tc-eligibility .treatment-price-note {
+	font-size: 13px;
+	color: #6b7280;
+	margin-bottom: 12px;
+}
+
+.tc-eligibility .treatment-image {
+	text-align: center;
+	margin: 12px 0;
+	height: 140px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #f9fafb;
+	border-radius: 8px;
+	color: #9ca3af;
+	font-size: 14px;
+}
+
+.tc-eligibility .treatment-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	border-radius: 6px;
+}
+
+.tc-eligibility .treatment-description {
+	color: #6b7280;
+	font-size: 13px;
+	margin-bottom: 16px;
+	line-height: 1.5;
+}
+
+.tc-eligibility .treatment-benefits {
+	list-style: none;
+	margin-bottom: 0;
+	padding: 0;
+}
+
+.tc-eligibility .treatment-benefit {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 8px;
+	font-size: 13px;
+	color: #374151;
+}
+
+.tc-eligibility .benefit-icon {
+	width: 20px;
+	height: 20px;
+	color: #8e88d0;
+	flex-shrink: 0;
+	margin-top: 2px;
+}
+
+.tc-eligibility .security-badge {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #9ca3af;
+	font-size: 14px;
+	margin-bottom: 24px;
+}
+
+.tc-eligibility .security-icon {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+}
+
+.tc-eligibility .gender-buttons {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	margin-bottom: 24px;
+}
+
+.tc-eligibility .gender-buttons .button {
+	width: 100%;
+	padding: 24px;
+	background: white;
+	color: #374151;
+	border: 2px solid #e5e7eb;
+	font-weight: 600;
+}
+
+.tc-eligibility .gender-buttons .button:hover {
+	border-color: #8e88d0;
+	background-color: #8e88d0;
+	color: white;
+}
+
+.tc-eligibility .radio-button-group {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	margin-bottom: 24px;
+}
+
+.tc-eligibility .radio-button input[type="radio"] {
+	display: none;
+}
+
+.tc-eligibility .radio-button-label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	border: 2px solid #e5e7eb;
+	border-radius: 12px;
+	padding: 20px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-weight: 600;
+	background: white;
+}
+
+.tc-eligibility .radio-button input[type="radio"]:checked + .radio-button-label,
+.tc-eligibility .radio-button-label.is-selected {
+	border-color: #8e88d0;
+	background-color: #8e88d0;
+	color: white;
+}
+
+.tc-eligibility .screening-question {
+	margin-bottom: 32px;
+}
+
+.tc-eligibility .bmi-result-card {
+	display: flex;
+	background: #f9fafb;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	overflow: hidden;
+	margin-bottom: 20px;
+}
+
+.tc-eligibility .bmi-result-accent {
+	width: 5px;
+	background: #8e88d0;
+	flex-shrink: 0;
+}
+
+.tc-eligibility .bmi-result-content {
+	padding: 24px 28px;
+	flex: 1;
+}
+
+.tc-eligibility .bmi-number {
+	font-size: 52px;
+	font-weight: 800;
+	color: #111827;
+	margin: 4px 0;
+	line-height: 1.1;
+}
+
+.tc-eligibility .bmi-category-label {
+	font-size: 14px;
+	color: #8e88d0;
+	font-weight: 600;
+	margin: 0;
+}
+
+.tc-eligibility .bmi-next-steps {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	background: #f0eef9;
+	border-radius: 10px;
+	padding: 16px 20px;
+	margin-bottom: 24px;
+}
+
+.tc-eligibility .bmi-next-icon {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	color: #8e88d0;
+}
+
+.tc-eligibility .bmi-next-text {
+	font-size: 14px;
+	color: #374151;
+	line-height: 1.5;
+	margin: 0;
+	padding-top: 6px;
+}
+
+.tc-eligibility .success-timeline {
+	background-color: #f9fafb;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	padding: 20px;
+	margin-bottom: 24px;
+	text-align: left;
+}
+
+.tc-eligibility .timeline-item {
+	display: flex;
+	gap: 16px;
+	margin-bottom: 16px;
+}
+
+.tc-eligibility .timeline-item:last-child {
+	margin-bottom: 0;
+}
+
+.tc-eligibility .timeline-number {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background-color: #8e88d0;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 600;
+	font-size: 14px;
+	flex-shrink: 0;
+}
+
+.tc-eligibility .timeline-title {
+	font-weight: 600;
+	color: #111827;
+	font-size: 14px;
+}
+
+.tc-eligibility .timeline-desc {
+	color: #6b7280;
+	font-size: 14px;
+	margin-top: 4px;
+}
+
+.tc-eligibility .dob-inputs {
+	display: grid;
+	grid-template-columns: 80px 80px 120px;
+	gap: 12px;
+}
+
+.tc-eligibility .dob-input {
+	text-align: center;
+	font-size: 18px;
+	font-weight: 600;
+	letter-spacing: 1px;
+}
+
+.tc-eligibility .powered-by-footer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 32px 24px;
+	width: 100%;
+}
+
+.tc-eligibility .powered-by-label {
+	display: block;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 1.5px;
+	color: #6b7280;
+	margin-bottom: 12px;
+	text-align: center;
+}
+
+.tc-eligibility .powered-by-img {
+	display: block;
+	height: 48px;
+	width: auto;
+	margin: 0 auto;
+}
+
+.tc-eligibility .is-loading {
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+.tc-eligibility-cta {
+	display: inline-block;
+	padding: 16px 32px;
+	background-color: #8e88d0;
+	color: white;
+	text-decoration: none;
+	border-radius: 9999px;
+	font-weight: 600;
+	font-size: 16px;
+	transition: background-color 0.2s ease;
+}
+
+.tc-eligibility-cta:hover,
+.tc-eligibility-cta:focus {
+	background-color: #7a74be;
+	color: white;
+	text-decoration: none;
+}
