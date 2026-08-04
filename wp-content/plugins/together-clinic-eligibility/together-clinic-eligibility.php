@@ -3,7 +3,7 @@
  * Plugin Name:       Together Clinic Eligibility Checker
  * Plugin URI:        https://togetherclinic.co.uk/
  * Description:       Multi-step weight-loss eligibility assessment with WooCommerce checkout integration (block + classic), patient and clinician notifications, and full audit trail.
- * Version:           2.1.0
+ * Version:           2.2.0
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Author:            Together Clinic
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TC_ELIGIBILITY_VERSION', '2.1.0' );
+define( 'TC_ELIGIBILITY_VERSION', '2.2.0' );
 define( 'TC_ELIGIBILITY_FILE', __FILE__ );
 define( 'TC_ELIGIBILITY_PATH', plugin_dir_path( __FILE__ ) );
 define( 'TC_ELIGIBILITY_URL', plugin_dir_url( __FILE__ ) );
@@ -43,6 +43,7 @@ require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-my-account.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-ajax.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-checkout.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-checkout-blocks.php';
+require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-payment-methods.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-order-admin.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-settings.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-account.php';
