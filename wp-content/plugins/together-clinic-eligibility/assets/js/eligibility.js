@@ -819,9 +819,9 @@
 		var w = $('wegovy-card');
 		var m = $('mounjaro-card');
 		var t = $('wegovy-tablets-card');
-		if (w) w.classList.toggle('selected', state.selectedTreatment === 'wegovy');
-		if (m) m.classList.toggle('selected', state.selectedTreatment === 'mounjaro');
-		if (t) t.classList.toggle('selected', state.selectedTreatment === 'wegovy-tablets');
+		if (w) { var wOn = state.selectedTreatment === 'wegovy';         w.classList.toggle('selected', wOn); w.setAttribute('aria-pressed', String(wOn)); }
+		if (m) { var mOn = state.selectedTreatment === 'mounjaro';       m.classList.toggle('selected', mOn); m.setAttribute('aria-pressed', String(mOn)); }
+		if (t) { var tOn = state.selectedTreatment === 'wegovy-tablets'; t.classList.toggle('selected', tOn); t.setAttribute('aria-pressed', String(tOn)); }
 	}
 
 	function updateSubmitButton() {
