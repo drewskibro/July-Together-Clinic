@@ -225,7 +225,7 @@ class TC_Eligibility_Plugin {
 			'assets'          => [
 				'wegovy'         => TC_ELIGIBILITY_URL . 'assets/img/wegovy.jpg',
 				'mounjaro'       => TC_ELIGIBILITY_URL . 'assets/img/mounjaro.png',
-				'wegovy-tablets' => TC_ELIGIBILITY_URL . 'assets/img/wegovy-tablets.jpg',
+				'wegovy-tablets' => TC_ELIGIBILITY_URL . 'assets/img/wegovy-tablets.png',
 			],
 		] );
 	}
