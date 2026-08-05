@@ -583,43 +583,61 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			</div>
 			<h2 style="text-align:center;margin:32px 0 16px;">Choose Your Treatment</h2>
 			<p style="text-align:center;margin-bottom:24px;">Select the medication that works best for you</p>
-			<div class="treatment-grid">
-				<button class="treatment-card" id="wegovy-card" data-action="select-treatment" data-value="wegovy">
-					<div class="treatment-header"><div class="treatment-title">Wegovy</div></div>
-					<div class="treatment-price">&pound;109<span style="font-size:14px;color:#6b7280;">/month</span></div>
-					<p class="treatment-price-note">Starting dose (0.25mg)</p>
+			<div class="treatment-grid" role="group" aria-label="Choose your treatment">
+				<button type="button" class="treatment-card" id="wegovy-card" data-action="select-treatment" data-value="wegovy" aria-pressed="false">
+					<span class="treatment-selected-pill" aria-hidden="true"><svg class="tsp-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg>Selected</span>
+					<div class="treatment-spec">
+						<div class="treatment-header">
+							<span class="treatment-title">Wegovy</span>
+							<span class="tc-radio" aria-hidden="true"><svg class="tc-radio-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg></span>
+						</div>
+						<div class="treatment-price">&pound;109<span class="treatment-price-unit">/month</span></div>
+						<p class="treatment-price-note">Starting dose (0.25mg)</p>
+					</div>
 					<div class="treatment-image"><img src="<?php echo esc_url( $wegovy_img ); ?>" alt="Wegovy injection pen" /></div>
 					<p class="treatment-description">Clinically proven semaglutide injection for significant weight loss</p>
 					<ul class="treatment-benefits">
-						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Average 15% weight loss</li>
-						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Once-weekly injection</li>
-						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA approved</li>
+						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Average 15% weight loss</li>
+						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Once-weekly injection</li>
+						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA approved</li>
 					</ul>
 				</button>
-				<button class="treatment-card" id="mounjaro-card" data-action="select-treatment" data-value="mounjaro">
-					<div class="treatment-header"><div class="treatment-title">Mounjaro</div></div>
-					<div class="treatment-price">&pound;159<span style="font-size:14px;color:#6b7280;">/month</span></div>
-					<p class="treatment-price-note">Starting dose (2.5mg)</p>
+				<button type="button" class="treatment-card" id="mounjaro-card" data-action="select-treatment" data-value="mounjaro" aria-pressed="false">
+					<span class="treatment-selected-pill" aria-hidden="true"><svg class="tsp-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg>Selected</span>
+					<div class="treatment-spec">
+						<div class="treatment-header">
+							<span class="treatment-title">Mounjaro</span>
+							<span class="tc-radio" aria-hidden="true"><svg class="tc-radio-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg></span>
+						</div>
+						<div class="treatment-price">&pound;159<span class="treatment-price-unit">/month</span></div>
+						<p class="treatment-price-note">Starting dose (2.5mg)</p>
+					</div>
 					<div class="treatment-image"><img src="<?php echo esc_url( $mounjaro_img ); ?>" alt="Mounjaro injection pen" /></div>
 					<p class="treatment-description">Dual-action tirzepatide formula for maximum weight loss results</p>
 					<ul class="treatment-benefits">
-						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Average 20% weight loss</li>
-						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Once-weekly injection</li>
-						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA approved</li>
+						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Average 20% weight loss</li>
+						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Once-weekly injection</li>
+						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA approved</li>
 					</ul>
 				</button>
-				<button class="treatment-card" id="wegovy-tablets-card" data-action="select-treatment" data-value="wegovy-tablets">
-					<div class="treatment-header"><div class="treatment-title">Wegovy Tablets</div></div>
-					<div class="treatment-price">&pound;99<span style="font-size:14px;color:#6b7280;">/month</span></div>
-					<p class="treatment-price-note">Starting dose (1.5mg)</p>
+				<button type="button" class="treatment-card" id="wegovy-tablets-card" data-action="select-treatment" data-value="wegovy-tablets" aria-pressed="false">
+					<span class="treatment-selected-pill" aria-hidden="true"><svg class="tsp-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg>Selected</span>
+					<div class="treatment-spec">
+						<div class="treatment-header">
+							<span class="treatment-title">Wegovy Tablets</span>
+							<span class="tc-radio" aria-hidden="true"><svg class="tc-radio-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg></span>
+						</div>
+						<div class="treatment-price">&pound;99<span class="treatment-price-unit">/month</span></div>
+						<p class="treatment-price-note">Starting dose (1.5mg)</p>
+					</div>
 					<div class="treatment-image"><img src="<?php echo esc_url( $wegovy_tablets_img ); ?>" alt="Wegovy tablets pack" onerror="this.style.display='none'" /></div>
 					<p class="treatment-description">Oral semaglutide &mdash; the same active ingredient as Wegovy injections, taken as a daily tablet instead of a weekly injection.</p>
 					<ul class="treatment-benefits">
-						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>No needles &mdash; one tablet a day</li>
-						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Same active ingredient (semaglutide)</li>
-						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Reviewed by a prescriber before dispatch</li>
+						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>No needles &mdash; one tablet a day</li>
+						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Same active ingredient (semaglutide)</li>
+						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Reviewed by a prescriber before dispatch</li>
 					</ul>
-					<p class="treatment-price-note" style="margin-top:12px;line-height:1.5;">Take one tablet on an empty stomach with a small sip of water, at least 30 minutes before eating, drinking, or taking any other medicines.</p>
+					<p class="treatment-admin-note">Take one tablet on an empty stomach with a small sip of water, at least 30 minutes before eating, drinking, or taking any other medicines.</p>
 				</button>
 			</div>
 			<div class="success-timeline">
