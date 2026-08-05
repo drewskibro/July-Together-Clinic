@@ -48,10 +48,21 @@ class TC_Order_Admin {
 		$status = $order->get_status();
 
 		if ( $status === TC_Review_Status::STATUS ) {
+			if ( class_exists( 'TC_Review_Payment' ) && TC_Review_Payment::is_authorised_uncaptured( $order ) ) {
+				?>
+				<div style="background:#ecfdf5;border-left:4px solid #10b981;padding:12px 16px;margin:16px 0;clear:both;">
+					<strong>Awaiting prescriber review &mdash; card authorised, funds held, nothing captured.</strong>
+					<p style="margin:8px 0 0;">Use the <em>Order actions</em> box: <strong>Approve &amp; capture the authorised payment</strong> (takes the held funds) or <strong>Reject &amp; release the payment hold</strong> (no money is ever taken).
+					Authorisations expire 7 days after the patient paid &mdash; approve or reject before then. If a capture fails, the order falls back to the emailed payment link automatically.</p>
+				</div>
+				<?php
+				return;
+			}
 			?>
 			<div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:12px 16px;margin:16px 0;clear:both;">
 				<strong>Awaiting prescriber review &mdash; no payment has been taken.</strong>
-				<p style="margin:8px 0 0;">Use the <em>Order actions</em> box: <strong>Approve &amp; send payment link</strong> or <strong>Reject &amp; cancel</strong>.
+				<p style="margin:8px 0 0;">The patient has not (yet) authorised their card &mdash; they may still be on the payment page, or they abandoned it.
+				Use the <em>Order actions</em> box: <strong>Approve &amp; send payment link</strong> or <strong>Reject &amp; cancel</strong>.
 				To adjust the dose first, edit the line item above (pencil icon), recalculate, click Update, then approve &mdash; the payment link always charges the order's current total.</p>
 			</div>
 			<?php
