@@ -546,9 +546,17 @@
 
 .tc-eligibility .treatment-grid {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: repeat(3, 1fr);
 	gap: 16px;
 	margin-bottom: 16px;
+}
+
+/* Stack the treatment cards on narrow screens so three options never sit
+   cramped side by side. Above this they render three-up in one row. */
+@media (max-width: 768px) {
+	.tc-eligibility .treatment-grid {
+		grid-template-columns: 1fr;
+	}
 }
 
 .tc-eligibility .treatment-card {
