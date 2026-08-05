@@ -612,7 +612,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 					<div class="treatment-header"><div class="treatment-title">Wegovy Tablets</div></div>
 					<div class="treatment-price">&pound;99<span style="font-size:14px;color:#6b7280;">/month</span></div>
 					<p class="treatment-price-note">Starting dose (1.5mg)</p>
-					<div class="treatment-image"><img src="<?php echo esc_url( $wegovy_tablets_img ); ?>" alt="Wegovy tablets pack" /></div>
+					<div class="treatment-image"><img src="<?php echo esc_url( $wegovy_tablets_img ); ?>" alt="Wegovy tablets pack" onerror="this.style.display='none'" /></div>
 					<p class="treatment-description">Oral semaglutide &mdash; the same active ingredient as Wegovy injections, taken as a daily tablet instead of a weekly injection.</p>
 					<ul class="treatment-benefits">
 						<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>No needles &mdash; one tablet a day</li>
