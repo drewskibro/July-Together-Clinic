@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $wegovy_img         = TC_ELIGIBILITY_URL . 'assets/img/wegovy.jpg';
 $mounjaro_img       = TC_ELIGIBILITY_URL . 'assets/img/mounjaro.png';
-$wegovy_tablets_img = TC_ELIGIBILITY_URL . 'assets/img/wegovy-tablets.jpg';
+$wegovy_tablets_img = TC_ELIGIBILITY_URL . 'assets/img/wegovy-tablets.png';
 $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png';
 ?>
 <div class="tc-eligibility" id="tc-eligibility-root">
