@@ -17,6 +17,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! defined( 'TC_PAYMENTS_ALLOW_FAKE' ) ) {
 	define( 'TC_PAYMENTS_ALLOW_FAKE', true ); // opt the sandbox provider in
 }
+if ( ! defined( 'TC_MAGIC_LINK_SECRET' ) ) {
+	define( 'TC_MAGIC_LINK_SECRET', 'test-secret-for-harness-only' ); // token signing key
+}
 
 $base = __DIR__ . '/../includes/payments/';
 require $base . 'class-tc-payment-request.php';
@@ -30,6 +33,7 @@ require $base . 'interface-tc-hold-repository.php';
 require $base . 'class-tc-array-hold-repository.php';
 require $base . 'class-tc-payment-service.php';
 require $base . 'class-tc-price-book.php';
+require $base . 'class-tc-magic-link.php';
 
 $pass = 0;
 $fail = 0;
@@ -164,6 +168,28 @@ check( 'request_for returns null when unpriced (fail-closed, no £0 charge)', $p
 echo "\n— price book: completeness check —\n";
 $missing = TC_Price_Book::missing_for( [ 'wegovy' => [ '0.25mg', '1mg' ] ] );
 check( 'missing_for flags the unpriced rung only', $missing === [ 'wegovy 1mg' ] );
+
+echo "\n— magic link: issue + verify —\n";
+$tok = TC_Magic_Link::issue( 'sub-ml-1', TC_Magic_Link::PURPOSE_PAY, 3600, 1000 );
+check( 'a token is issued', $tok !== '' );
+check( 'verify returns the submission id', TC_Magic_Link::verify( $tok, TC_Magic_Link::PURPOSE_PAY, 1500 ) === 'sub-ml-1' );
+
+echo "\n— magic link: scope + tamper + expiry are all rejected —\n";
+check( 'wrong purpose is rejected', TC_Magic_Link::verify( $tok, TC_Magic_Link::PURPOSE_RESUME, 1500 ) === null );
+$tamperBody = ( $tok[0] === 'A' ? 'B' : 'A' ) . substr( $tok, 1 );
+check( 'a tampered payload is rejected (bad signature)', TC_Magic_Link::verify( $tamperBody, TC_Magic_Link::PURPOSE_PAY, 1500 ) === null );
+$tamperSig = substr( $tok, 0, -1 ) . ( substr( $tok, -1 ) === 'A' ? 'B' : 'A' );
+check( 'a tampered signature is rejected', TC_Magic_Link::verify( $tamperSig, TC_Magic_Link::PURPOSE_PAY, 1500 ) === null );
+check( 'an expired token is rejected', TC_Magic_Link::verify( $tok, TC_Magic_Link::PURPOSE_PAY, 99999 ) === null );
+check( 'garbage is rejected', TC_Magic_Link::verify( 'not.a.real.token', TC_Magic_Link::PURPOSE_PAY, 1500 ) === null );
+
+echo "\n— magic link: URL round-trip (pay from any device, no login) —\n";
+$url = TC_Magic_Link::url_for( 'https://togetherclinic.test/pay', 'sub-ml-2', TC_Magic_Link::PURPOSE_PAY );
+check( 'url_for embeds the token', strpos( $url, 'tc_token=' ) !== false );
+$qs = [];
+parse_str( (string) parse_url( $url, PHP_URL_QUERY ), $qs );
+$fromUrl = isset( $qs['tc_token'] ) ? TC_Magic_Link::verify( $qs['tc_token'], TC_Magic_Link::PURPOSE_PAY ) : null;
+check( 'the token from the link verifies back to the submission', $fromUrl === 'sub-ml-2' );
 
 echo "\n========================================\n";
 echo "  $pass passed, $fail failed\n";
