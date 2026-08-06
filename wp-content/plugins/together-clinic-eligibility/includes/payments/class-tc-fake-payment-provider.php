@@ -111,6 +111,14 @@ class TC_Fake_Payment_Provider implements TC_Payment_Provider {
 		return TC_Payment_Result::voided( $hold_ref, $state['amount_minor'], $state['currency'] );
 	}
 
+	public function retrieve( string $hold_ref ): TC_Payment_Result {
+		$state = $this->read( $hold_ref );
+		if ( ! $state ) {
+			return TC_Payment_Result::failed( 'not_found', 'No such hold.', 0, 'GBP' );
+		}
+		return $this->result_from_state( $state );
+	}
+
 	/** Persist state under both its idempotency key and its hold reference. */
 	private function persist( array $state ): void {
 		$this->write( $state['hold_ref'], $state );

@@ -61,4 +61,12 @@ interface TC_Payment_Provider {
 	 * first real adapter).
 	 */
 	public function void( string $hold_ref ): TC_Payment_Result;
+
+	/**
+	 * Fetch the current state of a hold straight from the provider —
+	 * reconciliation for after a client-side confirmation, or when a webhook is
+	 * delayed or missed. Returns the mapped current status, or FAILED if the hold
+	 * cannot be found.
+	 */
+	public function retrieve( string $hold_ref ): TC_Payment_Result;
 }

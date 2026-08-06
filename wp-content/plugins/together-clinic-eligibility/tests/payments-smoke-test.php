@@ -20,6 +20,9 @@ if ( ! defined( 'TC_PAYMENTS_ALLOW_FAKE' ) ) {
 if ( ! defined( 'TC_MAGIC_LINK_SECRET' ) ) {
 	define( 'TC_MAGIC_LINK_SECRET', 'test-secret-for-harness-only' ); // token signing key
 }
+if ( ! defined( 'TC_STRIPE_WEBHOOK_SECRET' ) ) {
+	define( 'TC_STRIPE_WEBHOOK_SECRET', 'whsec_test_harness_only' ); // webhook signing secret
+}
 
 $base = __DIR__ . '/../includes/payments/';
 require $base . 'class-tc-payment-request.php';
@@ -34,6 +37,7 @@ require $base . 'class-tc-array-hold-repository.php';
 require $base . 'class-tc-payment-service.php';
 require $base . 'class-tc-price-book.php';
 require $base . 'class-tc-magic-link.php';
+require $base . 'class-tc-stripe-payment-provider.php';
 
 $pass = 0;
 $fail = 0;
@@ -190,6 +194,42 @@ $qs = [];
 parse_str( (string) parse_url( $url, PHP_URL_QUERY ), $qs );
 $fromUrl = isset( $qs['tc_token'] ) ? TC_Magic_Link::verify( $qs['tc_token'], TC_Magic_Link::PURPOSE_PAY ) : null;
 check( 'the token from the link verifies back to the submission', $fromUrl === 'sub-ml-2' );
+
+echo "\n— provider retrieve (reconciliation) —\n";
+$reqR  = TC_Payment_Request::for_submission( 'sub-ret', 'mounjaro', '2.5mg', 15900, 'GBP' );
+$authR = $fake->authorize( $reqR );
+$got   = $fake->retrieve( $authR->hold_ref );
+check( 'retrieve returns the current state of a hold', $got->is_authorized() && $got->hold_ref === $authR->hold_ref );
+check( 'retrieve of an unknown hold FAILS cleanly', $fake->retrieve( 'nope' )->is_failed() );
+
+echo "\n— Stripe adapter: fail-closed without keys —\n";
+$stripe = new TC_Stripe_Payment_Provider();
+check( 'Stripe id is "stripe"', $stripe->id() === 'stripe' );
+check( 'Stripe is NOT configured without a secret key', $stripe->is_configured() === false );
+TC_Payment_Providers::register( $stripe );
+check( 'Stripe is registered', TC_Payment_Providers::get( 'stripe' ) instanceof TC_Stripe_Payment_Provider );
+check( 'unconfigured Stripe still resolves to the Null provider (fail-closed)', TC_Payment_Providers::active() instanceof TC_Null_Payment_Provider );
+
+echo "\n— Stripe adapter: webhook signature verification (no network) —\n";
+$whPayload = json_encode( [ 'type' => 'payment_intent.amount_capturable_updated', 'data' => [ 'object' => [ 'id' => 'pi_hook', 'amount' => 15900, 'currency' => 'gbp' ] ] ] );
+$whTs      = 1000;
+$whSig     = hash_hmac( 'sha256', $whTs . '.' . $whPayload, TC_STRIPE_WEBHOOK_SECRET );
+$whHeader  = 't=' . $whTs . ',v1=' . $whSig;
+check( 'a correctly-signed webhook verifies (within tolerance)', is_array( $stripe->verify_webhook( $whPayload, $whHeader, 1100, 300 ) ) );
+check( 'a stale webhook is rejected (replay protection)', $stripe->verify_webhook( $whPayload, $whHeader, 9000, 300 ) === null );
+$whTampered = 't=' . $whTs . ',v1=' . substr( $whSig, 0, -1 ) . ( substr( $whSig, -1 ) === 'a' ? 'b' : 'a' );
+check( 'a tampered webhook signature is rejected', $stripe->verify_webhook( $whPayload, $whTampered, 1100, 300 ) === null );
+
+echo "\n— Stripe adapter: webhook event → ledger status (no network) —\n";
+$ev = function ( $type ) {
+	return [ 'type' => $type, 'data' => [ 'object' => [ 'id' => 'pi_ev', 'amount' => 15900, 'amount_received' => 15900, 'currency' => 'gbp' ] ] ];
+};
+check( 'amount_capturable_updated → AUTHORIZED', $stripe->event_to_result( $ev( 'payment_intent.amount_capturable_updated' ) )->is_authorized() );
+check( 'succeeded → CAPTURED', $stripe->event_to_result( $ev( 'payment_intent.succeeded' ) )->is_captured() );
+check( 'canceled → VOIDED', $stripe->event_to_result( $ev( 'payment_intent.canceled' ) )->is_voided() );
+check( 'payment_failed → FAILED', $stripe->event_to_result( $ev( 'payment_intent.payment_failed' ) )->is_failed() );
+check( 'an event maps to the PaymentIntent id as hold_ref', $stripe->event_to_result( $ev( 'payment_intent.succeeded' ) )->hold_ref === 'pi_ev' );
+check( 'an unhandled event type is ignored (null)', $stripe->event_to_result( $ev( 'payment_intent.created' ) ) === null );
 
 echo "\n========================================\n";
 echo "  $pass passed, $fail failed\n";

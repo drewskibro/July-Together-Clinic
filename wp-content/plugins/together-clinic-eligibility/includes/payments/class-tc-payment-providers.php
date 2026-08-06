@@ -62,8 +62,9 @@ class TC_Payment_Providers {
 		return ! ( self::active() instanceof TC_Null_Payment_Provider );
 	}
 
-	/** Register the built-in providers. The Stripe adapter registers itself here once it exists. */
+	/** Register the built-in providers. Each stays inert until it's both configured and selected. */
 	public static function bootstrap(): void {
 		self::register( new TC_Fake_Payment_Provider() );
+		self::register( new TC_Stripe_Payment_Provider() );
 	}
 }

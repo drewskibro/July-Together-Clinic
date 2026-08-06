@@ -41,4 +41,8 @@ class TC_Null_Payment_Provider implements TC_Payment_Provider {
 	public function void( string $hold_ref ): TC_Payment_Result {
 		return TC_Payment_Result::failed( 'no_provider', 'No payment provider is configured.', 0, 'GBP' );
 	}
+
+	public function retrieve( string $hold_ref ): TC_Payment_Result {
+		return TC_Payment_Result::failed( 'no_provider', 'No payment provider is configured.', 0, 'GBP' );
+	}
 }
