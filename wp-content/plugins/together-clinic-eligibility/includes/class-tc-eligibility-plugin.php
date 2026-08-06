@@ -29,6 +29,7 @@ class TC_Eligibility_Plugin {
 		new TC_Checkout();
 		new TC_Checkout_Blocks();
 		new TC_Payment_Methods();
+		new TC_Change_Treatment();
 		new TC_Order_Admin();
 		new TC_Settings();
 		new TC_Cron();
