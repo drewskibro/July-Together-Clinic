@@ -151,6 +151,25 @@
 		});
 	}
 
+	// The assessment page HTML embeds the nonce (cfg.nonce), but that HTML can be
+	// served from the CDN cache — leaving the nonce stale or bound to another
+	// session, which fails the server's security check (seen most often when a
+	// logged-in user lands on a page cached while logged out). admin-ajax is never
+	// edge-cached, so pull a fresh nonce for THIS session and use it thereafter.
+	// Requesting a nonce needs no nonce: it is bound to the caller's own session
+	// and grants nothing on its own.
+	function refreshNonce() {
+		var url = (cfg.ajaxUrl || '/wp-admin/admin-ajax.php') + '?action=tc_eligibility_refresh_nonce';
+		return fetch(url, { method: 'GET', credentials: 'same-origin', cache: 'no-store' })
+			.then(function (resp) { return resp.json(); })
+			.then(function (body) {
+				if (body && body.success && body.data && body.data.nonce) {
+					cfg.nonce = body.data.nonce;
+				}
+			})
+			.catch(function () { /* keep the embedded nonce as a best-effort fallback */ });
+	}
+
 	function buildCookiePayload() {
 		var u = state.userData;
 		return {
@@ -842,7 +861,9 @@
 		if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
 
 		var payload = buildCookiePayload();
-		ajax('tc_eligibility_save', payload).then(function (data) {
+		refreshNonce().then(function () {
+			return ajax('tc_eligibility_save', payload);
+		}).then(function (data) {
 			if (data.eligible === false) {
 				showIneligible(data.reason || 'You do not meet the eligibility criteria.');
 				state.isSubmitting = false;
@@ -983,6 +1004,10 @@
 
 	function init() {
 		if (!root()) return;
+
+		// Replace any CDN-cached/stale nonce with a fresh, session-bound one
+		// before the patient interacts with the form.
+		refreshNonce();
 
 		initCheckboxes();
 		setupAgreement();

@@ -14,6 +14,7 @@ class TC_Ajax {
 			'tc_eligibility_add_to_cart'  => 'add_to_cart',
 			'tc_eligibility_ineligible'   => 'ineligible',
 			'tc_eligibility_get_doses'    => 'get_doses',
+			'tc_eligibility_refresh_nonce' => 'refresh_nonce',
 		];
 
 		foreach ( $actions as $hook => $method ) {
@@ -325,6 +326,21 @@ class TC_Ajax {
 		wp_send_json_success( [
 			'doses' => TC_Variation_Map::get_doses( $treatment ),
 		] );
+	}
+
+	/**
+	 * Issue a fresh nonce for the current session.
+	 *
+	 * The wizard calls this from an uncached admin-ajax request because the
+	 * assessment page HTML — which embeds the initial nonce — can be served from
+	 * the CDN cache, leaving a stale or foreign nonce that fails the security
+	 * check. Deliberately performs NO nonce check: the returned token is bound to
+	 * the caller's own session and confers nothing on its own, so issuing one to
+	 * any visitor is safe (it is exactly what a normal page load does).
+	 */
+	public function refresh_nonce() {
+		nocache_headers();
+		wp_send_json_success( [ 'nonce' => wp_create_nonce( self::NONCE_ACTION ) ] );
 	}
 
 	private function verify_nonce() {
