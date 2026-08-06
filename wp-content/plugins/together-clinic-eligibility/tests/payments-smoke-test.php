@@ -29,6 +29,7 @@ require $base . 'class-tc-payment-hold.php';
 require $base . 'interface-tc-hold-repository.php';
 require $base . 'class-tc-array-hold-repository.php';
 require $base . 'class-tc-payment-service.php';
+require $base . 'class-tc-price-book.php';
 
 $pass = 0;
 $fail = 0;
@@ -139,6 +140,30 @@ check( 'no active hold remains after void', $svc->active_hold( 'sub-svc-2' ) ===
 echo "\n— payment service: capture with nothing to capture —\n";
 $svcNone = $svc->capture_for_submission( 'sub-does-not-exist' );
 check( 'capturing a submission with no hold FAILS cleanly (no_active_hold)', $svcNone->is_failed() && $svcNone->error_code === 'no_active_hold' );
+
+echo "\n— price book: lookups —\n";
+check( 'Wegovy 0.25mg is £109 (10900p)', TC_Price_Book::price_minor( 'wegovy', '0.25mg' ) === 10900 );
+check( 'Mounjaro 2.5mg is £159 (15900p)', TC_Price_Book::price_minor( 'mounjaro', '2.5mg' ) === 15900 );
+check( 'Wegovy Tablets 25mg is £189 (18900p)', TC_Price_Book::price_minor( 'wegovy-tablets', '25mg' ) === 18900 );
+check( 'currency is GBP', TC_Price_Book::currency() === 'GBP' );
+
+echo "\n— price book: normalisation —\n";
+check( 'case/space-insensitive ("Wegovy" / "0.25 MG")', TC_Price_Book::price_minor( 'Wegovy', '0.25 MG' ) === 10900 );
+
+echo "\n— price book: fail-closed on an unpriced combination —\n";
+check( 'an unpriced dose returns null (never a guessed price)', TC_Price_Book::price_minor( 'wegovy', '1mg' ) === null );
+check( 'has_price is false for the unpriced dose', TC_Price_Book::has_price( 'wegovy', '1mg' ) === false );
+
+echo "\n— price book → payment request bridge —\n";
+$pbReq = TC_Price_Book::request_for( 'sub-price-1', 'mounjaro', '2.5mg' );
+check( 'request_for builds a priced request', $pbReq instanceof TC_Payment_Request && $pbReq->amount_minor === 15900 && $pbReq->currency === 'GBP' );
+check( 'the request carries an idempotency key', $pbReq && ! empty( $pbReq->idempotency_key ) );
+$pbReqNone = TC_Price_Book::request_for( 'sub-price-1', 'wegovy', '1mg' );
+check( 'request_for returns null when unpriced (fail-closed, no £0 charge)', $pbReqNone === null );
+
+echo "\n— price book: completeness check —\n";
+$missing = TC_Price_Book::missing_for( [ 'wegovy' => [ '0.25mg', '1mg' ] ] );
+check( 'missing_for flags the unpriced rung only', $missing === [ 'wegovy 1mg' ] );
 
 echo "\n========================================\n";
 echo "  $pass passed, $fail failed\n";
