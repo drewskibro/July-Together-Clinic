@@ -40,6 +40,7 @@ class TC_Review_Payment {
 		add_filter( 'woocommerce_valid_order_statuses_for_payment', [ __CLASS__, 'make_review_status_payable' ], 10, 2 );
 		add_filter( 'woocommerce_payment_complete_order_status', [ __CLASS__, 'route_payment_complete_status' ], 20, 3 );
 		add_action( 'woocommerce_payment_complete', [ __CLASS__, 'note_authorisation' ] );
+		add_filter( 'map_meta_cap', [ __CLASS__, 'grant_pay_by_order_key' ], 99, 4 );
 	}
 
 	/**
@@ -51,6 +52,57 @@ class TC_Review_Payment {
 			$statuses[] = TC_Review_Status::STATUS;
 		}
 		return $statuses;
+	}
+
+	/**
+	 * Let whoever presents the order's secure key pay a treatment order, even
+	 * when they are logged in as a different user — or logged out.
+	 *
+	 * The order is assigned to the patient's account at submission, but the
+	 * browser session only becomes that patient when nobody was already logged
+	 * in (see TC_Account::ensure_account_for). So a patient who was logged in as
+	 * someone else, a shared device, or — most visibly — a staff member testing
+	 * from wp-admin ends up on the order-pay page as a non-owner. WooCommerce
+	 * then blocks a logged-in non-owner outright ("This order cannot be paid
+	 * for. Please contact us if you need assistance.") and sends a logged-out
+	 * non-owner to a login form for an auto-created account whose password they
+	 * do not have. Both strand the patient in front of a payment they are
+	 * entitled to make.
+	 *
+	 * The order key in the pay URL is the same unguessable secret WooCommerce
+	 * already trusts to authorise guest order-pay, so we grant the pay
+	 * capability when it matches. Tightly scoped and purely additive: treatment
+	 * orders only, only while still in the pay window (awaiting-review, or the
+	 * emailed pay-link's pending), only when the URL carries the exact key, and
+	 * it never removes a capability WooCommerce would otherwise allow. Returning
+	 * an empty caps array satisfies the meta cap for the key holder without
+	 * granting anything else.
+	 */
+	public static function grant_pay_by_order_key( $caps, $cap, $user_id, $args ) {
+		if ( 'pay_for_order' !== $cap || empty( $_GET['key'] ) ) {
+			return $caps;
+		}
+
+		$order_id = isset( $args[0] ) ? absint( $args[0] ) : 0;
+		if ( ! $order_id || ! function_exists( 'wc_get_order' ) ) {
+			return $caps;
+		}
+
+		$order = wc_get_order( $order_id );
+		if ( ! $order instanceof WC_Order || ! TC_Review_Status::is_treatment_order( $order ) ) {
+			return $caps;
+		}
+
+		if ( ! in_array( $order->get_status(), [ TC_Review_Status::STATUS, 'pending' ], true ) ) {
+			return $caps;
+		}
+
+		$key = wc_clean( wp_unslash( $_GET['key'] ) );
+		if ( is_string( $key ) && $key !== '' && hash_equals( $order->get_order_key(), $key ) ) {
+			return []; // Key holder may pay — the same trust model as guest order-pay.
+		}
+
+		return $caps;
 	}
 
 	/**
