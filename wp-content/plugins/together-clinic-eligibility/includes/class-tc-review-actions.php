@@ -40,7 +40,9 @@ class TC_Review_Actions {
 		if ( $order instanceof WC_Order
 			&& $order->get_status() === TC_Review_Status::STATUS
 			&& TC_Review_Status::is_treatment_order( $order ) ) {
-			$actions['tc_review_approve'] = 'Approve & send payment link';
+			$actions['tc_review_approve'] = ( class_exists( 'TC_Payment' ) && TC_Payment::enabled() && TC_Payment::is_hold_placed( $order ) )
+				? 'Approve & capture payment'
+				: 'Approve & send payment link';
 			$actions['tc_review_reject']  = 'Reject & cancel (notify patient)';
 		}
 
@@ -57,6 +59,42 @@ class TC_Review_Actions {
 		$order->update_meta_data( self::META_DECISION, 'approved' );
 		$order->update_meta_data( self::META_DECIDED_BY, $reviewer );
 		$order->update_meta_data( self::META_DECIDED_AT, time() );
+		$order->save();
+
+		// Hold model (Phase 2.5): approval CAPTURES the authorised funds. A dose
+		// adjusted upward can exceed the held amount, and a hold can never be
+		// captured for more than was authorised — so in that one case we release
+		// the hold and fall through to the pay-link for the new, higher total.
+		if ( class_exists( 'TC_Payment' ) && TC_Payment::enabled() && TC_Payment::is_hold_placed( $order ) ) {
+			$held = TC_Payment::held_amount( $order );
+
+			if ( $order->get_total() > $held + 0.01 ) {
+				TC_Payment::release( $order, 'Approved total exceeds the held amount; releasing hold and sending a pay link.' );
+				$order->add_order_note( sprintf(
+					'Approved dose costs more than the held amount (held %s, now %s). Card authorisation released; pay link sent for the new total.',
+					wp_strip_all_tags( wc_price( $held ) ),
+					wp_strip_all_tags( wc_price( $order->get_total() ) )
+				) );
+				// fall through to the pay-link path below.
+			} else {
+				$captured = TC_Payment::capture( $order );
+				if ( ! is_wp_error( $captured ) ) {
+					TC_Review_Emails::send_captured( $order );
+					TC_Log::info( 'review_approved', [
+						'order_id' => $order->get_id(),
+						'by'       => $reviewer,
+						'total'    => $order->get_total(),
+						'via'      => 'hold_capture',
+					] );
+					return;
+				}
+				$order->add_order_note( 'Hold capture failed; falling back to a payment link. ' . $captured->get_error_message() );
+				// fall through to the pay-link path below.
+			}
+		}
+
+		// Default path: no hold placed, hold model disabled, or a fallback from
+		// above — approve and email the patient a payment link.
 		$order->update_meta_data( self::META_PAYLINK_AT, time() );
 		$order->save();
 
@@ -73,6 +111,7 @@ class TC_Review_Actions {
 			'order_id' => $order->get_id(),
 			'by'       => $reviewer,
 			'total'    => $order->get_total(),
+			'via'      => 'pay_link',
 		] );
 	}
 
@@ -87,6 +126,14 @@ class TC_Review_Actions {
 		$order->update_meta_data( self::META_DECIDED_BY, $reviewer );
 		$order->update_meta_data( self::META_DECIDED_AT, time() );
 		$order->save();
+
+		// Hold model (Phase 2.5): mark the authorisation for release; the
+		// cancellation below triggers the gateway's native void of the hold.
+		if ( class_exists( 'TC_Payment' ) && TC_Payment::enabled()
+			&& $order->get_meta( TC_Payment::META_INTENT_ID )
+			&& ! $order->get_meta( TC_Payment::META_RELEASED_AT ) ) {
+			TC_Payment::release( $order, 'Rejected — releasing the card authorisation.' );
+		}
 
 		TC_Review_Status::allow();
 		$order->update_status(

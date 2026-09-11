@@ -42,6 +42,7 @@ class TC_Settings {
 			'tc_eligibility_min_bmi_default',
 			'tc_eligibility_min_bmi_south_asian',
 			'tc_eligibility_retention_days',
+			'tc_payment_hold_enabled',
 			TC_Variation_Map::OPTION_KEY,
 		];
 
@@ -192,6 +193,17 @@ class TC_Settings {
 					</tr>
 				</table>
 
+				<h2>Payments</h2>
+				<table class="form-table">
+					<tr>
+						<th>Take payment at submission (hold)</th>
+						<td>
+							<label><input type="checkbox" name="tc_payment_hold_enabled" value="yes" <?php checked( get_option( 'tc_payment_hold_enabled', 'no' ), 'yes' ); ?> /> Enabled</label>
+							<p class="description">When on, the patient authorises their card at the end of the assessment (a hold, not a charge). The prescriber's approval captures it; rejection releases it. When off, the patient is emailed a payment link after approval. <strong>Requires WooCommerce &rarr; Stripe &rarr; "Issue an authorization on checkout, and capture later" to be enabled.</strong> Test in Stripe test mode before going live.</p>
+						</td>
+					</tr>
+				</table>
+
 				<h2>Calendly URLs</h2>
 				<p class="description">Booking links shown on the thank-you page after order. Placeholders until the client provides the real URLs.</p>
 				<table class="form-table">
@@ -311,6 +323,9 @@ class TC_Settings {
 		foreach ( $checkboxes as $key ) {
 			update_option( $key, isset( $_POST[ $key ] ) ? '1' : '0' );
 		}
+
+		// Stored as yes/no so TC_Payment::enabled() reads naturally.
+		update_option( 'tc_payment_hold_enabled', isset( $_POST['tc_payment_hold_enabled'] ) ? 'yes' : 'no' );
 
 		if ( isset( $_POST['tc_variation_map'] ) && is_array( $_POST['tc_variation_map'] ) ) {
 			TC_Variation_Map::save( wp_unslash( $_POST['tc_variation_map'] ) );

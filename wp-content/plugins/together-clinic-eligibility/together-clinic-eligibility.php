@@ -32,6 +32,7 @@ require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-dose-ladder.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-variation-map.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-review-status.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-review-order.php';
+require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-payment.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-review-actions.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-review-emails.php';
 require_once TC_ELIGIBILITY_PATH . 'includes/class-tc-review-cron.php';

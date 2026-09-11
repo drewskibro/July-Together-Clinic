@@ -203,6 +203,12 @@ class TC_Ajax {
 				// Decode entities (&pound; etc): the JS renders this via textContent.
 				? html_entity_decode( wp_strip_all_tags( wc_price( $order->get_total() ) ), ENT_QUOTES, 'UTF-8' )
 				: '',
+			// Hold model (Phase 2.5): when enabled, the patient is sent to the
+			// order-pay page to authorise their card. Empty otherwise, so the JS
+			// keeps showing the "submitted for review" confirmation screen.
+			'payUrl'         => ( class_exists( 'TC_Payment' ) && TC_Payment::enabled() && $order_id && ! is_wp_error( $order ) && $order->needs_payment() )
+				? TC_Payment::pay_url( $order )
+				: '',
 			'nonce'          => wp_create_nonce( self::NONCE_ACTION ),
 		] );
 	}

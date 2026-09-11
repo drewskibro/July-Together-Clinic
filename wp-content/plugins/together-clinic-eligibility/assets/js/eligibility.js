@@ -844,6 +844,15 @@
 			if (data.nonce) cfg.nonce = data.nonce;
 			setCookie(state.assessmentId);
 
+			// Hold model (Phase 2.5): when the server returns a pay URL, send the
+			// patient straight to the secure order-pay page to authorise their
+			// card. Otherwise fall through to the "submitted for review" screen.
+			if (data.payUrl) {
+				if (btn) { btn.textContent = 'Taking you to secure payment…'; }
+				window.location.href = data.payUrl;
+				return;
+			}
+
 			$('confirmed-name').textContent = state.userData.firstName || '';
 			$('confirmed-email').textContent = state.userData.email || '';
 			updateConfirmedTreatmentBanner(data);

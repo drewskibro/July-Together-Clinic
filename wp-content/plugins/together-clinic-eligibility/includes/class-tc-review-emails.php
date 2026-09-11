@@ -32,6 +32,30 @@ class TC_Review_Emails {
 		return self::send( $order, $email, $subject, $body, 'approved' );
 	}
 
+	/**
+	 * Hold model (Phase 2.5): approval captured the funds the patient already
+	 * authorised, so there is no link to click — this confirms payment taken.
+	 */
+	public static function send_captured( WC_Order $order ) {
+		$email = $order->get_billing_email();
+		if ( ! is_email( $email ) ) {
+			return false;
+		}
+
+		$first = $order->get_billing_first_name() ?: 'there';
+		$items = self::item_summary( $order );
+		$total = wp_strip_all_tags( wc_price( $order->get_total() ) );
+
+		$subject = '[Together Clinic] Your treatment is approved and confirmed';
+
+		$body  = sprintf( '<p>Hi %s,</p>', esc_html( $first ) );
+		$body .= sprintf( '<p>Good news &mdash; our prescriber has approved your treatment (<strong>%s</strong>), and the payment of <strong>%s</strong> you authorised has now been taken.</p>', esc_html( $items ), esc_html( $total ) );
+		$body .= '<p>Your medication is being prepared and will be dispatched with free next-day delivery. We will email your tracking details as soon as it is on its way.</p>';
+		$body .= self::footer();
+
+		return self::send( $order, $email, $subject, $body, 'captured' );
+	}
+
 	public static function send_rejected( WC_Order $order ) {
 		$email = $order->get_billing_email();
 		if ( ! is_email( $email ) ) {

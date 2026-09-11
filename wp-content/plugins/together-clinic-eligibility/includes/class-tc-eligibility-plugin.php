@@ -23,6 +23,7 @@ class TC_Eligibility_Plugin {
 		TC_Review_Status::init();
 
 		new TC_Review_Actions();
+		new TC_Payment();
 		new TC_Review_Cron();
 		new TC_Ajax();
 		new TC_Checkout();
