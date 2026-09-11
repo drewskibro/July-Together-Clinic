@@ -43,6 +43,8 @@ class TC_Settings {
 			'tc_eligibility_min_bmi_south_asian',
 			'tc_eligibility_retention_days',
 			'tc_payment_hold_enabled',
+			'tc_identity_enabled',
+			'tc_identity_webhook_secret',
 			TC_Variation_Map::OPTION_KEY,
 		];
 
@@ -204,6 +206,24 @@ class TC_Settings {
 					</tr>
 				</table>
 
+				<h2>Identity verification</h2>
+				<table class="form-table">
+					<tr>
+						<th>Verify identity after payment</th>
+						<td>
+							<label><input type="checkbox" name="tc_identity_enabled" value="yes" <?php checked( get_option( 'tc_identity_enabled', 'no' ), 'yes' ); ?> /> Enabled</label>
+							<p class="description">When on, a first-time patient verifies their identity (photo ID + selfie, via Stripe Identity) as the final step after payment. The verified name and date of birth are cross-checked against the assessment, 18+ is enforced, and any problem is flagged to the prescriber — it never auto-rejects. Reuses the Stripe account already connected to WooCommerce. Test in Stripe test mode before going live.</p>
+						</td>
+					</tr>
+					<tr>
+						<th>Stripe Identity webhook secret</th>
+						<td>
+							<input type="text" name="tc_identity_webhook_secret" value="<?php echo esc_attr( get_option( 'tc_identity_webhook_secret', '' ) ); ?>" class="regular-text" autocomplete="off" />
+							<p class="description">The signing secret (<code>whsec_…</code>) for a Stripe webhook sending <code>identity.verification_session.*</code> events to <code><?php echo esc_html( rest_url( 'tc-identity/v1/webhook' ) ); ?></code>. Without it, verification results are still read when the patient returns from Stripe, but webhook confirmations are rejected.</p>
+						</td>
+					</tr>
+				</table>
+
 				<h2>Calendly URLs</h2>
 				<p class="description">Booking links shown on the thank-you page after order. Placeholders until the client provides the real URLs.</p>
 				<table class="form-table">
@@ -324,8 +344,13 @@ class TC_Settings {
 			update_option( $key, isset( $_POST[ $key ] ) ? '1' : '0' );
 		}
 
-		// Stored as yes/no so TC_Payment::enabled() reads naturally.
+		// Stored as yes/no so TC_Payment::enabled() / TC_Identity::enabled() read naturally.
 		update_option( 'tc_payment_hold_enabled', isset( $_POST['tc_payment_hold_enabled'] ) ? 'yes' : 'no' );
+		update_option( 'tc_identity_enabled', isset( $_POST['tc_identity_enabled'] ) ? 'yes' : 'no' );
+
+		if ( isset( $_POST['tc_identity_webhook_secret'] ) ) {
+			update_option( 'tc_identity_webhook_secret', sanitize_text_field( wp_unslash( $_POST['tc_identity_webhook_secret'] ) ) );
+		}
 
 		if ( isset( $_POST['tc_variation_map'] ) && is_array( $_POST['tc_variation_map'] ) ) {
 			TC_Variation_Map::save( wp_unslash( $_POST['tc_variation_map'] ) );

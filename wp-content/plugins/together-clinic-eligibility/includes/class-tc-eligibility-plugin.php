@@ -24,6 +24,7 @@ class TC_Eligibility_Plugin {
 
 		new TC_Review_Actions();
 		new TC_Payment();
+		new TC_Identity();
 		new TC_Review_Cron();
 		new TC_Ajax();
 		new TC_Checkout();

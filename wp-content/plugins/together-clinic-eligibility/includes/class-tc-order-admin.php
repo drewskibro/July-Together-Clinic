@@ -22,6 +22,7 @@ class TC_Order_Admin {
 		}
 
 		$this->render_review_panel( $order );
+		$this->render_identity( $order );
 
 		if ( $elig_raw ) {
 			$payload = json_decode( $elig_raw, true );
@@ -42,6 +43,39 @@ class TC_Order_Admin {
 		}
 
 		$this->render_flags( $order );
+	}
+
+	/**
+	 * Identity-verification status line (Phase 2.5). Genuine problems already
+	 * surface in the red review-flags panel; this shows the positive/neutral
+	 * states so the prescriber can see at a glance whether ID has cleared.
+	 */
+	private function render_identity( WC_Order $order ) {
+		if ( ! class_exists( 'TC_Identity' ) || ! TC_Identity::enabled() ) {
+			return;
+		}
+		$status = (string) $order->get_meta( TC_Identity::META_STATUS );
+		if ( ! $status ) {
+			return;
+		}
+
+		$map = [
+			'verified'       => [ '#065f46', '#d1fae5', 'Identity verified — document + selfie confirmed, name and DOB match.' ],
+			'mismatch'       => [ '#92400e', '#fef3c7', 'Identity verified, but details do not match the assessment (see flags).' ],
+			'under_18'       => [ '#991b1b', '#fee2e2', 'Identity document shows the patient is under 18 (see flags).' ],
+			'requires_input' => [ '#92400e', '#fef3c7', 'Identity check incomplete — patient could not verify.' ],
+			'processing'     => [ '#1e3a8a', '#dbeafe', 'Identity check processing…' ],
+			'created'        => [ '#374151', '#f3f4f6', 'Identity check started, awaiting the patient.' ],
+			'canceled'       => [ '#92400e', '#fef3c7', 'Identity check cancelled by the patient.' ],
+		];
+		$row = $map[ $status ] ?? [ '#374151', '#f3f4f6', 'Identity check: ' . $status ];
+
+		printf(
+			'<p style="margin:8px 0;padding:8px 12px;border-radius:6px;color:%s;background:%s;font-size:13px;"><strong>ID check:</strong> %s</p>',
+			esc_attr( $row[0] ),
+			esc_attr( $row[1] ),
+			esc_html( $row[2] )
+		);
 	}
 
 	private function render_review_panel( WC_Order $order ) {

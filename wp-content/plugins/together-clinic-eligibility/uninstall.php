@@ -29,6 +29,9 @@ $options = [
 	'tc_eligibility_min_bmi_south_asian',
 	'tc_eligibility_retention_days',
 	'tc_eligibility_variation_map',
+	'tc_payment_hold_enabled',
+	'tc_identity_enabled',
+	'tc_identity_webhook_secret',
 	// Reorder module (folded-in plugin).
 	'tc_reorder_db_version',
 	'tc_reorder_enforce_login',
