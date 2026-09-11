@@ -37,11 +37,20 @@ class TC_Payment {
 	const META_HOLD_AMOUNT = '_tc_hold_amount';      // order total at authorisation
 	const META_CAPTURED_AT = '_tc_hold_captured_at';
 	const META_RELEASED_AT = '_tc_hold_released_at';
+	const META_EXPIRY_REMINDER_AT   = '_tc_hold_expiry_reminder_at';
+	const META_LATE_DISPATCH_FLAGGED = '_tc_late_dispatch_flagged_at';
 
 	/** The gateway's own PaymentIntent meta key (official WooCommerce Stripe Gateway). */
 	const STRIPE_INTENT_META = '_stripe_intent_id';
 
 	public function __construct() {
+		// Applies to BOTH payment models: any treatment order that reaches
+		// `processing` older than Click & Drop's import window is flagged for a
+		// manual dispatch check, so a late-paid order can never silently fail to
+		// import. Registered outside the feature flag because the pay-link model
+		// can produce late-paid orders too.
+		add_action( 'woocommerce_order_status_processing', [ __CLASS__, 'guard_late_dispatch' ], 10, 2 );
+
 		if ( ! self::enabled() ) {
 			return;
 		}
@@ -207,5 +216,64 @@ class TC_Payment {
 		] );
 
 		return true;
+	}
+
+	/**
+	 * Royal Mail Click & Drop only imports orders in `processing` and no more
+	 * than ~7 days old. A payment that lands late — a hold captured after a slow
+	 * review, or a fallback pay-link paid after the hold expired — can reach
+	 * `processing` on an order past that window and never import.
+	 *
+	 * So whenever a treatment order enters `processing` at/over the window, we
+	 * (always) alert the pharmacy to import it manually — it can never fail
+	 * silently — and (optionally, once Click & Drop's date-keying is confirmed
+	 * on the go-live test order) re-stamp the order date so a created-date-keyed
+	 * import re-sees it as current.
+	 */
+	public static function guard_late_dispatch( $order_id, $order = null ) {
+		if ( ! $order instanceof WC_Order ) {
+			$order = wc_get_order( $order_id );
+		}
+		if ( ! $order || ! TC_Review_Status::is_treatment_order( $order ) ) {
+			return;
+		}
+		if ( $order->get_meta( self::META_LATE_DISPATCH_FLAGGED ) ) {
+			return;
+		}
+
+		$window_days = (int) apply_filters( 'tc_clickdrop_import_window_days', 7 );
+		$created     = $order->get_date_created() ? $order->get_date_created()->getTimestamp() : 0;
+		if ( ! $created ) {
+			return;
+		}
+
+		$age_days = ( time() - $created ) / DAY_IN_SECONDS;
+		// One-day buffer: flag as it approaches the edge, not only once past it.
+		if ( $age_days < ( $window_days - 1 ) ) {
+			return;
+		}
+
+		$order->update_meta_data( self::META_LATE_DISPATCH_FLAGGED, time() );
+
+		if ( apply_filters( 'tc_late_payment_restamp_date', false, $order ) ) {
+			$order->set_date_created( time() );
+			$order->add_order_note( 'Order date re-stamped to the payment date so Royal Mail Click & Drop imports this late-paid order.' );
+		}
+
+		$order->add_order_note( sprintf(
+			'Paid ~%.1f days after creation — at or over Royal Mail Click & Drop\'s %d-day import window. Flagged for a manual dispatch check so it cannot be missed.',
+			$age_days,
+			$window_days
+		) );
+		$order->save();
+
+		if ( class_exists( 'TC_Review_Emails' ) ) {
+			TC_Review_Emails::send_manual_dispatch_alert( $order, $age_days );
+		}
+
+		TC_Log::warn( 'late_dispatch_flagged', [
+			'order_id' => $order->get_id(),
+			'age_days' => round( $age_days, 1 ),
+		] );
 	}
 }

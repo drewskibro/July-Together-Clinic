@@ -115,6 +115,88 @@ class TC_Review_Emails {
 		return self::send( $order, $email, $subject, $body, 'expired' );
 	}
 
+	/** Hold model: the authorisation expired before review; patient reassurance. */
+	public static function send_hold_released( WC_Order $order ) {
+		$email = $order->get_billing_email();
+		if ( ! is_email( $email ) ) {
+			return false;
+		}
+
+		$first = $order->get_billing_first_name() ?: 'there';
+		$items = self::item_summary( $order );
+
+		$subject = '[Together Clinic] Your card authorisation has been released';
+
+		$body  = sprintf( '<p>Hi %s,</p>', esc_html( $first ) );
+		$body .= sprintf( '<p>The temporary authorisation on your card for your treatment (<strong>%s</strong>) has now been released &mdash; <strong>no payment has been taken.</strong></p>', esc_html( $items ) );
+		$body .= '<p>Your order is still with our prescriber. If it is approved, we will email you a secure link to complete payment then &mdash; there is nothing you need to do in the meantime.</p>';
+		$body .= self::footer();
+
+		return self::send( $order, $email, $subject, $body, 'hold_released' );
+	}
+
+	/** Hold model: alert the prescriber that a hold is approaching its expiry. */
+	public static function send_hold_expiry_alert( WC_Order $order, $expiry_ts ) {
+		$recipients = TC_Emails::clinician_recipients();
+		if ( empty( $recipients ) ) {
+			return false;
+		}
+
+		$subject = sprintf( '[Together Clinic] Card hold expiring soon — order #%s needs review', $order->get_order_number() );
+
+		$body  = sprintf(
+			'<p>The card authorisation on order <strong>#%s</strong> (%s) expires on <strong>%s</strong>.</p>',
+			esc_html( $order->get_order_number() ),
+			esc_html( $order->get_formatted_billing_full_name() ),
+			esc_html( date_i18n( get_option( 'date_format' ) . ' H:i', (int) $expiry_ts ) )
+		);
+		$body .= '<p>Please approve or reject it before then. If the hold expires first it is released automatically (no charge); the order stays in the queue, and approval would then email the patient a payment link instead.</p>';
+		$body .= self::button( $order->get_edit_order_url(), 'Review this order' );
+
+		return self::send_to_clinicians( $recipients, $subject, $body, 'hold_expiry_alert', $order );
+	}
+
+	/** A treatment order was paid at/over Click & Drop's import window — dispatch it by hand. */
+	public static function send_manual_dispatch_alert( WC_Order $order, $age_days ) {
+		$recipients = TC_Emails::clinician_recipients();
+		if ( empty( $recipients ) ) {
+			return false;
+		}
+
+		$subject = sprintf( '[Together Clinic] Manual dispatch needed — order #%s paid late', $order->get_order_number() );
+
+		$body  = sprintf(
+			'<p>Order <strong>#%s</strong> (%s) was paid about %d day(s) after it was created, which is at or beyond Royal Mail Click &amp; Drop\'s import window.</p>',
+			esc_html( $order->get_order_number() ),
+			esc_html( $order->get_formatted_billing_full_name() ),
+			(int) round( $age_days )
+		);
+		$body .= '<p>Click &amp; Drop may not import it automatically. <strong>Please add it for dispatch manually</strong> and confirm the tracking is recorded on the order.</p>';
+		$body .= self::button( $order->get_edit_order_url(), 'Open the order' );
+
+		return self::send_to_clinicians( $recipients, $subject, $body, 'manual_dispatch_alert', $order );
+	}
+
+	/** Internal (clinician-facing) send: no patient footer, own From header. */
+	private static function send_to_clinicians( $recipients, $subject, $body, $kind, WC_Order $order ) {
+		if ( function_exists( 'WC' ) && WC()->mailer() && method_exists( WC()->mailer(), 'wrap_message' ) ) {
+			$body = WC()->mailer()->wrap_message( '', $body );
+		}
+
+		$headers    = [ 'Content-Type: text/html; charset=UTF-8' ];
+		$from_email = sanitize_email( get_option( 'tc_eligibility_from_email', 'care@togetherclinic.co.uk' ) );
+		$from_name  = sanitize_text_field( get_option( 'tc_eligibility_from_name', 'Together Clinic' ) );
+		if ( $from_email ) {
+			$headers[] = sprintf( 'From: %s <%s>', $from_name ?: 'Together Clinic', $from_email );
+		}
+
+		$sent = wp_mail( $recipients, $subject, $body, $headers );
+
+		TC_Log::info( 'review_email_' . $kind . '_' . ( $sent ? 'sent' : 'failed' ), [ 'order_id' => $order->get_id() ] );
+
+		return $sent;
+	}
+
 	private static function item_summary( WC_Order $order ) {
 		$names = [];
 		foreach ( $order->get_items() as $item ) {

@@ -35,8 +35,63 @@ class TC_Review_Cron {
 	}
 
 	public static function run() {
+		self::process_holds();
 		self::process_unpaid_paylinks();
 		self::send_review_queue_digest();
+	}
+
+	/**
+	 * Hold model (Phase 2.5): for orders authorised at submission and still
+	 * awaiting review, remind the prescriber before each hold's own expiry and,
+	 * once expired, release it (Stripe voids the authorisation) while keeping
+	 * the order in the queue — approval then falls back to a payment link. The
+	 * expiry is read per-hold (Stripe's capture_before where known), never a
+	 * fixed 7 days, per the owner requirement.
+	 */
+	private static function process_holds() {
+		if ( ! class_exists( 'TC_Payment' ) || ! TC_Payment::enabled() ) {
+			return;
+		}
+
+		$reminder_lead = (int) apply_filters( 'tc_payment_hold_reminder_lead_hours', 48 ) * HOUR_IN_SECONDS;
+		$now           = time();
+
+		$orders = wc_get_orders( [
+			'status' => TC_Review_Status::STATUS,
+			'limit'  => -1,
+		] );
+
+		$reminded = 0;
+		$released = 0;
+
+		foreach ( $orders as $order ) {
+			if ( ! TC_Payment::is_hold_placed( $order ) ) {
+				continue;
+			}
+
+			$expiry = TC_Payment::hold_expiry( $order );
+
+			if ( $now >= $expiry ) {
+				TC_Payment::release( $order, 'Hold reached its expiry before a prescriber decision.' );
+				$order->add_order_note( 'Card authorisation expired before review completed. Hold released — no charge. Order stays in review; approval will now send a payment link.' );
+				$order->save();
+				TC_Review_Emails::send_hold_released( $order );
+				$released++;
+				continue;
+			}
+
+			if ( ( $now >= ( $expiry - $reminder_lead ) ) && ! $order->get_meta( TC_Payment::META_EXPIRY_REMINDER_AT ) ) {
+				TC_Review_Emails::send_hold_expiry_alert( $order, $expiry );
+				$order->update_meta_data( TC_Payment::META_EXPIRY_REMINDER_AT, $now );
+				$order->add_order_note( 'Prescriber alerted: card authorisation approaching expiry.' );
+				$order->save();
+				$reminded++;
+			}
+		}
+
+		if ( $reminded || $released ) {
+			TC_Log::info( 'review_cron_holds', [ 'reminded' => $reminded, 'released' => $released ] );
+		}
 	}
 
 	private static function process_unpaid_paylinks() {
