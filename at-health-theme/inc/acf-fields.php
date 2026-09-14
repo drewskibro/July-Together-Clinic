@@ -72,7 +72,7 @@ acf_add_local_field_group( array(
         array( 'key' => 'field_ah_registered_name', 'label' => 'Registered Business Name', 'name' => 'registered_name', 'type' => 'text', 'default_value' => 'Prescription Point Ltd' ),
         array( 'key' => 'field_ah_registered_address', 'label' => 'Registered Address', 'name' => 'registered_address', 'type' => 'textarea', 'default_value' => '14-16 Ashton Road, Denton, Manchester M34 3EX', 'rows' => 3 ),
         array( 'key' => 'field_ah_trust_badge_1', 'label' => 'Trust Badge 1', 'name' => 'trust_badge_1', 'type' => 'text', 'default_value' => 'GPhC & MHRA Regulated' ),
-        array( 'key' => 'field_ah_trust_badge_2', 'label' => 'Trust Badge 2', 'name' => 'trust_badge_2', 'type' => 'text', 'default_value' => '4.9/5 from 10,000+ patients' ),
+        array( 'key' => 'field_ah_trust_badge_2', 'label' => 'Trust Badge 2', 'name' => 'trust_badge_2', 'type' => 'text', 'default_value' => '4.9/5 patient rating' ),
         array( 'key' => 'field_ah_trust_badge_3', 'label' => 'Trust Badge 3', 'name' => 'trust_badge_3', 'type' => 'text', 'default_value' => '256-bit SSL Encrypted' ),
         array( 'key' => 'field_ah_trust_badge_4', 'label' => 'Trust Badge 4', 'name' => 'trust_badge_4', 'type' => 'text', 'default_value' => 'Tracked 48h Delivery' ),
     ),
