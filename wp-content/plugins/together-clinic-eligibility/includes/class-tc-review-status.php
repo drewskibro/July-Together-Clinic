@@ -97,6 +97,22 @@ class TC_Review_Status {
 	}
 
 	/**
+	 * Admin URL for the review queue — the orders list filtered to
+	 * awaiting-review. HPOS and the legacy post table use different screens,
+	 * so resolve which is active rather than hardcoding either.
+	 */
+	public static function queue_url() {
+		$hpos = class_exists( '\Automattic\WooCommerce\Utilities\OrderUtil' )
+			&& \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled();
+
+		$url = $hpos
+			? admin_url( 'admin.php?page=wc-orders&status=' . self::STATUS_KEY )
+			: admin_url( 'edit.php?post_type=shop_order&post_status=' . self::STATUS_KEY );
+
+		return apply_filters( 'tc_review_queue_url', $url );
+	}
+
+	/**
 	 * Treatment orders must not leave awaiting-review except via the review
 	 * actions. Anything else (manual admin status edits, other plugins) is
 	 * reverted with an order note, so an unreviewed prescription can never
