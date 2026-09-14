@@ -83,7 +83,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			<button class="pathway-card" data-action="set-user-type" data-value="new">
 				<div class="pathway-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/></svg></div>
 				<strong class="pathway-title">I'm new to treatment</strong>
-				<span class="pathway-subtitle">First time using Wegovy or Mounjaro</span>
+				<span class="pathway-subtitle">First time using weight loss medication</span>
 			</button>
 			<button class="pathway-card" data-action="set-user-type" data-value="switching">
 				<div class="pathway-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16"/><path d="M8 5l-4 4 4 4"/><path d="M20 15H4"/><path d="M16 19l4-4-4-4"/></svg></div>
@@ -125,14 +125,26 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 		<div id="screen-3a" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">18%</div><div class="progress-bar"><div class="progress-fill" style="width: 18%"></div></div></div></div>
 			<h2>Which medication are you currently taking?</h2>
-			<button class="pathway-card" data-action="set-current-medication" data-value="wegovy">
-				<div class="pathway-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5 10.5 3.5"/><path d="M14.5 20.5 14.5 3.5"/><rect x="7" y="3" width="10" height="4" rx="1"/><rect x="7" y="17" width="10" height="4" rx="1"/></svg></div>
-				<strong class="pathway-title">Wegovy</strong><span class="pathway-subtitle">Semaglutide injection</span>
-			</button>
-			<button class="pathway-card" data-action="set-current-medication" data-value="mounjaro">
-				<div class="pathway-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 20.5 10.5 3.5"/><path d="M14.5 20.5 14.5 3.5"/><rect x="7" y="3" width="10" height="4" rx="1"/><rect x="7" y="17" width="10" height="4" rx="1"/></svg></div>
-				<strong class="pathway-title">Mounjaro</strong><span class="pathway-subtitle">Tirzepatide injection</span>
-			</button>
+			<?php
+			/*
+			 * Generated from the canonical dose ladder, not hardcoded: every
+			 * treatment the clinic sells must be declarable here. A switcher
+			 * who cannot name their actual medication picks the nearest wrong
+			 * one, which then drives the dose list and reaches the prescriber
+			 * as false clinical history.
+			 */
+			$tc_injection_icon = '<path d="M10.5 20.5 10.5 3.5"/><path d="M14.5 20.5 14.5 3.5"/><rect x="7" y="3" width="10" height="4" rx="1"/><rect x="7" y="17" width="10" height="4" rx="1"/>';
+			$tc_tablet_icon    = '<rect x="3" y="8" width="18" height="8" rx="4"/><path d="M12 8v8"/>';
+
+			foreach ( array_keys( TC_Dose_Ladder::ladders() ) as $tc_treatment ) :
+				$tc_desc = TC_Variation_Map::treatment_descriptor( $tc_treatment );
+				$tc_icon = ( $tc_desc['form'] === 'injection' ) ? $tc_injection_icon : $tc_tablet_icon;
+				?>
+				<button class="pathway-card" data-action="set-current-medication" data-value="<?php echo esc_attr( $tc_treatment ); ?>">
+					<div class="pathway-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?php echo $tc_icon; // phpcs:ignore WordPress.Security.EscapeOutput ?></svg></div>
+					<strong class="pathway-title"><?php echo esc_html( TC_Variation_Map::treatment_label( $tc_treatment ) ); ?></strong><span class="pathway-subtitle"><?php echo esc_html( $tc_desc['text'] ); ?></span>
+				</button>
+			<?php endforeach; ?>
 			<button class="button button-secondary" data-action="previous">Back</button>
 		</div>
 
