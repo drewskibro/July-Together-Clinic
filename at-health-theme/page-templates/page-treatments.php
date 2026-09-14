@@ -6,113 +6,111 @@
 get_header();
 ?>
 
-<!-- Hero -->
-<section class="py-16 md:py-20" style="background:#fdf8f3;">
-  <div class="ah-container text-center">
-    <p class="text-purple-600 text-xs font-bold uppercase tracking-wider mb-4"><?php echo esc_html( ah_field( 'tr_eyebrow', 'All Treatments' ) ); ?></p>
-    <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif text-gray-900 leading-tight mb-6">
-      <?php echo wp_kses_post( ah_field( 'tr_title', 'Choose the right weight loss<br>treatment <span style="color:#7c6fba;">for you</span>' ) ); ?>
-    </h1>
-    <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-      <?php echo esc_html( ah_field( 'tr_subtitle', 'Mounjaro and Wegovy prescribed by UK-registered independent prescribers. Delivered discreetly to your door within 48 hours.' ) ); ?>
-    </p>
-    <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600">
-      <?php foreach ( array( 'GPhC Regulated', 'We Verify Identity', '100% Confidential', '48h Delivery' ) as $t ) : ?>
-      <div class="flex items-center gap-2">
-        <svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-        <span class="font-medium"><?php echo esc_html( $t ); ?></span>
+<!-- Hero: copy left, eligibility check right — one section, so no stacked padding between "hero" and "tool" -->
+<?php
+$tr_bmi_min  = (float) get_option( 'tc_eligibility_min_bmi_default', 27 ); // same threshold the assessment uses
+$tr_bmi_full = 30.0;                                                        // NICE obesity threshold
+$tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 'contact' ) ) : home_url( '/contact/' );
+?>
+<section class="tr-hero py-14 md:py-20" style="background:#fdf8f3;">
+  <div class="ah-container-wide">
+    <div class="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+
+      <div class="lg:col-span-7">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-1 h-8 bg-purple-600 rounded-full"></div>
+          <p class="text-purple-600 text-xs font-bold uppercase tracking-wider"><?php echo esc_html( ah_field( 'tr_eyebrow', 'All Treatments' ) ); ?></p>
+        </div>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif text-gray-900 leading-[1.05] tracking-[-0.02em] mb-6" style="text-wrap: balance;">
+          <?php echo wp_kses_post( ah_field( 'tr_title', 'The right treatment,<br>chosen <span style="color:#7c6fba;">with a prescriber</span>' ) ); ?>
+        </h1>
+        <p class="text-lg text-gray-600 leading-relaxed max-w-xl mb-8">
+          <?php echo esc_html( ah_field( 'tr_subtitle', 'Five prescription treatments, one clinical standard. Every assessment is reviewed by a UK-registered independent prescriber — and nothing is charged unless they approve.' ) ); ?>
+        </p>
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-gray-700">
+          <?php foreach ( array( 'GPhC Regulated', 'We Verify Identity', 'Confidential', 'Delivered within 48 hours' ) as $t ) : ?>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            <span class="font-medium"><?php echo esc_html( $t ); ?></span>
+          </div>
+          <?php endforeach; ?>
+        </div>
       </div>
-      <?php endforeach; ?>
+
+      <!-- Eligibility check: a service-eligibility tool, not a drug-efficacy projection. Names no medicine. -->
+      <div class="lg:col-span-5">
+        <div class="tr-calc-card p-7 md:p-9" id="bmiCheck"
+             data-bmi-min="<?php echo esc_attr( $tr_bmi_min ); ?>"
+             data-bmi-full="<?php echo esc_attr( $tr_bmi_full ); ?>"
+             data-cta="<?php echo esc_url( ah_booking_url() ); ?>"
+             data-contact="<?php echo esc_url( $tr_contact ); ?>">
+          <div class="inline-flex items-center gap-2 bg-purple-50 border border-purple-100 rounded-full px-4 py-1.5 mb-5">
+            <svg class="w-3.5 h-3.5 text-purple-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+            <span class="text-[11px] font-bold text-purple-700 uppercase tracking-[0.14em]"><?php echo esc_html( ah_field( 'tr_bmi_pill', 'Takes 10 seconds' ) ); ?></span>
+          </div>
+          <h2 class="text-2xl md:text-[1.75rem] font-serif text-gray-900 leading-tight mb-2"><?php echo esc_html( ah_field( 'tr_bmi_title', 'Am I eligible?' ) ); ?></h2>
+          <p class="text-sm text-gray-600 leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_bmi_subtitle', 'Enter your height and weight for an instant, private indication. Nothing is stored.' ) ); ?></p>
+
+          <form id="bmiForm" novalidate>
+            <div class="inline-flex bg-gray-50 border border-gray-200 rounded-full p-1 mb-5" role="group" aria-label="Units">
+              <button type="button" data-units="metric" class="tr-unit-btn active px-4 py-1.5 rounded-full text-sm font-semibold" aria-pressed="true">Metric</button>
+              <button type="button" data-units="imperial" class="tr-unit-btn px-4 py-1.5 rounded-full text-sm font-semibold text-gray-500" aria-pressed="false">Imperial</button>
+            </div>
+
+            <div data-units-panel="metric" class="grid grid-cols-2 gap-3 mb-4">
+              <label class="block">
+                <span class="block text-xs font-semibold text-gray-700 mb-1.5">Height (cm)</span>
+                <input type="number" id="bmiHeightCm" inputmode="decimal" placeholder="e.g. 170" min="120" max="230" step="0.1" class="tr-input" />
+              </label>
+              <label class="block">
+                <span class="block text-xs font-semibold text-gray-700 mb-1.5">Weight (kg)</span>
+                <input type="number" id="bmiWeightKg" inputmode="decimal" placeholder="e.g. 95" min="30" max="300" step="0.1" class="tr-input" />
+              </label>
+            </div>
+
+            <div data-units-panel="imperial" class="grid grid-cols-4 gap-3 mb-4" style="display:none;">
+              <label class="block">
+                <span class="block text-xs font-semibold text-gray-700 mb-1.5">Height ft</span>
+                <input type="number" id="bmiHeightFt" inputmode="numeric" placeholder="5" min="3" max="7" step="1" class="tr-input" />
+              </label>
+              <label class="block">
+                <span class="block text-xs font-semibold text-gray-700 mb-1.5">in</span>
+                <input type="number" id="bmiHeightIn" inputmode="numeric" placeholder="7" min="0" max="11" step="1" class="tr-input" />
+              </label>
+              <label class="block">
+                <span class="block text-xs font-semibold text-gray-700 mb-1.5">Weight st</span>
+                <input type="number" id="bmiWeightSt" inputmode="numeric" placeholder="15" min="4" max="50" step="1" class="tr-input" />
+              </label>
+              <label class="block">
+                <span class="block text-xs font-semibold text-gray-700 mb-1.5">lb</span>
+                <input type="number" id="bmiWeightLb" inputmode="numeric" placeholder="0" min="0" max="13" step="1" class="tr-input" />
+              </label>
+            </div>
+
+            <p id="bmiError" class="hidden text-sm text-red-600 mb-3" role="alert"></p>
+
+            <button type="submit" class="w-full flex items-center justify-center gap-2.5 bg-purple-600 hover:bg-purple-700 text-white text-base font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all hover-lift">
+              <?php echo esc_html( ah_field( 'tr_bmi_button', 'Check my eligibility' ) ); ?>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </button>
+          </form>
+
+          <div id="bmiResult" class="hidden mt-5" aria-live="polite"></div>
+
+          <p class="text-[12px] text-gray-500 leading-relaxed mt-5">
+            <?php echo esc_html( ah_field( 'tr_bmi_note', 'An indication only. Thresholds are lower for some ethnic backgrounds, and the full assessment accounts for this. A prescriber makes the final decision.' ) ); ?>
+          </p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- Weight Loss Calculator -->
-<!-- Moved from homepage Phase 2. Note: calc_* ACF fields are set on the homepage; defaults render here until fields are registered on this page. -->
-<!-- GPHC-FLAG: Calculator results panel references "SURMOUNT-1 Clinical Data" and "tirzepatide 15mg" — review before this section goes live -->
-<section class="relative w-full py-14 md:py-16 overflow-hidden" style="background: #fdf8f3;">
-  <div class="max-w-[840px] mx-auto px-6 relative z-10">
-    <div class="hp-calc-card px-8 md:px-14 py-10 md:py-14" data-reveal>
-      <!-- Takes 10 seconds pill -->
-      <div class="flex justify-center mb-8">
-        <div class="inline-flex items-center gap-2 bg-white border border-orange-200/80 rounded-full px-5 py-2.5 shadow-sm">
-          <svg class="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
-          </svg>
-          <span class="text-xs font-bold text-orange-600 uppercase tracking-widest"><?php echo esc_html( ah_field( 'calc_pill_text', 'Takes 10 Seconds' ) ); ?></span>
-        </div>
-      </div>
-
-      <div class="text-center mb-8">
-        <h2 class="text-3xl md:text-4xl font-serif text-gray-900 leading-tight mb-3">
-          <?php echo wp_kses_post( ah_field( 'calc_title', 'How Much Could <em class="text-purple-600 not-italic font-serif">You</em> Lose?' ) ); ?>
-        </h2>
-        <p class="text-gray-500 text-base"><?php echo esc_html( ah_field( 'calc_subtitle', 'Enter your weight below — results are instant and private' ) ); ?></p>
-      </div>
-
-      <form id="weightLossForm" class="mb-8">
-        <label class="block text-sm font-bold text-gray-900 mb-3">Enter your current weight</label>
-        <div class="flex mb-4">
-          <div class="inline-flex bg-gray-50 border border-gray-200 rounded-full p-1">
-            <button type="button" data-unit="kg" class="calc-unit-btn active-unit px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200">kg</button>
-            <button type="button" data-unit="stone" class="calc-unit-btn px-5 py-2 rounded-full text-sm font-semibold text-gray-500 transition-all duration-200">stone</button>
-            <button type="button" data-unit="lbs" class="calc-unit-btn px-5 py-2 rounded-full text-sm font-semibold text-gray-500 transition-all duration-200">lbs</button>
-          </div>
-        </div>
-        <div class="flex items-center gap-3 mb-8">
-          <div class="relative flex-1">
-            <input type="number" id="calcWeight" placeholder="e.g. 95" class="w-full px-5 py-4 bg-white border-2 border-gray-200 rounded-2xl text-gray-900 text-lg font-medium focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 transition-all outline-none" required min="30" max="300" step="0.1" />
-          </div>
-          <span class="text-gray-400 text-base font-medium min-w-[40px]" id="calcUnitLabel">kg</span>
-        </div>
-        <button type="submit" class="w-full flex items-center justify-center gap-3 text-white text-base md:text-lg font-semibold px-10 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all hover-lift" style="background: linear-gradient(135deg, #b8855a 0%, #a0714d 100%);">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-          </svg>
-          Calculate My Results
-        </button>
-      </form>
-
-      <!-- Results (hidden initially) -->
-      <div id="calcResults" class="hidden">
-        <div class="bg-gradient-to-br from-purple-50 to-white rounded-2xl border border-purple-100 p-6 md:p-8 mb-6">
-          <!-- GPHC-FLAG: "SURMOUNT-1 Clinical Data" — SURMOUNT-1 is the tirzepatide (Mounjaro) trial, branded by association -->
-          <p class="text-xs font-bold text-purple-600 uppercase tracking-wider mb-3">Based on SURMOUNT-1 Clinical Data</p>
-          <div class="grid grid-cols-3 gap-4 mb-6">
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-serif font-bold text-purple-700" id="resLossKg">0</div>
-              <p class="text-xs text-gray-500 mt-1 font-medium">kg lost</p>
-            </div>
-            <div class="text-center border-x border-purple-100">
-              <div class="text-3xl md:text-4xl font-serif font-bold text-purple-700" id="resLossStone">0</div>
-              <p class="text-xs text-gray-500 mt-1 font-medium">stone lost</p>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-serif font-bold text-purple-700" id="resNewWeight">0</div>
-              <p class="text-xs text-gray-500 mt-1 font-medium" id="resNewWeightUnit">kg new weight</p>
-            </div>
-          </div>
-          <div class="relative h-3 bg-purple-100 rounded-full overflow-hidden mb-4">
-            <div id="resBar" class="absolute inset-y-0 left-0 bg-gradient-to-r from-purple-600 to-purple-400 rounded-full transition-all duration-1000 ease-out" style="width:0%"></div>
-          </div>
-          <div class="flex justify-between text-xs text-gray-400 font-medium">
-            <span id="resStartLabel">95 kg</span>
-            <span class="text-purple-600 font-bold" id="resPercent">-22.5%</span>
-            <span id="resGoalLabel">73.6 kg</span>
-          </div>
-        </div>
-        <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="w-full flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white text-base font-semibold px-8 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all hover-lift mb-6">
-          Start Your Journey
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-          </svg>
-        </a>
-        <!-- GPHC-FLAG: References "tirzepatide 15mg" — branded active ingredient (Mounjaro) -->
-        <p class="text-center text-xs text-gray-400">Results based on SURMOUNT-1 clinical trial (tirzepatide 15mg, 72-week data). Individual results may vary.</p>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- The SURMOUNT-1 weight-loss projection calculator that lived here was removed: it was unstyled and
+     non-functional on this template (its CSS/JS shipped with the homepage only), and a "you could lose
+     22.5%" projection from a named drug's trial is an efficacy claim for a POM on a public landing page.
+     The eligibility check in the hero replaces it. History: git log -- this file. -->
 
 <!-- Product Cards -->
 <section class="py-14 md:py-16" style="background: #f7f4f9;">
@@ -123,10 +121,15 @@ get_header();
         <p class="text-purple-600 text-xs md:text-sm font-bold uppercase tracking-wider">Choose Your Treatment</p>
       </div>
       <h2 class="text-3xl md:text-4xl lg:text-5xl text-gray-800 font-serif leading-[1.1] mb-4">Which treatment is right for you?</h2>
-      <p class="text-base md:text-lg text-gray-700 max-w-2xl mx-auto">Both are clinically proven and prescribed by UK-registered doctors.</p>
+      <p class="text-base md:text-lg text-gray-700 max-w-2xl mx-auto">All prescribed by UK-registered independent prescribers after a full clinical review.</p>
     </div>
 
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto" data-stagger>
+    <!-- Injections: two cards, centred and a little wider, so the pair reads as a set rather than a short row -->
+    <div class="max-w-4xl mx-auto mb-6">
+      <h3 class="text-lg font-serif text-gray-900">Injections</h3>
+      <p class="text-sm text-gray-600">Once weekly. The highest average weight loss in clinical trials.</p>
+    </div>
+    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto" data-stagger>
       <!-- Mounjaro Card -->
       <div class="tr-treatment-card" data-reveal style="--stagger-index:0">
         <div class="relative">
@@ -139,9 +142,10 @@ get_header();
         <div class="p-8">
           <h3 class="text-3xl font-serif text-gray-900 mb-2">Mounjaro</h3>
           <p class="text-purple-600 font-bold text-lg mb-3">22.5% average weight loss</p>
-          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_mounjaro_desc', 'Dual-action Glucagon-Like Peptide-1 (GLP-1) and Glucose-dependent Insulinotropic Polypeptide (GIP) receptor agonist. The most effective weight loss treatment available with up to 22.5% body weight reduction.' ) ); ?></p>
-          <!-- AWAITING PRICE FROM CLIENT -->
-          <p class="tr-price"><?php echo esc_html( ah_field( 'tr_mounjaro_price', 'from £XX' ) ); ?></p>
+          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_mounjaro_desc', 'Dual-action GLP-1 and GIP receptor agonist, taken once a week. Up to 22.5% body weight reduction in clinical trials.' ) ); ?></p>
+          <?php $tr_p = (string) ah_field( 'tr_mounjaro_price', '' ); if ( $tr_p !== '' && stripos( $tr_p, 'XX' ) === false ) : ?>
+          <p class="tr-price"><?php echo esc_html( $tr_p ); ?></p>
+          <?php endif; ?>
           <div class="flex gap-3">
             <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
             <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'mounjaro' ) ) ); ?>" class="flex-1 text-center border-2 border-gray-200 hover:border-purple-300 text-gray-700 font-semibold py-3 rounded-xl transition-all">Learn More</a>
@@ -162,22 +166,32 @@ get_header();
           <h3 class="text-3xl font-serif text-gray-900 mb-2">Wegovy</h3>
           <p class="text-purple-600 font-bold text-lg mb-3">20.7% average weight loss</p>
           <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_wegovy_desc', 'GLP-1 receptor agonist with proven cardiovascular benefits. Up to 20.7% body weight reduction and 20% reduced cardiovascular risk.' ) ); ?></p>
-          <!-- AWAITING PRICE FROM CLIENT -->
-          <p class="tr-price"><?php echo esc_html( ah_field( 'tr_wegovy_price', 'from £XX' ) ); ?></p>
+          <?php $tr_p = (string) ah_field( 'tr_wegovy_price', '' ); if ( $tr_p !== '' && stripos( $tr_p, 'XX' ) === false ) : ?>
+          <p class="tr-price"><?php echo esc_html( $tr_p ); ?></p>
+          <?php endif; ?>
           <div class="flex gap-3">
             <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
             <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy' ) ) ); ?>" class="flex-1 text-center border-2 border-gray-200 hover:border-purple-300 text-gray-700 font-semibold py-3 rounded-xl transition-all">Learn More</a>
           </div>
         </div>
       </div>
+    </div>
 
+    <!-- Oral treatments: three cards fill three columns -->
+    <div class="max-w-6xl mx-auto mb-6 mt-16">
+      <h3 class="text-lg font-serif text-gray-900">Oral treatments</h3>
+      <p class="text-sm text-gray-600">Once daily, needle-free.</p>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto" data-stagger>
       <!-- Wegovy Tablets Card -->
       <div class="tr-treatment-card" data-reveal style="--stagger-index:2">
         <div class="relative">
           <span class="absolute top-4 left-4 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-full">Needle-Free</span>
           <?php $wt_img = ah_field( 'tr_wegovy_tablets_image', '' ); ?>
           <?php if ( $wt_img ) : echo wp_get_attachment_image( $wt_img, 'treatment-card', false, array( 'class' => 'w-full h-56 object-cover' ) ); else : ?>
-          <img src="https://c.animaapp.com/mkl3lxzpWoqisd/img/wegovy-%281%29.jpg" alt="Wegovy Tablets" class="w-full h-56 object-cover" />
+          <div class="w-full h-56 flex items-center justify-center" style="background: linear-gradient(135deg, #eef0fb 0%, #d9dcf5 100%);">
+            <svg class="w-20 h-20 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          </div>
           <?php endif; ?>
         </div>
         <div class="p-8">
@@ -218,7 +232,7 @@ get_header();
       <!-- Orlistat / Xenical Card -->
       <div class="tr-treatment-card" data-reveal style="--stagger-index:4">
         <div class="relative">
-          <span class="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">Tablet Option</span>
+          <span class="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">Capsule</span>
           <?php $or_img = ah_field( 'tr_orlistat_image', '' ); ?>
           <?php if ( $or_img ) : echo wp_get_attachment_image( $or_img, 'treatment-card', false, array( 'class' => 'w-full h-56 object-cover' ) ); else : ?>
           <div class="w-full h-56 flex items-center justify-center" style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);">
@@ -230,8 +244,9 @@ get_header();
           <h3 class="text-3xl font-serif text-gray-900 mb-2">Orlistat</h3>
           <p class="text-purple-600 font-bold text-lg mb-3">Branded as Xenical</p>
           <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_orlistat_desc', 'A clinically proven weight loss tablet that reduces the amount of fat your body absorbs from food. Suitable for patients with a Body Mass Index (BMI) of 28 or above.' ) ); ?></p>
-          <!-- AWAITING PRICE FROM CLIENT -->
-          <p class="tr-price"><?php echo esc_html( ah_field( 'tr_orlistat_price', 'from £XX' ) ); ?></p>
+          <?php $tr_p = (string) ah_field( 'tr_orlistat_price', '' ); if ( $tr_p !== '' && stripos( $tr_p, 'XX' ) === false ) : ?>
+          <p class="tr-price"><?php echo esc_html( $tr_p ); ?></p>
+          <?php endif; ?>
           <div class="flex gap-3">
             <!-- AWAITING PRODUCT PAGE BUILD -->
             <a href="#" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>

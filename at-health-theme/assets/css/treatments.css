@@ -63,3 +63,63 @@
 .tr-table-scroll .tr-comparison-table {
     min-width: 520px;
 }
+
+/* ── Eligibility check card (hero, right column) ──
+   Was .hp-calc-card, which only ships with the homepage stylesheet. */
+.tr-calc-card {
+    background: #fff;
+    border-radius: 28px;
+    border: 1px solid rgba(229, 231, 235, 0.9);
+    box-shadow: 0 18px 40px -20px rgba(17, 24, 39, 0.18);
+}
+
+.tr-unit-btn {
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.tr-unit-btn.active {
+    background: var(--ah-purple-600);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(142, 136, 208, 0.3);
+}
+.tr-unit-btn:not(.active):hover {
+    color: var(--ah-gray-700);
+}
+
+.tr-input {
+    width: 100%;
+    padding: 12px 14px;
+    background: #fff;
+    border: 2px solid var(--ah-gray-200);
+    border-radius: 14px;
+    color: var(--ah-gray-900);
+    font-size: 16px;   /* ≥16px stops iOS zooming the page on focus */
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    -moz-appearance: textfield;
+}
+.tr-input::-webkit-outer-spin-button,
+.tr-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.tr-input:focus {
+    border-color: var(--ah-purple-500);
+    box-shadow: 0 0 0 4px rgba(155, 143, 206, 0.15);
+}
+
+/* Result panel: one shape, three tones (likely / conditional / below) */
+.tr-bmi-result {
+    border-radius: 16px;
+    padding: 18px 20px;
+    border: 1px solid;
+}
+.tr-bmi-result .tr-bmi-value {
+    font-family: var(--ah-font-serif, 'DM Serif Display', serif);
+    font-size: 2rem;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+.tr-bmi-result--likely      { background: #ecfdf5; border-color: #a7f3d0; }
+.tr-bmi-result--likely .tr-bmi-value      { color: #047857; }
+.tr-bmi-result--conditional { background: var(--ah-purple-50); border-color: var(--ah-purple-200); }
+.tr-bmi-result--conditional .tr-bmi-value { color: var(--ah-purple-700); }
+.tr-bmi-result--below       { background: var(--ah-gray-50); border-color: var(--ah-gray-200); }
+.tr-bmi-result--below .tr-bmi-value       { color: var(--ah-gray-700); }
