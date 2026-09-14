@@ -12,6 +12,7 @@ class TC_Checkout {
 	public function __construct() {
 		add_action( 'template_redirect', [ $this, 'enforce_before_checkout' ] );
 		add_action( 'template_redirect', [ $this, 'redirect_returning_customers_from_assessment' ], 5 );
+		add_action( 'template_redirect', [ $this, 'redirect_single_product' ], 6 );
 
 		add_filter( 'woocommerce_checkout_fields',    [ $this, 'prefill_checkout_fields' ] );
 		add_filter( 'woocommerce_checkout_get_value', [ $this, 'prefill_checkout_get_value' ], 999, 2 );
@@ -355,6 +356,71 @@ class TC_Checkout {
 			}
 		}
 
+		/*
+		 * Fail-closed fallback: gate by product category as well as by map
+		 * membership. Map membership alone is fail-OPEN — a newly published
+		 * treatment SKU is freely purchasable, bypassing the assessment
+		 * entirely, until somebody remembers to run auto-detect in settings.
+		 * A prescription product must be protected from the moment it is
+		 * published, not from the moment it is wired up.
+		 */
+		$gated_cats = apply_filters( 'tc_assessment_required_product_cats', [
+			'glp-1-medications',
+			'weight-loss',
+			'mounjaro',
+			'wegovy',
+			'foundayo',
+			'orlistat',
+		] );
+
+		// Variations carry no terms of their own — test the parent.
+		$term_target = $product_id;
+		if ( $product && $product->is_type( 'variation' ) ) {
+			$term_target = $product->get_parent_id() ?: $product_id;
+		}
+
+		if ( $gated_cats && has_term( $gated_cats, 'product_cat', $term_target ) ) {
+			return true;
+		}
+
 		return false;
+	}
+
+	/**
+	 * Treatment products are dispensed through the assessment, never browsed.
+	 * Their single-product pages are unstyled thin pages that also expose
+	 * add-to-basket and express-pay buttons, so send visitors to the treatment
+	 * page instead. Filterable, and never interferes with admin or the REST API.
+	 */
+	public function redirect_single_product() {
+		if ( is_admin() || wp_doing_ajax() || ! function_exists( 'is_product' ) || ! is_product() ) {
+			return;
+		}
+
+		if ( get_option( 'tc_eligibility_block_direct_add_to_cart', '1' ) !== '1' ) {
+			return;
+		}
+
+		$product_id = get_queried_object_id();
+		if ( ! $product_id || ! self::product_requires_assessment( $product_id ) ) {
+			return;
+		}
+
+		$slug = 'treatments';
+		foreach ( TC_Variation_Map::all() as $treatment => $doses ) {
+			if ( in_array( (int) $product_id, array_map( 'intval', (array) $doses ), true ) ) {
+				$slug = $treatment;
+				break;
+			}
+		}
+
+		$page = get_page_by_path( $slug ) ?: get_page_by_path( 'treatments' );
+		$url  = $page ? get_permalink( $page ) : home_url( '/' );
+		$url  = apply_filters( 'tc_single_product_redirect_url', $url, $product_id );
+
+		if ( $url ) {
+			wp_safe_redirect( $url, 302 );
+			exit;
+		}
 	}
 }
