@@ -18,6 +18,7 @@ $hero_cta_url   = ah_field( 'hero_cta_url', '' );
 if ( $hero_cta_url === null || $hero_cta_url === '' ) {
     $hero_cta_url = ah_booking_url();
 }
+$hero_assurance = ah_field( 'hero_assurance', 'Nothing is charged until a prescriber approves your treatment. Treatments from £99 a month, no subscription.' );
 $hero_image     = ah_field( 'hero_image', '' );
 $hero_image_alt = ah_field( 'hero_image_alt', 'Woman in kitchen feeling confident and healthy' );
 ?>
@@ -73,7 +74,17 @@ $hero_image_alt = ah_field( 'hero_image_alt', 'Woman in kitchen feeling confiden
           </p>
         </div>
 
-        <!-- Proof strip: every trust claim, once, at a readable size -->
+        <!-- Assurance: the payment promise (card held, never charged unless approved) and the entry price -->
+        <?php if ( $hero_assurance !== null && $hero_assurance !== '' ) : ?>
+        <p class="flex items-start gap-2 mt-4 text-[13.5px] leading-[1.5] text-gray-600 max-w-[520px] opacity-0 animate-fade-in-up delay-[450ms]" style="animation-fill-mode: forwards;">
+          <svg class="w-4 h-4 mt-[2px] text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span><?php echo esc_html( $hero_assurance ); ?></span>
+        </p>
+        <?php endif; ?>
+
+        <!-- Proof strip: three claims, once each, at a readable size -->
         <ul class="ah-hero-proof flex flex-wrap items-center gap-x-7 gap-y-3 mt-10 pt-6 opacity-0 animate-fade-in-up delay-[500ms]" style="animation-fill-mode: forwards;">
           <li class="flex items-center gap-2 text-[13px] font-medium text-gray-700">
             <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
@@ -85,19 +96,13 @@ $hero_image_alt = ah_field( 'hero_image_alt', 'Woman in kitchen feeling confiden
             <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
             </svg>
-            Rated 4.9/5 by 10,000+ patients
+            Rated 4.9/5 by verified patients
           </li>
           <li class="flex items-center gap-2 text-[13px] font-medium text-gray-700">
             <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             Confidential, discreet packaging
-          </li>
-          <li class="flex items-center gap-2 text-[13px] font-medium text-gray-700">
-            <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            Delivered within 48 hours
           </li>
         </ul>
       </div>
