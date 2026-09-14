@@ -116,7 +116,7 @@ $bmi_warn    = $bmi > 0 && ( $bmi < 27 || $bmi > 50 );
 <?php endif; ?>
 
 <p style="margin-top: 24px;">
-	<a href="<?php echo esc_url( admin_url( 'admin.php?page=tc-eligibility-settings' ) ); ?>">Open admin dashboard &rarr;</a>
+	<a href="<?php echo esc_url( TC_Review_Status::queue_url() ); ?>">View all orders awaiting review &rarr;</a>
 </p>
 
 <p style="color: #6b7280; font-size: 11px; margin-top: 24px;">Assessment ID: <?php echo esc_html( $assessment_id ); ?></p>
