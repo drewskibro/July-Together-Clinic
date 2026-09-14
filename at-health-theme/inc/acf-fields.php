@@ -319,13 +319,14 @@ acf_add_local_field_group( array(
 
         array(
             'key'        => 'field_ah_health_hub_cards',
-            'label'      => 'Supporting Cards (4 items)',
+            'label'      => 'Supporting Cards (up to 4)',
             'name'       => 'health_hub_cards',
             'type'       => 'repeater',
-            'min'        => 4,
+            'min'        => 0,
             'max'        => 4,
             'layout'     => 'block',
             'button_label' => 'Add Card',
+            'instructions' => 'Pick up to four. The grid adapts to how many you choose — three cards fill three columns, not four with a gap.',
             'sub_fields' => array(
                 array( 'key' => 'field_ah_card_post', 'label' => 'Article', 'name' => 'card_post', 'type' => 'post_object', 'post_type' => array( 'post' ), 'return_format' => 'id', 'allow_null' => 1, 'ui' => 1, 'instructions' => 'Pick a published post for this card.' ),
                 array( 'key' => 'field_ah_card_read_time', 'label' => 'Read Time', 'name' => 'card_read_time', 'type' => 'text', 'instructions' => 'Optional. e.g. "4 min read".' ),

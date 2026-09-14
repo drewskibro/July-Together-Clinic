@@ -228,7 +228,10 @@ $hh_heading      = ah_field( 'health_hub_heading', 'Know More. Feel Better.' );
 $hh_subheading   = ah_field( 'health_hub_subheading', 'Honest health guidance from our pharmacist prescribers — written for real people, not medical textbooks.' );
 
 // Normalise a picked post ID into the shape the cards expect.
-$hh_post_card = function ( $post_id, $read_time = '' ) {
+// $words caps the dek: WordPress's raw excerpt is 55 words ending in "[...]",
+// which is a blog-archive convention, not a magazine one. Cards get a
+// two-line dek; the feature and the large sixth card get a little more.
+$hh_post_card = function ( $post_id, $read_time = '', $words = 18 ) {
     if ( ! $post_id || ! get_post( $post_id ) ) {
         return null;
     }
@@ -243,9 +246,12 @@ $hh_post_card = function ( $post_id, $read_time = '' ) {
         }
         if ( $category === '' ) { $category = $cats[0]->name; }
     }
+    $excerpt = wp_strip_all_tags( get_the_excerpt( $post_id ) );
+    $excerpt = trim( str_replace( array( '[...]', '[&hellip;]', '&hellip;', '…' ), '', $excerpt ) );
+    $excerpt = wp_trim_words( $excerpt, (int) $words, '…' ); // literal ellipsis: this string is passed through esc_html()
     return array(
         'title'     => get_the_title( $post_id ),
-        'excerpt'   => wp_strip_all_tags( get_the_excerpt( $post_id ) ),
+        'excerpt'   => $excerpt,
         'image'     => get_post_thumbnail_id( $post_id ),
         'url'       => get_permalink( $post_id ),
         'category'  => $category,
@@ -254,7 +260,7 @@ $hh_post_card = function ( $post_id, $read_time = '' ) {
 };
 
 $hh_hero_id  = ah_field( 'health_hub_hero_post', 0 );
-$hh_hero     = $hh_post_card( $hh_hero_id, ah_field( 'health_hub_hero_read_time', '5 min read' ) );
+$hh_hero     = $hh_post_card( $hh_hero_id, ah_field( 'health_hub_hero_read_time', '5 min read' ), 30 );
 
 $hh_cards_raw = ah_field( 'health_hub_cards', array() );
 $hh_cards     = array();
@@ -268,7 +274,7 @@ if ( is_array( $hh_cards_raw ) ) {
 }
 
 $hh_sixth_id = ah_field( 'health_hub_sixth_post', 0 );
-$hh_sixth    = $hh_post_card( $hh_sixth_id, ah_field( 'health_hub_sixth_read_time', '5 min read' ) );
+$hh_sixth    = $hh_post_card( $hh_sixth_id, ah_field( 'health_hub_sixth_read_time', '5 min read' ), 28 );
 
 $hh_cta_heading     = ah_field( 'health_hub_cta_heading', 'Ready to take the first step?' );
 $hh_cta_subtext     = ah_field( 'health_hub_cta_subtext', 'Answer a few quick questions and find out which treatment is right for you.' );
@@ -341,38 +347,56 @@ $hh_explore_url = ah_field( 'health_hub_explore_url', '/health-hub/' );
     </a>
     <?php endif; ?>
 
-    <!-- ROW 2: Four supporting article cards -->
-    <?php if ( ! empty( $hh_cards ) ) : ?>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-12" data-stagger>
+    <!-- ROW 2: Supporting article cards — grid width follows how many were picked -->
+    <?php if ( ! empty( $hh_cards ) ) :
+        $hh_grid_cols = array(
+            1 => 'grid-cols-1 max-w-md',
+            2 => 'grid-cols-1 sm:grid-cols-2',
+            3 => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+            4 => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+        );
+        $hh_grid = $hh_grid_cols[ min( 4, max( 1, count( $hh_cards ) ) ) ];
+    ?>
+    <div class="grid <?php echo esc_attr( $hh_grid ); ?> gap-x-8 gap-y-12 md:gap-x-10 mb-12 md:mb-16" data-stagger>
       <?php foreach ( $hh_cards as $i => $card ) : ?>
-      <a href="<?php echo esc_url( $card['url'] ); ?>" class="hh-card group flex flex-col pb-6 transition-all duration-300" style="border-bottom: 1px solid rgba(142,136,208,0.2); --stagger-index:<?php echo (int) $i; ?>;" data-reveal>
+      <a href="<?php echo esc_url( $card['url'] ); ?>" class="hh-card group flex flex-col" style="--stagger-index:<?php echo (int) $i; ?>;" data-reveal>
         <?php if ( $card['image'] ) : ?>
-        <div class="relative aspect-[4/3] mb-5 rounded-2xl overflow-hidden bg-gray-100">
+        <div class="relative aspect-[4/3] mb-6 rounded-2xl overflow-hidden bg-gray-100">
           <?php echo wp_get_attachment_image( $card['image'], 'health-hub-card', false, array(
-              'class' => 'absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105',
+              'class' => 'absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]',
               'alt'   => esc_attr( $card['title'] ),
           ) ); ?>
         </div>
         <?php endif; ?>
-        <?php if ( $card['category'] !== '' ) : ?>
-        <span class="text-[11px] font-bold uppercase tracking-[0.1em] mb-4" style="color: #8e88d0;">
-          <?php echo esc_html( $card['category'] ); ?>
-        </span>
+
+        <!-- Meta line: category · read time, on one line above the title -->
+        <?php if ( $card['category'] !== '' || $card['read_time'] !== '' ) : ?>
+        <div class="flex items-center gap-x-2.5 mb-3 text-[11px] uppercase tracking-[0.14em]">
+          <?php if ( $card['category'] !== '' ) : ?>
+          <span class="font-bold" style="color: #7d76ba;"><?php echo esc_html( $card['category'] ); ?></span>
+          <?php endif; ?>
+          <?php if ( $card['category'] !== '' && $card['read_time'] !== '' ) : ?>
+          <span aria-hidden="true" class="text-gray-300">&middot;</span>
+          <?php endif; ?>
+          <?php if ( $card['read_time'] !== '' ) : ?>
+          <span class="font-medium text-gray-500"><?php echo esc_html( $card['read_time'] ); ?></span>
+          <?php endif; ?>
+        </div>
         <?php endif; ?>
-        <h3 class="font-serif text-gray-900 text-[1.25rem] md:text-[1.35rem] leading-[1.25] tracking-[-0.01em] mb-3 transition-colors duration-300 group-hover:text-[#8e88d0]">
+
+        <h3 class="font-serif text-gray-900 text-[1.4rem] md:text-[1.55rem] leading-[1.18] tracking-[-0.015em] mb-3 transition-colors duration-300 group-hover:text-[#7d76ba]" style="text-wrap: balance;">
           <?php echo esc_html( $card['title'] ); ?>
         </h3>
+
         <?php if ( $card['excerpt'] !== '' ) : ?>
-        <p class="text-[15px] text-gray-600 leading-[1.6] mb-4 flex-grow">
+        <p class="text-[15px] text-gray-600 leading-[1.6] line-clamp-2 mb-5">
           <?php echo esc_html( $card['excerpt'] ); ?>
         </p>
         <?php endif; ?>
-        <?php if ( $card['read_time'] !== '' ) : ?>
-        <p class="text-xs text-gray-500 mb-5"><?php echo esc_html( $card['read_time'] ); ?></p>
-        <?php endif; ?>
-        <span class="inline-flex items-center gap-1.5 text-sm font-semibold transition-transform duration-300 group-hover:translate-x-1" style="color: #8e88d0;">
-          Read
-          <span aria-hidden="true">&rarr;</span>
+
+        <span class="mt-auto inline-flex items-center gap-1.5 text-[13px] font-semibold text-gray-900 transition-transform duration-300 group-hover:translate-x-1">
+          Read article
+          <span aria-hidden="true" style="color: #8e88d0;">&rarr;</span>
         </span>
       </a>
       <?php endforeach; ?>
