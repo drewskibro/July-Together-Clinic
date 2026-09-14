@@ -42,7 +42,7 @@ acf_add_local_field_group( array(
         array( 'key' => 'field_ah_company_name', 'label' => 'Company Name', 'name' => 'company_name', 'type' => 'text', 'default_value' => 'Together Clinic' ),
         array( 'key' => 'field_ah_company_legal_name', 'label' => 'Company Legal Name', 'name' => 'company_legal_name', 'type' => 'text', 'default_value' => 'Together Clinic Ltd' ),
         array( 'key' => 'field_ah_company_registration', 'label' => 'Company Registration Text', 'name' => 'company_registration', 'type' => 'text', 'default_value' => 'Company registered in England & Wales.' ),
-        array( 'key' => 'field_ah_footer_tagline', 'label' => 'Footer Tagline', 'name' => 'footer_tagline', 'type' => 'text', 'default_value' => 'Medical Weight Loss, Delivered' ),
+        array( 'key' => 'field_ah_footer_tagline', 'label' => 'Footer Tagline', 'name' => 'footer_tagline', 'type' => 'text', 'default_value' => 'Pharmacist-led care, delivered.' ),
     ),
     'location' => array( array( array( 'param' => 'options_page', 'operator' => '==', 'value' => 'ah-settings-branding' ) ) ),
 ) );
@@ -66,12 +66,16 @@ acf_add_local_field_group( array(
     'key'      => 'group_ah_a3_compliance',
     'title'    => 'A3 — Registration & Compliance',
     'fields'   => array(
-        array( 'key' => 'field_ah_gphc_number', 'label' => 'GPhC Registration Number', 'name' => 'gphc_number', 'type' => 'text', 'default_value' => '2081354' ),
-        array( 'key' => 'field_ah_superintendent', 'label' => 'Superintendent Pharmacist', 'name' => 'superintendent', 'type' => 'text', 'default_value' => 'Ms. Simona Pantaziu' ),
-        array( 'key' => 'field_ah_company_number', 'label' => 'Company Number', 'name' => 'company_number', 'type' => 'text', 'default_value' => '08563110' ),
-        array( 'key' => 'field_ah_registered_name', 'label' => 'Registered Business Name', 'name' => 'registered_name', 'type' => 'text', 'default_value' => 'Prescription Point Ltd' ),
-        array( 'key' => 'field_ah_registered_address', 'label' => 'Registered Address', 'name' => 'registered_address', 'type' => 'textarea', 'default_value' => '14-16 Ashton Road, Denton, Manchester M34 3EX', 'rows' => 3 ),
-        array( 'key' => 'field_ah_trust_badge_1', 'label' => 'Trust Badge 1', 'name' => 'trust_badge_1', 'type' => 'text', 'default_value' => 'GPhC & MHRA Regulated' ),
+        // Defaults are deliberately blank (except the superintendent, who is already published in
+        // Know Your Team). These previously defaulted to ANOTHER pharmacy's details — a template
+        // leftover — and the footer now renders this block, so a wrong default would be published.
+        array( 'key' => 'field_ah_gphc_number', 'label' => 'Pharmacy Premises GPhC Number', 'name' => 'gphc_number', 'type' => 'text', 'default_value' => '', 'instructions' => 'The premises registration number (not a pharmacist\'s). Shown in the footer regulatory line once set.' ),
+        array( 'key' => 'field_ah_superintendent', 'label' => 'Superintendent Pharmacist', 'name' => 'superintendent', 'type' => 'text', 'default_value' => 'Ahmed Nizar Al-Liabi' ),
+        array( 'key' => 'field_ah_superintendent_gphc_number', 'label' => 'Superintendent GPhC Number', 'name' => 'superintendent_gphc_number', 'type' => 'text', 'default_value' => '2208502' ),
+        array( 'key' => 'field_ah_company_number', 'label' => 'Company Number', 'name' => 'company_number', 'type' => 'text', 'default_value' => '', 'instructions' => 'Companies House number of the owning company.' ),
+        array( 'key' => 'field_ah_registered_name', 'label' => 'Registered Business Name', 'name' => 'registered_name', 'type' => 'text', 'default_value' => '', 'instructions' => 'The legal owner of the pharmacy (e.g. "AT Health Ltd"). Renders as "Together Clinic is a trading name of …".' ),
+        array( 'key' => 'field_ah_registered_address', 'label' => 'Registered Address', 'name' => 'registered_address', 'type' => 'textarea', 'default_value' => '', 'rows' => 3 ),
+        array( 'key' => 'field_ah_trust_badge_1', 'label' => 'Trust Badge 1', 'name' => 'trust_badge_1', 'type' => 'text', 'default_value' => 'GPhC-registered pharmacy' ),
         array( 'key' => 'field_ah_trust_badge_2', 'label' => 'Trust Badge 2', 'name' => 'trust_badge_2', 'type' => 'text', 'default_value' => '4.9/5 patient rating' ),
         array( 'key' => 'field_ah_trust_badge_3', 'label' => 'Trust Badge 3', 'name' => 'trust_badge_3', 'type' => 'text', 'default_value' => '256-bit SSL Encrypted' ),
         array( 'key' => 'field_ah_trust_badge_4', 'label' => 'Trust Badge 4', 'name' => 'trust_badge_4', 'type' => 'text', 'default_value' => 'Tracked 48h Delivery' ),

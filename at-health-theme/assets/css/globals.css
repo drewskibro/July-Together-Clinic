@@ -255,6 +255,33 @@ a {
     border-top: 1px solid rgba(17, 24, 39, 0.10);
 }
 
+/* ── Footer ──
+   Column labels are <h3>, which the global heading rule sets to the serif
+   display face; at 11px that is hairline-thin on dark. Override to the
+   sans at a size and weight that reads. */
+.ah-footer .ah-footer-label {
+    font-family: var(--ah-font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ah-gray-200);
+    margin-bottom: 1.25rem;
+}
+
+.ah-footer .ah-footer-link {
+    font-size: 15px;
+    color: var(--ah-gray-300);
+    transition: color 0.2s ease;
+}
+.ah-footer .ah-footer-link:hover {
+    color: #fff;
+}
+.ah-footer .ah-footer-link--sm {
+    font-size: 13px;
+    color: var(--ah-gray-400);
+}
+
 /* Purple utility classes (matching Tailwind config from HTML) */
 .bg-purple-50  { background-color: var(--ah-purple-50); }
 .bg-purple-600 { background-color: var(--ah-purple-600); }
