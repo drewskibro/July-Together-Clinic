@@ -4,24 +4,24 @@
  * Three-step process cards with number badges.
  */
 
-$hiw_eyebrow  = ah_field( 'hiw_eyebrow', 'Proven Process' );
-$hiw_title    = ah_field( 'hiw_title', 'Start Feeling Confident<br>in Your <span class="text-purple-600">Body Again</span>' );
-$hiw_subtitle = ah_field( 'hiw_subtitle', 'Lose 2-4 stone with UK-registered medical support. Walk pain-free, drop clothing sizes, and regain your energy in 6-12 months.' );
+$hiw_eyebrow  = ah_field( 'hiw_eyebrow', 'Simple, safe, supervised' );
+$hiw_title    = ah_field( 'hiw_title', 'How Together Clinic <span class="text-purple-600">works</span>' );
+$hiw_subtitle = ah_field( 'hiw_subtitle', 'Every assessment is reviewed by a UK-registered prescriber before anything is prescribed. Personalised treatment, ongoing support, delivered to your door.' );
 
 $step1_title       = ah_field( 'hiw_step1_title', 'Complete<br>Assessment' );
-$step1_description = ah_field( 'hiw_step1_description', 'Answer questions about your health and weight loss goals in our secure online form.' );
+$step1_description = ah_field( 'hiw_step1_description', 'Answer a few questions about your health and what you need, in our secure online form.' );
 $step1_badge       = ah_field( 'hiw_step1_badge', 'Takes 5 minutes' );
 
-$step2_title       = ah_field( 'hiw_step2_title', 'Clinical<br>Review' );
-$step2_description = ah_field( 'hiw_step2_description', 'UK-registered prescribers review your assessment and approve your personalised treatment.' );
-$step2_badge       = ah_field( 'hiw_step2_badge', 'Same-day approval' );
+$step2_title       = ah_field( 'hiw_step2_title', 'Prescriber<br>Review' );
+$step2_description = ah_field( 'hiw_step2_description', 'One of our independent pharmacist prescribers reviews your assessment in full — and may contact you for more information — before any treatment is prescribed.' );
+$step2_badge       = ah_field( 'hiw_step2_badge', 'Reviewed within 24 hours' );
 
 $step3_title       = ah_field( 'hiw_step3_title', 'Delivered to<br>Your Door' );
-$step3_description = ah_field( 'hiw_step3_description', 'Receive your medication discreetly packaged with full support and guidance materials.' );
+$step3_description = ah_field( 'hiw_step3_description', 'Your treatment arrives discreetly packaged, with guidance materials and support from our pharmacy team.' );
 $step3_badge       = ah_field( 'hiw_step3_badge', 'Within 48 hours' );
 
 $hiw_trust1 = ah_field( 'hiw_trust1', 'No prescription transfer needed' );
-$hiw_trust2 = ah_field( 'hiw_trust2', '100% confidential service' );
+$hiw_trust2 = ah_field( 'hiw_trust2', 'Prescriber review included at every reorder' );
 $hiw_trust3 = ah_field( 'hiw_trust3', 'Cancel anytime' );
 
 $hiw_cta_text    = ah_field( 'hiw_cta_text', 'Start Journey' );
@@ -29,7 +29,7 @@ $hiw_cta_url     = ah_field( 'hiw_cta_url', '' );
 if ( $hiw_cta_url === null || $hiw_cta_url === '' ) {
     $hiw_cta_url = ah_booking_url();
 }
-$hiw_social_proof = ah_field( 'hiw_social_proof', 'Over <strong class="text-gray-900 text-lg"><span data-count="10000" data-suffix="+">0</span> patients</strong> have started their journey with Together Clinic' );
+$hiw_social_proof = ah_field( 'hiw_social_proof', 'Nothing is charged until a prescriber approves your treatment.' );
 ?>
 
 <!-- Premium How It Works Section -->
@@ -57,13 +57,15 @@ $hiw_social_proof = ah_field( 'hiw_social_proof', 'Over <strong class="text-gray
 
     <!-- Three Premium Steps -->
     <div class="relative max-w-[1200px] mx-auto">
-      <!-- Connecting Line (Desktop) -->
-      <div class="hidden lg:block absolute top-[140px] left-[16%] right-[16%] h-[2px] bg-purple-200 rounded-full"></div>
+      <!-- Connecting line (desktop): runs through the centre of the number badges.
+           Badges sit 24px above the card top and are 100px tall, so their centre is 26px down. -->
+      <div class="hidden lg:block absolute top-[26px] left-[16%] right-[16%] h-[2px] bg-purple-200 rounded-full"></div>
 
+      <!-- items-stretch (grid default) + h-full on each card = equal heights, badges on one line -->
       <div class="grid lg:grid-cols-3 gap-8 lg:gap-10">
         <!-- Step 1: Complete Assessment -->
-        <div class="relative group" data-reveal style="--stagger-index:0">
-          <div class="relative bg-white rounded-[32px] p-8 lg:p-10 shadow-lg border border-gray-200 hover:border-purple-300 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
+        <div class="relative group h-full" data-reveal style="--stagger-index:0">
+          <div class="relative h-full bg-white rounded-[32px] p-8 lg:p-10 shadow-lg border border-gray-200 hover:border-purple-300 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
             <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-[100px] h-[100px] bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center shadow-2xl border-6 border-white group-hover:scale-110 transition-transform duration-500">
               <span class="text-5xl font-serif font-bold text-white">1</span>
             </div>
@@ -90,8 +92,8 @@ $hiw_social_proof = ah_field( 'hiw_social_proof', 'Over <strong class="text-gray
         </div>
 
         <!-- Step 2: Clinical Review -->
-        <div class="relative group" data-reveal style="--stagger-index:1">
-          <div class="relative bg-white rounded-[32px] p-8 lg:p-10 shadow-lg border border-gray-200 hover:border-purple-300 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl lg:mt-8">
+        <div class="relative group h-full" data-reveal style="--stagger-index:1">
+          <div class="relative h-full bg-white rounded-[32px] p-8 lg:p-10 shadow-lg border border-gray-200 hover:border-purple-300 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
             <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-[100px] h-[100px] bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center shadow-2xl border-6 border-white group-hover:scale-110 transition-transform duration-500">
               <span class="text-5xl font-serif font-bold text-white">2</span>
             </div>
@@ -102,10 +104,9 @@ $hiw_social_proof = ah_field( 'hiw_social_proof', 'Over <strong class="text-gray
                 </svg>
               </div>
               <h3 class="text-2xl lg:text-3xl font-serif text-gray-900 mb-5 leading-tight"><?php echo wp_kses_post( $step2_title ); ?></h3>
-              <p class="text-base text-gray-600 leading-relaxed mb-4">
+              <p class="text-base text-gray-600 leading-relaxed mb-6">
                 <?php echo esc_html( $step2_description ); ?>
               </p>
-              <p class="text-base text-gray-600 leading-relaxed mb-6">Before any prescription is issued, one of our independent pharmacist prescribers will review your consultation in full. We may contact you for further information if required.</p>
               <div class="inline-flex items-center gap-2 bg-purple-50 text-purple-700 px-5 py-2.5 rounded-full text-sm font-semibold">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
@@ -117,8 +118,8 @@ $hiw_social_proof = ah_field( 'hiw_social_proof', 'Over <strong class="text-gray
         </div>
 
         <!-- Step 3: Delivered to Your Door -->
-        <div class="relative group" data-reveal style="--stagger-index:2">
-          <div class="relative bg-white rounded-[32px] p-8 lg:p-10 shadow-lg border border-gray-200 hover:border-purple-300 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
+        <div class="relative group h-full" data-reveal style="--stagger-index:2">
+          <div class="relative h-full bg-white rounded-[32px] p-8 lg:p-10 shadow-lg border border-gray-200 hover:border-purple-300 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl">
             <div class="absolute -top-6 left-1/2 -translate-x-1/2 w-[100px] h-[100px] bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center shadow-2xl border-6 border-white group-hover:scale-110 transition-transform duration-500">
               <span class="text-5xl font-serif font-bold text-white">3</span>
             </div>

@@ -20,7 +20,7 @@ get_template_part( 'template-parts/section', 'how-it-works' );
     <div class="text-center mb-12">
       <div class="inline-flex items-center gap-2 bg-white border border-amber-200 rounded-full px-5 py-2 shadow-sm mb-6">
         <span class="text-amber-500 text-sm">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-        <span class="text-sm font-semibold text-gray-700"><?php echo esc_html( ah_field( 'testimonials_badge', 'Rated Excellent 4.9/5 by 10,000+ patients' ) ); ?></span>
+        <span class="text-sm font-semibold text-gray-700"><?php echo esc_html( ah_field( 'testimonials_badge', 'Rated 4.9/5 by verified patients' ) ); ?></span>
       </div>
       <h2 class="text-3xl md:text-4xl lg:text-5xl font-serif text-gray-900 mb-4">
         <?php echo wp_kses_post( ah_field( 'testimonials_title', 'Life-Changing Results' ) ); ?>
@@ -31,9 +31,9 @@ get_template_part( 'template-parts/section', 'how-it-works' );
       <?php
       $default_testimonials = array(
           array( 'name' => 'Sophie Chaudhry', 'label' => 'Verified Patient', 'text' => "I no longer struggle with weight loss. It's changed my entire relationship with food." ),
-          array( 'name' => 'Stephen Matthews', 'label' => 'Verified Patient · Lost 19kg', 'text' => 'I have so far lost 3 stone (19kg). The support has been incredible.' ),
+          array( 'name' => 'Stephen Matthews', 'label' => 'Verified Patient', 'text' => 'I have so far lost 3 stone (19kg). The support has been incredible.' ),
           array( 'name' => 'Marie Clayton', 'label' => 'Verified Patient', 'text' => "I've got my life back. I feel confident, energetic, and happy again." ),
-          array( 'name' => 'Tanta Stefanescu', 'label' => 'Verified Patient · Lost 11kg', 'text' => 'I have lost almost 11kg and feel incredible. The best decision I\'ve made.' ),
+          array( 'name' => 'Tanta Stefanescu', 'label' => 'Verified Patient', 'text' => 'I have lost almost 11kg and feel incredible. The best decision I\'ve made.' ),
       );
 
       $testimonials = ah_field( 'testimonials_items', '' );
@@ -213,7 +213,7 @@ $team_members = array(
 
     <!-- CTA -->
     <div class="text-center" data-reveal>
-      <a href="<?php echo esc_url( $stats_cta_url ); ?>" class="inline-flex items-center justify-center gap-2.5 bg-gray-900 hover:bg-gray-800 text-white text-[15px] font-semibold px-9 py-4 rounded-xl transition-all hover-lift shadow-lg">
+      <a href="<?php echo esc_url( $stats_cta_url ); ?>" class="inline-flex items-center justify-center gap-2.5 bg-purple-600 hover:bg-purple-700 text-white text-[15px] font-semibold px-9 py-4 rounded-xl transition-all hover-lift shadow-lg">
         <?php echo esc_html( $stats_cta_text ); ?>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
       </a>

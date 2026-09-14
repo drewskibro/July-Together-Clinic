@@ -114,7 +114,7 @@
                         </svg>
                         <?php endfor; ?>
                     </div>
-                    <span class="text-sm text-gray-300 font-medium"><?php echo esc_html( ah_option( 'trust_badge_2', '4.9/5 from 10,000+ patients' ) ); ?></span>
+                    <span class="text-sm text-gray-300 font-medium"><?php echo esc_html( ah_option( 'trust_badge_2', '4.9/5 patient rating' ) ); ?></span>
                 </div>
                 <div class="flex items-center gap-2.5">
                     <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

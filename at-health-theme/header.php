@@ -40,7 +40,7 @@
     <!-- Top Banner -->
     <div class="ah-top-banner" style="background:#8e88d0;">
         <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="block ah-container text-center text-white text-sm font-medium py-3 hover:opacity-90 transition-opacity">
-            <?php echo wp_kses_post( ah_option( 'top_banner_text', 'Clinically proven weight loss treatments —' ) ); ?>
+            <?php echo wp_kses_post( ah_option( 'top_banner_text', 'GPhC-registered online pharmacy. Prescriber-reviewed care, delivered to your door —' ) ); ?>
             <span class="underline ml-1"><?php echo esc_html( ah_option( 'top_banner_link_text', 'Check your eligibility' ) ); ?></span>
         </a>
     </div>
