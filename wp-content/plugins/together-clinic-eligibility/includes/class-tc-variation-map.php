@@ -169,6 +169,28 @@ class TC_Variation_Map {
 		return isset( $labels[ $treatment ] ) ? $labels[ $treatment ] : ucfirst( $treatment );
 	}
 
+	/**
+	 * Short descriptor and administration form for a treatment. Used by the
+	 * wizard so screens that list treatments can be generated from the
+	 * canonical ladder rather than hardcoded — a hardcoded list silently
+	 * omits any treatment added later, which is how the switching screen
+	 * ended up offering only the two injections.
+	 */
+	public static function treatment_descriptor( $treatment ) {
+		$treatment = self::normalize_treatment( $treatment );
+
+		$map = apply_filters( 'tc_treatment_descriptors', [
+			'wegovy'         => [ 'text' => 'Semaglutide injection',   'form' => 'injection' ],
+			'mounjaro'       => [ 'text' => 'Tirzepatide injection',   'form' => 'injection' ],
+			'wegovy-tablets' => [ 'text' => 'Oral semaglutide tablet', 'form' => 'tablet' ],
+			'foundayo'       => [ 'text' => 'Orforglipron tablet',     'form' => 'tablet' ],
+		] );
+
+		return isset( $map[ $treatment ] )
+			? $map[ $treatment ]
+			: [ 'text' => '', 'form' => 'tablet' ];
+	}
+
 	public static function autodetect_from_skus() {
 		if ( ! function_exists( 'wc_get_product_id_by_sku' ) ) {
 			return [ 'found' => 0, 'expected' => 0, 'missing' => [] ];
