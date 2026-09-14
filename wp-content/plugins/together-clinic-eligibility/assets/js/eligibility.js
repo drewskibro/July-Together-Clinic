@@ -18,6 +18,7 @@
 		selectedWegovyDose: '0.25mg',
 		selectedMounjaroDose: '2.5mg',
 		selectedTabletsDose: '1.5mg',
+		selectedFoundayoDose: '0.8mg',
 		isSubmitting: false,
 		ineligibleReason: ''
 	};
@@ -220,9 +221,11 @@
 			selectedWegovyDose: state.selectedWegovyDose,
 			selectedMounjaroDose: state.selectedMounjaroDose,
 			selectedTabletsDose: state.selectedTabletsDose,
+			selectedFoundayoDose: state.selectedFoundayoDose,
 			selectedDose: (function () {
 				if (state.selectedTreatment === 'mounjaro') return state.selectedMounjaroDose;
 				if (state.selectedTreatment === 'wegovy-tablets') return state.selectedTabletsDose;
+				if (state.selectedTreatment === 'foundayo') return state.selectedFoundayoDose;
 				return state.selectedWegovyDose;
 			})(),
 			termsAgreed: state.agreementChecks.every(Boolean),
@@ -363,7 +366,8 @@
 		var ladders = cfg.doseLadders || {
 			wegovy: ['0.25mg', '0.5mg', '1mg', '1.7mg', '2.4mg'],
 			mounjaro: ['2.5mg', '5mg', '7.5mg', '10mg', '12.5mg', '15mg'],
-			'wegovy-tablets': ['1.5mg', '4mg', '9mg', '25mg']
+			'wegovy-tablets': ['1.5mg', '4mg', '9mg', '25mg'],
+			foundayo: ['0.8mg', '2.5mg', '5.5mg', '9mg', '14.5mg', '17.2mg']
 		};
 		var ladder = ladders[state.userData.currentMedication] || [];
 		var doses = ladder.map(function (dose, i) {
@@ -834,13 +838,23 @@
 		updateSubmitButton();
 	}
 
+	// Card id ↔ treatment id. Adding a treatment means one entry here, not
+	// another hardcoded branch (this function grew a line per product).
+	var TREATMENT_CARDS = {
+		'wegovy-card': 'wegovy',
+		'mounjaro-card': 'mounjaro',
+		'wegovy-tablets-card': 'wegovy-tablets',
+		'foundayo-card': 'foundayo'
+	};
+
 	function updateTreatmentCards() {
-		var w = $('wegovy-card');
-		var m = $('mounjaro-card');
-		var t = $('wegovy-tablets-card');
-		if (w) { var wOn = state.selectedTreatment === 'wegovy';         w.classList.toggle('selected', wOn); w.setAttribute('aria-pressed', String(wOn)); }
-		if (m) { var mOn = state.selectedTreatment === 'mounjaro';       m.classList.toggle('selected', mOn); m.setAttribute('aria-pressed', String(mOn)); }
-		if (t) { var tOn = state.selectedTreatment === 'wegovy-tablets'; t.classList.toggle('selected', tOn); t.setAttribute('aria-pressed', String(tOn)); }
+		Object.keys(TREATMENT_CARDS).forEach(function (cardId) {
+			var card = $(cardId);
+			if (!card) return;
+			var on = state.selectedTreatment === TREATMENT_CARDS[cardId];
+			card.classList.toggle('selected', on);
+			card.setAttribute('aria-pressed', String(on));
+		});
 	}
 
 	function updateSubmitButton() {
@@ -896,11 +910,12 @@
 	}
 
 	function updateConfirmedTreatmentBanner(info) {
-		var names = { wegovy: 'Wegovy', mounjaro: 'Mounjaro', 'wegovy-tablets': 'Wegovy Tablets' };
+		var names = { wegovy: 'Wegovy', mounjaro: 'Mounjaro', 'wegovy-tablets': 'Wegovy Tablets', foundayo: 'Foundayo' };
 		var prices = {
 			wegovy: '£109/month · Starting dose (0.25mg)',
 			mounjaro: '£159/month · Starting dose (2.5mg)',
-			'wegovy-tablets': '£99/month · Starting dose (1.5mg)'
+			'wegovy-tablets': '£99/month · Starting dose (1.5mg)',
+			foundayo: '£99/month · Starting dose (0.8mg)'
 		};
 		var name = names[state.selectedTreatment] || 'Wegovy';
 		var price = prices[state.selectedTreatment] || prices.wegovy;

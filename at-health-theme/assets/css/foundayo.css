@@ -1,0 +1,40 @@
+/* ═══════════════════════════════════════════════
+   Together Clinic — Foundayo Page Styles
+   Prefix: fd-
+   ═══════════════════════════════════════════════ */
+
+.fd-hero {
+    background: var(--ah-cream);
+}
+
+.fd-diff-card {
+    background: #fff;
+    border: 1px solid var(--ah-gray-200);
+    border-radius: 24px;
+    padding: 28px;
+    transition: all 0.3s ease;
+}
+
+.fd-diff-card:hover {
+    border-color: var(--ah-purple-300);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.fd-dosing-step {
+    position: relative;
+    padding-left: 48px;
+}
+
+.fd-dosing-step::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 40px;
+    bottom: -20px;
+    width: 2px;
+    background: var(--ah-purple-200);
+}
+
+.fd-dosing-step:last-child::before {
+    display: none;
+}

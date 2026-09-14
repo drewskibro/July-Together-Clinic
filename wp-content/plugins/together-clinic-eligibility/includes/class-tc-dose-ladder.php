@@ -27,6 +27,11 @@ class TC_Dose_Ladder {
 		// ladder. Never an alias of 'wegovy' (see the molecule-collision note in
 		// TC_Variation_Map). Titration order confirmed with the prescriber.
 		'wegovy-tablets' => [ '1.5mg', '4mg', '9mg', '25mg' ],
+		// Orforglipron (Foundayo) — a non-peptide GLP-1, MHRA-licensed Aug 2026.
+		// A DISTINCT molecule from both semaglutide products; shares no name
+		// fragment with them, but the same exact-match identity rule applies.
+		// Six licensed strengths, minimum 30 days at each before an increase.
+		'foundayo'       => [ '0.8mg', '2.5mg', '5.5mg', '9mg', '14.5mg', '17.2mg' ],
 	];
 
 	/**

@@ -70,10 +70,12 @@ class TC_Variation_Map {
 	 * stable id and register that id here and in TC_Dose_Ladder.
 	 */
 	const TREATMENT_ALIASES = [
-		'wegovy'      => 'wegovy',
-		'mounjaro'    => 'mounjaro',
-		'semaglutide' => 'wegovy',   // legacy payloads only (injection era)
-		'tirzepatide' => 'mounjaro', // legacy payloads only (injection era)
+		'wegovy'       => 'wegovy',
+		'mounjaro'     => 'mounjaro',
+		'foundayo'     => 'foundayo',
+		'orforglipron' => 'foundayo', // generic name, in case a payload carries it
+		'semaglutide'  => 'wegovy',   // legacy payloads only (injection era)
+		'tirzepatide'  => 'mounjaro', // legacy payloads only (injection era)
 	];
 
 	public static function normalize_treatment( $treatment ) {
@@ -133,6 +135,17 @@ class TC_Variation_Map {
 				'9mg'   => 'WGT-9',
 				'25mg'  => 'WGT-25',
 			],
+			// Orforglipron. Own FDY- prefix: 9mg exists in BOTH this ladder and
+			// the Wegovy Tablets ladder at a different price, so a shared prefix
+			// would put two different products on one SKU.
+			'foundayo' => [
+				'0.8mg'  => 'FDY-0.8',
+				'2.5mg'  => 'FDY-2.5',
+				'5.5mg'  => 'FDY-5.5',
+				'9mg'    => 'FDY-9',
+				'14.5mg' => 'FDY-14.5',
+				'17.2mg' => 'FDY-17.2',
+			],
 		] );
 	}
 
@@ -151,6 +164,7 @@ class TC_Variation_Map {
 			'wegovy'         => 'Wegovy',
 			'mounjaro'       => 'Mounjaro',
 			'wegovy-tablets' => 'Wegovy Tablets',
+			'foundayo'       => 'Foundayo',
 		] );
 		return isset( $labels[ $treatment ] ) ? $labels[ $treatment ] : ucfirst( $treatment );
 	}

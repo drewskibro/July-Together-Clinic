@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $wegovy_img         = TC_ELIGIBILITY_URL . 'assets/img/wegovy.jpg';
 $mounjaro_img       = TC_ELIGIBILITY_URL . 'assets/img/mounjaro.png';
 $wegovy_tablets_img = TC_ELIGIBILITY_URL . 'assets/img/wegovy-tablets.png';
+$foundayo_img       = TC_ELIGIBILITY_URL . 'assets/img/foundayo.png';
 $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png';
 ?>
 <div class="tc-eligibility" id="tc-eligibility-root">
@@ -643,6 +644,27 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Reviewed by a prescriber before dispatch</li>
 						</ul>
 						<p class="treatment-admin-note">Take one tablet on an empty stomach with a small sip of water, at least 30 minutes before eating, drinking, or taking any other medicines.</p>
+					</div>
+				</button>
+				<button type="button" class="treatment-card" id="foundayo-card" data-action="select-treatment" data-value="foundayo" aria-pressed="false">
+					<span class="treatment-selected-pill" aria-hidden="true"><svg class="tsp-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg>Selected</span>
+					<div class="treatment-image"><img src="<?php echo esc_url( $foundayo_img ); ?>" alt="Foundayo tablets pack" onerror="this.style.display='none'" /></div>
+					<div class="treatment-body">
+						<div class="treatment-body-head">
+							<div class="treatment-head-text">
+								<span class="treatment-title">Foundayo</span>
+								<div class="treatment-price">&pound;99<span class="treatment-price-unit">/month</span></div>
+								<p class="treatment-price-note">Starting dose (0.8mg)</p>
+							</div>
+							<span class="tc-radio" aria-hidden="true"><svg class="tc-radio-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg></span>
+						</div>
+						<p class="treatment-description">Orforglipron &mdash; the first non-peptide GLP-1 tablet licensed in the UK. A daily tablet with no fasting rules.</p>
+						<ul class="treatment-benefits">
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Take it any time &mdash; with or without food</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>No needles &mdash; one tablet a day</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA approved &mdash; reviewed by a prescriber before dispatch</li>
+						</ul>
+						<p class="treatment-admin-note">Swallow one tablet whole with water, at any time of day. No waiting period before eating or drinking.</p>
 					</div>
 				</button>
 			</div>
