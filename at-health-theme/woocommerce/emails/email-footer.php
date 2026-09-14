@@ -43,21 +43,36 @@ $company = function_exists( 'ah_company_name' ) ? ah_company_name() : 'Together 
                         <td style="text-align: center; padding: 16px 0; border-top: 1px solid #e5e7eb;">
                             <!-- Trust badges -->
                             <p style="margin: 0 0 12px; font-size: 12px; color: #9ca3af;">
-                                &#9989; GPhC &amp; MHRA Regulated &nbsp;&middot;&nbsp; &#128274; 256-bit SSL Encrypted &nbsp;&middot;&nbsp; &#128230; Tracked 48h Delivery
+                                &#9989; GPhC-registered pharmacy &nbsp;&middot;&nbsp; &#128274; 256-bit SSL encrypted &nbsp;&middot;&nbsp; &#128230; Tracked 48h delivery
                             </p>
 
                             <!-- Legal -->
                             <p style="margin: 0 0 8px; font-size: 11px; color: #d1d5db;">
-                                &copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php echo esc_html( $company ); ?> Ltd. All rights reserved.
+                                &copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php echo esc_html( function_exists( 'ah_option' ) ? ah_option( 'company_legal_name', 'Together Clinic Ltd' ) : 'Together Clinic Ltd' ); ?>. All rights reserved.
                             </p>
-                            <p style="margin: 0 0 8px; font-size: 11px; color: #d1d5db;">
-                                <?php echo esc_html( function_exists( 'ah_option' ) ? ah_option( 'registered_name', 'Prescription Point Ltd' ) : 'Prescription Point Ltd' ); ?>
-                                (Co. No: <?php echo esc_html( function_exists( 'ah_option' ) ? ah_option( 'company_number', '08563110' ) : '08563110' ); ?>)
-                                &middot; GPhC: <?php echo esc_html( function_exists( 'ah_option' ) ? ah_option( 'gphc_number', '2081354' ) : '2081354' ); ?>
-                            </p>
+                            <?php
+                            /*
+                             * Regulatory line — mirrors the site footer. Each fragment renders only when
+                             * its option is set. No fallbacks: this template previously fell back to
+                             * another pharmacy's company number, GPhC number and superintendent.
+                             */
+                            $em_reg_name   = function_exists( 'ah_option' ) ? trim( (string) ah_option( 'registered_name', '' ) ) : '';
+                            $em_company_no = function_exists( 'ah_option' ) ? trim( (string) ah_option( 'company_number', '' ) ) : '';
+                            $em_premises   = function_exists( 'ah_option' ) ? trim( (string) ah_option( 'gphc_number', '' ) ) : '';
+                            $em_super      = function_exists( 'ah_option' ) ? trim( (string) ah_option( 'superintendent', '' ) ) : '';
+                            $em_super_no   = function_exists( 'ah_option' ) ? trim( (string) ah_option( 'superintendent_gphc_number', '' ) ) : '';
+
+                            $em_parts = array();
+                            if ( $em_reg_name )   { $em_parts[] = $em_reg_name . ( $em_company_no ? ' (Co. No: ' . $em_company_no . ')' : '' ); }
+                            elseif ( $em_company_no ) { $em_parts[] = 'Co. No: ' . $em_company_no; }
+                            if ( $em_premises )   { $em_parts[] = 'GPhC premises no. ' . $em_premises; }
+                            if ( $em_super )      { $em_parts[] = 'Superintendent Pharmacist: ' . $em_super . ( $em_super_no ? ' (GPhC ' . $em_super_no . ')' : '' ); }
+                            ?>
+                            <?php if ( $em_parts ) : ?>
                             <p style="margin: 0; font-size: 11px; color: #d1d5db;">
-                                Superintendent: <?php echo esc_html( function_exists( 'ah_option' ) ? ah_option( 'superintendent', 'Ms. Simona Pantaziu' ) : 'Ms. Simona Pantaziu' ); ?>
+                                <?php echo esc_html( implode( ' · ', $em_parts ) ); ?>
                             </p>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 </table>
