@@ -192,8 +192,31 @@ get_header();
         </div>
       </div>
 
-      <!-- Orlistat / Xenical Card -->
+      <!-- Foundayo Card -->
       <div class="tr-treatment-card" data-reveal style="--stagger-index:3">
+        <div class="relative">
+          <span class="absolute top-4 left-4 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full">New</span>
+          <?php $fd_img = ah_field( 'tr_foundayo_image', '' ); ?>
+          <?php if ( $fd_img ) : echo wp_get_attachment_image( $fd_img, 'treatment-card', false, array( 'class' => 'w-full h-56 object-cover' ) ); else : ?>
+          <div class="w-full h-56 flex items-center justify-center" style="background: linear-gradient(135deg, #eef0fb 0%, #d9dcf5 100%);">
+            <svg class="w-20 h-20 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          </div>
+          <?php endif; ?>
+        </div>
+        <div class="p-8">
+          <h3 class="text-3xl font-serif text-gray-900 mb-2">Foundayo</h3>
+          <p class="text-purple-600 font-bold text-lg mb-3">No fasting rules</p>
+          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_foundayo_desc', 'Orforglipron — the first non-peptide GLP-1 tablet licensed in the UK. Once daily, taken with or without food, with no waiting period before you eat.' ) ); ?></p>
+          <p class="tr-price"><?php echo esc_html( ah_field( 'tr_foundayo_price', 'from £99' ) ); ?></p>
+          <div class="flex gap-3">
+            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
+            <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'foundayo' ) ) ); ?>" class="flex-1 text-center border-2 border-gray-200 hover:border-purple-300 text-gray-700 font-semibold py-3 rounded-xl transition-all">Learn More</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orlistat / Xenical Card -->
+      <div class="tr-treatment-card" data-reveal style="--stagger-index:4">
         <div class="relative">
           <span class="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">Tablet Option</span>
           <?php $or_img = ah_field( 'tr_orlistat_image', '' ); ?>
@@ -231,21 +254,52 @@ get_header();
       </div>
       <h2 class="text-3xl md:text-4xl font-serif text-gray-900 mb-4">Find your perfect match</h2>
     </div>
-    <div class="max-w-4xl mx-auto bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm" data-reveal>
-      <table class="tr-comparison-table">
-        <thead>
-          <tr><th></th><th>Mounjaro</th><th>Wegovy</th><th>Wegovy Tablets</th></tr>
-        </thead>
-        <tbody>
-          <tr><td class="font-semibold text-gray-900">Active Ingredient</td><td>Tirzepatide</td><td>Semaglutide</td><td>Semaglutide (oral)</td></tr>
-          <tr><td class="font-semibold text-gray-900">Weight Loss</td><td class="text-purple-700 font-bold">Up to 22.5%</td><td class="text-purple-700 font-bold">Up to 20.7%</td><td class="text-purple-700 font-bold">Up to 16.6%</td></tr>
-          <tr><td class="font-semibold text-gray-900">How It's Taken</td><td>Once-weekly injection</td><td>Once-weekly injection</td><td>Once-daily tablet</td></tr>
-          <tr><td class="font-semibold text-gray-900">Starting Dose</td><td>2.5mg</td><td>0.25mg</td><td>1.5mg</td></tr>
-          <tr><td class="font-semibold text-gray-900">Dosing Plan</td><td>20 weeks to full dose</td><td>16 weeks to full dose</td><td>Four tablet strengths</td></tr>
-          <tr><td class="font-semibold text-gray-900">Delivery</td><td>Within 48 hours</td><td>Within 48 hours</td><td>Within 48 hours</td></tr>
-          <tr><td class="font-semibold text-gray-900">Side Effects</td><td>Nausea, diarrhoea, reduced appetite</td><td>Nausea, diarrhoea, reduced appetite</td><td>Nausea, diarrhoea, reduced appetite</td></tr>
-        </tbody>
-      </table>
+    <div class="max-w-4xl mx-auto space-y-10" data-reveal>
+
+      <!-- Tablets -->
+      <div>
+        <h3 class="text-lg font-serif text-gray-900 mb-1">Tablets</h3>
+        <p class="text-sm text-gray-600 mb-4">Once-daily, needle-free options.</p>
+        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm tr-table-scroll">
+          <table class="tr-comparison-table">
+            <thead>
+              <tr><th></th><th>Foundayo</th><th>Wegovy Tablets</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="font-semibold text-gray-900">Active Ingredient</td><td>Orforglipron</td><td>Semaglutide</td></tr>
+              <tr><td class="font-semibold text-gray-900">How It's Taken</td><td class="text-purple-700 font-bold">Any time, with or without food</td><td>Empty stomach, 30 min before food</td></tr>
+              <tr><td class="font-semibold text-gray-900">Dose Strengths</td><td>Six (0.8mg &ndash; 17.2mg)</td><td>Four (1.5mg &ndash; 25mg)</td></tr>
+              <tr><td class="font-semibold text-gray-900">Dosing Plan</td><td>Minimum 30 days per step</td><td>Four tablet strengths</td></tr>
+              <tr><td class="font-semibold text-gray-900">Delivery</td><td>Within 48 hours</td><td>Within 48 hours</td></tr>
+              <tr><td class="font-semibold text-gray-900">Side Effects</td><td>Nausea, diarrhoea, reduced appetite</td><td>Nausea, diarrhoea, reduced appetite</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Injections -->
+      <div>
+        <h3 class="text-lg font-serif text-gray-900 mb-1">Injections</h3>
+        <p class="text-sm text-gray-600 mb-4">Once-weekly, with the highest average weight loss in clinical trials.</p>
+        <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm tr-table-scroll">
+          <table class="tr-comparison-table">
+            <thead>
+              <tr><th></th><th>Mounjaro</th><th>Wegovy</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="font-semibold text-gray-900">Active Ingredient</td><td>Tirzepatide</td><td>Semaglutide</td></tr>
+              <tr><td class="font-semibold text-gray-900">Weight Loss</td><td class="text-purple-700 font-bold">Up to 22.5%</td><td class="text-purple-700 font-bold">Up to 20.7%</td></tr>
+              <tr><td class="font-semibold text-gray-900">How It's Taken</td><td>Once-weekly injection</td><td>Once-weekly injection</td></tr>
+              <tr><td class="font-semibold text-gray-900">Starting Dose</td><td>2.5mg</td><td>0.25mg</td></tr>
+              <tr><td class="font-semibold text-gray-900">Dosing Plan</td><td>20 weeks to full dose</td><td>16 weeks to full dose</td></tr>
+              <tr><td class="font-semibold text-gray-900">Delivery</td><td>Within 48 hours</td><td>Within 48 hours</td></tr>
+              <tr><td class="font-semibold text-gray-900">Side Effects</td><td>Nausea, diarrhoea, reduced appetite</td><td>Nausea, diarrhoea, reduced appetite</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-600 text-center">Not sure which is right for you? <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="text-purple-600 font-semibold hover:text-purple-700">Complete the screening assessment</a> and a UK-registered prescriber will recommend the most appropriate option.</p>
     </div>
   </div>
 </section>

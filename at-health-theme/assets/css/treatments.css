@@ -51,3 +51,15 @@
     letter-spacing: 0.05em;
     color: var(--ah-gray-600);
 }
+
+/* Comparison tables: split by administration route (tablets / injections).
+   Three columns each stays readable on a phone; the wrapper scrolls rather
+   than letting the page body scroll sideways. */
+.tr-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tr-table-scroll .tr-comparison-table {
+    min-width: 520px;
+}

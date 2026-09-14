@@ -76,6 +76,8 @@
                                class="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">Wegovy</a>
                             <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy-tablets' ) ) ); ?>"
                                class="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">Wegovy Tablets</a>
+                            <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'foundayo' ) ) ); ?>"
+                               class="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">Foundayo <span class="ml-1 text-[10px] font-bold uppercase tracking-wider text-indigo-600">New</span></a>
                             <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) ); ?>"
                                class="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-b-lg transition-colors">All Treatments</a>
                         </div>
@@ -165,6 +167,7 @@
                         <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'mounjaro' ) ) ); ?>" class="block px-4 py-3 rounded-xl hover:bg-purple-50 text-gray-600 hover:text-purple-600 text-sm font-medium">Mounjaro</a>
                         <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy' ) ) ); ?>" class="block px-4 py-3 rounded-xl hover:bg-purple-50 text-gray-600 hover:text-purple-600 text-sm font-medium">Wegovy</a>
                         <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy-tablets' ) ) ); ?>" class="block px-4 py-3 rounded-xl hover:bg-purple-50 text-gray-600 hover:text-purple-600 text-sm font-medium">Wegovy Tablets</a>
+                        <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'foundayo' ) ) ); ?>" class="block px-4 py-3 rounded-xl hover:bg-purple-50 text-gray-600 hover:text-purple-600 text-sm font-medium">Foundayo <span class="ml-1 text-[10px] font-bold uppercase tracking-wider text-indigo-600">New</span></a>
                         <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) ); ?>" class="block px-4 py-3 rounded-xl hover:bg-purple-50 text-gray-600 hover:text-purple-600 text-sm font-medium">All Treatments</a>
                     </div>
                 </div>

@@ -671,6 +671,7 @@ add_action( 'wp_enqueue_scripts', function () {
         'page-templates/page-mounjaro.php'         => 'mounjaro',
         'page-templates/page-wegovy.php'           => 'wegovy',
         'page-templates/page-wegovy-tablets.php'   => 'wegovy-tablets',
+        'page-templates/page-foundayo.php'         => 'foundayo',
         'page-templates/page-eligibility.php'      => 'eligibility',
         'page-templates/page-switching.php'        => 'switching',
         'page-templates/page-about.php'            => 'about',

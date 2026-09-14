@@ -655,11 +655,82 @@ acf_add_local_field_group( array(
         array( 'key' => 'field_ah_tr_wegovy_tablets_image', 'label' => 'Wegovy Tablets Card Image', 'name' => 'tr_wegovy_tablets_image', 'type' => 'image', 'return_format' => 'id' ),
         array( 'key' => 'field_ah_tr_wegovy_tablets_desc', 'label' => 'Wegovy Tablets Description', 'name' => 'tr_wegovy_tablets_desc', 'type' => 'textarea', 'rows' => 2 ),
         array( 'key' => 'field_ah_tr_wegovy_tablets_price', 'label' => 'Wegovy Tablets Price (e.g. "from £99")', 'name' => 'tr_wegovy_tablets_price', 'type' => 'text', 'default_value' => 'from £99' ),
+        array( 'key' => 'field_ah_tr_foundayo_image', 'label' => 'Foundayo Card Image', 'name' => 'tr_foundayo_image', 'type' => 'image', 'return_format' => 'id' ),
+        array( 'key' => 'field_ah_tr_foundayo_desc', 'label' => 'Foundayo Description', 'name' => 'tr_foundayo_desc', 'type' => 'textarea', 'rows' => 2 ),
+        array( 'key' => 'field_ah_tr_foundayo_price', 'label' => 'Foundayo Price (e.g. "from £99")', 'name' => 'tr_foundayo_price', 'type' => 'text', 'default_value' => 'from £99' ),
         array( 'key' => 'field_ah_tr_orlistat_image', 'label' => 'Orlistat Card Image', 'name' => 'tr_orlistat_image', 'type' => 'image', 'return_format' => 'id' ),
         array( 'key' => 'field_ah_tr_orlistat_desc', 'label' => 'Orlistat Description', 'name' => 'tr_orlistat_desc', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'A clinically proven weight loss tablet that reduces the amount of fat your body absorbs from food. Suitable for patients with a Body Mass Index (BMI) of 28 or above.' ),
         array( 'key' => 'field_ah_tr_orlistat_price', 'label' => 'Orlistat Price (e.g. "from £XX")', 'name' => 'tr_orlistat_price', 'type' => 'text', 'default_value' => 'from £XX' ),
     ),
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-treatments.php' ) ) ),
+) );
+
+// ═══════════════════════════════════════════════
+// O-SERIES: FOUNDAYO PAGE
+// ═══════════════════════════════════════════════
+
+acf_add_local_field_group( array(
+    'key'      => 'group_ah_o1_foundayo',
+    'title'    => 'O1 — Foundayo: All Fields',
+    'fields'   => array(
+        array( 'key' => 'field_ah_fd_eyebrow', 'label' => 'Eyebrow', 'name' => 'fd_eyebrow', 'type' => 'text', 'default_value' => 'Orforglipron · Once-Daily Tablet' ),
+        array( 'key' => 'field_ah_fd_flag', 'label' => 'New/Approval Flag', 'name' => 'fd_flag', 'type' => 'text', 'default_value' => 'New — MHRA approved August 2026' ),
+        array( 'key' => 'field_ah_fd_title', 'label' => 'Page Title', 'name' => 'fd_title', 'type' => 'text', 'default_value' => 'Foundayo' ),
+        array( 'key' => 'field_ah_fd_description', 'label' => 'Description', 'name' => 'fd_description', 'type' => 'textarea', 'rows' => 4 ),
+        array( 'key' => 'field_ah_fd_product_image', 'label' => 'Product Image', 'name' => 'fd_product_image', 'type' => 'image', 'return_format' => 'id' ),
+        array( 'key' => 'field_ah_fd_price', 'label' => 'Price (number only)', 'name' => 'fd_price', 'type' => 'text', 'default_value' => '99' ),
+        array( 'key' => 'field_ah_fd_cta_text', 'label' => 'CTA Text', 'name' => 'fd_cta_text', 'type' => 'text', 'default_value' => 'Start Journey →' ),
+    ),
+    'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-foundayo.php' ) ) ),
+) );
+
+acf_add_local_field_group( array(
+    'key'   => 'group_ah_o2_foundayo_extended',
+    'title' => 'O2 — Foundayo: Difference, Dosing & FAQ',
+    'fields' => array(
+        array( 'key' => 'field_ah_fd_price_includes', 'label' => 'Price Includes Text', 'name' => 'fd_price_includes', 'type' => 'text', 'default_value' => 'Includes medication, consultations & support · 30-day supply' ),
+        array( 'key' => 'field_ah_fd_diff_eyebrow', 'label' => 'Difference Eyebrow', 'name' => 'fd_diff_eyebrow', 'type' => 'text', 'default_value' => 'What Makes Foundayo Different' ),
+        array( 'key' => 'field_ah_fd_diff_title', 'label' => 'Difference Title (HTML)', 'name' => 'fd_diff_title', 'type' => 'textarea', 'rows' => 2 ),
+        array( 'key' => 'field_ah_fd_diff_subtitle', 'label' => 'Difference Subtitle', 'name' => 'fd_diff_subtitle', 'type' => 'textarea', 'rows' => 2 ),
+        array(
+            'key' => 'field_ah_fd_diffs', 'label' => 'Difference Cards', 'name' => 'fd_diffs', 'type' => 'repeater', 'min' => 0, 'max' => 3, 'layout' => 'block',
+            'sub_fields' => array(
+                array( 'key' => 'field_ah_fd_diff_card_title', 'label' => 'Title', 'name' => 'title', 'type' => 'text' ),
+                array( 'key' => 'field_ah_fd_diff_card_desc', 'label' => 'Description', 'name' => 'desc', 'type' => 'textarea', 'rows' => 3 ),
+            ),
+        ),
+        array( 'key' => 'field_ah_fd_dosing_eyebrow', 'label' => 'Dosing Eyebrow', 'name' => 'fd_dosing_eyebrow', 'type' => 'text', 'default_value' => 'Gradual & Personalised' ),
+        array( 'key' => 'field_ah_fd_dosing_title', 'label' => 'Dosing Title (HTML)', 'name' => 'fd_dosing_title', 'type' => 'textarea', 'rows' => 2 ),
+        array( 'key' => 'field_ah_fd_dosing_subtitle', 'label' => 'Dosing Subtitle', 'name' => 'fd_dosing_subtitle', 'type' => 'textarea', 'rows' => 2 ),
+        array( 'key' => 'field_ah_fd_dosing_note', 'label' => 'Dosing Note', 'name' => 'fd_dosing_note', 'type' => 'textarea', 'rows' => 2 ),
+        array(
+            'key' => 'field_ah_fd_doses', 'label' => 'Doses', 'name' => 'fd_doses', 'type' => 'repeater', 'min' => 0, 'max' => 8, 'layout' => 'table',
+            'sub_fields' => array(
+                array( 'key' => 'field_ah_fd_dose_dose', 'label' => 'Dose', 'name' => 'dose', 'type' => 'text' ),
+                array( 'key' => 'field_ah_fd_dose_label', 'label' => 'Label', 'name' => 'label', 'type' => 'text' ),
+                array( 'key' => 'field_ah_fd_dose_price', 'label' => 'Price (number only)', 'name' => 'price', 'type' => 'text' ),
+                array( 'key' => 'field_ah_fd_dose_desc', 'label' => 'Description', 'name' => 'desc', 'type' => 'text' ),
+            ),
+        ),
+        array(
+            'key' => 'field_ah_fd_benefits', 'label' => 'Benefits List', 'name' => 'fd_benefits', 'type' => 'repeater', 'min' => 0, 'max' => 6, 'layout' => 'table',
+            'sub_fields' => array(
+                array( 'key' => 'field_ah_fd_benefit_text', 'label' => 'Benefit (HTML)', 'name' => 'text', 'type' => 'text' ),
+            ),
+        ),
+        array( 'key' => 'field_ah_fd_faq_title', 'label' => 'FAQ Title', 'name' => 'fd_faq_title', 'type' => 'text', 'default_value' => 'Foundayo FAQs' ),
+        array(
+            'key' => 'field_ah_fd_faqs', 'label' => 'FAQs', 'name' => 'fd_faqs', 'type' => 'repeater', 'min' => 0, 'max' => 10, 'layout' => 'block',
+            'sub_fields' => array(
+                array( 'key' => 'field_ah_fd_faq_q', 'label' => 'Question', 'name' => 'question', 'type' => 'text' ),
+                array( 'key' => 'field_ah_fd_faq_a', 'label' => 'Answer', 'name' => 'answer', 'type' => 'textarea', 'rows' => 3 ),
+            ),
+        ),
+        array( 'key' => 'field_ah_fd_cta_eyebrow', 'label' => 'CTA Eyebrow', 'name' => 'fd_cta_eyebrow', 'type' => 'text', 'default_value' => 'Start Today' ),
+        array( 'key' => 'field_ah_fd_cta_title', 'label' => 'CTA Title (HTML)', 'name' => 'fd_cta_title', 'type' => 'textarea', 'rows' => 2 ),
+        array( 'key' => 'field_ah_fd_cta_subtitle', 'label' => 'CTA Subtitle', 'name' => 'fd_cta_subtitle', 'type' => 'textarea', 'rows' => 2 ),
+    ),
+    'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-foundayo.php' ) ) ),
 ) );
 
 // ═══════════════════════════════════════════════
