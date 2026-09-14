@@ -49,12 +49,13 @@
     <nav class="ah-nav bg-white border-b border-gray-100 sticky top-0 z-50">
         <div class="ah-container">
             <div class="flex items-center justify-between h-20">
-                <!-- Logo -->
-                <a href="<?php echo esc_url( home_url( '/' ) ); ?>">
+                <!-- Logo: 44px in the 80px bar leaves 18px clear above and below, so the
+                     mark's flat base reads as a baseline rather than a crop -->
+                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="flex items-center">
                     <img
                         src="<?php echo esc_url( ah_logo_url() ); ?>"
                         alt="<?php echo esc_attr( ah_company_name() ); ?>"
-                        class="h-16"
+                        class="block h-11 w-auto"
                     />
                 </a>
 
