@@ -42,6 +42,8 @@ class TC_Settings {
 			'tc_eligibility_min_bmi_default',
 			'tc_eligibility_min_bmi_south_asian',
 			'tc_eligibility_retention_days',
+			TC_Identity::OPT_ENABLED,
+			TC_Identity::OPT_WEBHOOK,
 			TC_Variation_Map::OPTION_KEY,
 		];
 
@@ -188,6 +190,31 @@ class TC_Settings {
 						<td>
 							<label><input type="checkbox" name="tc_eligibility_block_direct_add_to_cart" value="1" <?php checked( get_option( 'tc_eligibility_block_direct_add_to_cart', '1' ), '1' ); ?> /> Enabled</label>
 							<p class="description">Patients can't add Wegovy / Mounjaro to cart from the product page without going through the assessment first.</p>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="tc_idv_enabled">Automated ID verification</label></th>
+						<td>
+							<label><input type="checkbox" name="tc_idv_enabled" id="tc_idv_enabled" value="1" <?php checked( get_option( TC_Identity::OPT_ENABLED, '1' ), '1' ); ?> /> Offer Stripe Identity on the order confirmation page</label>
+							<p class="description">
+								<?php if ( TC_Identity::secret_key() ) : ?>
+									Stripe keys detected from the WooCommerce Stripe gateway &mdash; automated checks are available. Manual upload stays available as a fallback.
+								<?php else : ?>
+									<strong>No Stripe secret key found.</strong> Automated checks stay switched off until the WooCommerce Stripe gateway is connected; patients see the manual upload only.
+								<?php endif; ?>
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="tc_idv_webhook_secret">Stripe Identity webhook secret</label></th>
+						<td>
+							<input type="text" name="tc_idv_webhook_secret" id="tc_idv_webhook_secret" class="regular-text" value="<?php echo esc_attr( get_option( TC_Identity::OPT_WEBHOOK, '' ) ); ?>" placeholder="whsec_..." />
+							<p class="description">
+								In Stripe &rarr; Developers &rarr; Webhooks, add an endpoint for<br />
+								<code><?php echo esc_html( TC_Identity::webhook_url() ); ?></code><br />
+								subscribed to <code>identity.verification_session.verified</code> and <code>identity.verification_session.requires_input</code>, then paste its signing secret here.
+								Optional &mdash; results are also read when the patient returns from Stripe; the webhook additionally catches checks that finish later.
+							</p>
 						</td>
 					</tr>
 				</table>
