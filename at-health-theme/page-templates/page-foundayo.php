@@ -79,9 +79,7 @@ get_header();
           if ( $fd_image ) :
               echo wp_get_attachment_image( $fd_image, 'hero-image', false, array( 'class' => 'w-full h-[400px] object-cover' ) );
           else : ?>
-            <div class="w-full h-[400px] flex items-center justify-center" style="background: linear-gradient(135deg, #eef0fb 0%, #d9dcf5 100%);">
-              <svg class="w-24 h-24 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.5 12.75l6 6 9-13.5"/></svg>
-            </div>
+            <?php echo ah_treatment_visual( 'tablet', 'h-[400px]' ); ?>
           <?php endif; ?>
           <div class="p-8">
             <div class="flex items-baseline gap-2 mb-4">

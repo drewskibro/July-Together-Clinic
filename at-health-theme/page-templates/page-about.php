@@ -51,16 +51,16 @@ get_header();
         <h2 class="text-3xl md:text-4xl font-serif text-gray-900 mb-8"><?php echo esc_html( ah_field( 'ab_story_title', 'Our Story' ) ); ?></h2>
         <div class="space-y-6">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Experienced Medical Roots</h3>
-            <p class="text-gray-600 leading-relaxed"><?php echo esc_html( ah_field( 'ab_story_1', 'Operated by Prescription Point Limited, we bring over a decade of pharmaceutical experience and have served more than 10,000 patients across the UK.' ) ); ?></p>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Pharmacist-led from the start</h3>
+            <p class="text-gray-600 leading-relaxed"><?php echo esc_html( ah_field( 'ab_story_1', 'Together Clinic is a GPhC-registered online pharmacy led by independent pharmacist prescribers. Every treatment we supply is reviewed by a prescriber before it is dispensed — no exceptions.' ) ); ?></p>
           </div>
           <div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">Solving the Access Problem</h3>
-            <p class="text-gray-600 leading-relaxed"><?php echo esc_html( ah_field( 'ab_story_2', 'Glucagon-Like Peptide-1 (GLP-1) medications were difficult to access. We removed barriers — offering same-day prescriptions, 48-hour delivery, and transparent pricing.' ) ); ?></p>
+            <p class="text-gray-600 leading-relaxed"><?php echo esc_html( ah_field( 'ab_story_2', 'Getting expert care used to mean waiting weeks. We removed the barriers — prescriber review within 24 hours, tracked 48-hour delivery, and transparent pricing with nothing charged until you are approved.' ) ); ?></p>
           </div>
           <div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">No Compromise on Quality</h3>
-            <p class="text-gray-600 leading-relaxed"><?php echo esc_html( ah_field( 'ab_story_3', 'Expert guidance, genuine UK-licensed medication, fast delivery, and ongoing support — everything you need for a safe, effective weight loss journey.' ) ); ?></p>
+            <p class="text-gray-600 leading-relaxed"><?php echo esc_html( ah_field( 'ab_story_3', 'Expert guidance, genuine UK-licensed medication, fast delivery, and ongoing support — everything you need for safe, effective treatment.' ) ); ?></p>
           </div>
         </div>
         <div class="mt-8 bg-purple-50 border border-purple-200 rounded-2xl p-6">

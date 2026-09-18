@@ -127,6 +127,43 @@ function ah_no_phone_notice() {
     return ah_option( 'no_phone_notice', 'We do not offer telephone consultations. Please contact us via email or live chat.' );
 }
 
+/**
+ * Designed visual for a treatment, used when no photograph is set.
+ *
+ * Deliberately NOT a product packshot. The ASA/MHRA/GPhC enforcement notice on
+ * weight-management prescription medicines names injection-pen imagery — whole
+ * or partial, branded or unbranded — as advertising the medicine. So this shows
+ * the administration form and nothing identifying a product: no pack, no pen,
+ * no drug name. It reads as an intentional editorial panel rather than a
+ * missing image, and it is what should stay in place unless the client supplies
+ * compliant lifestyle photography.
+ *
+ * @param string $form   'tablet' or 'injection'.
+ * @param string $height Tailwind height classes for the panel.
+ * @param string $label  Optional override for the caption.
+ */
+function ah_treatment_visual( $form = 'tablet', $height = 'h-56', $label = '' ) {
+    $is_tablet = ( $form !== 'injection' );
+
+    if ( $label === '' ) {
+        $label = $is_tablet ? 'Once-daily tablet' : 'Once-weekly injection';
+    }
+
+    // Tablet: a capsule seen end-on. Injection: a droplet. Both abstract marks.
+    $mark = $is_tablet
+        ? '<rect x="10" y="26" width="44" height="20" rx="10" stroke="currentColor" stroke-width="2.25" fill="none"/><path d="M32 26v20" stroke="currentColor" stroke-width="2.25"/>'
+        : '<path d="M32 12c7 9 12 15.5 12 21.5a12 12 0 1 1-24 0C20 27.5 25 21 32 12z" stroke="currentColor" stroke-width="2.25" fill="none"/>';
+
+    ob_start();
+    ?>
+    <div class="ah-tvisual <?php echo esc_attr( $height ); ?> <?php echo $is_tablet ? 'ah-tvisual--tablet' : 'ah-tvisual--inject'; ?>" role="img" aria-label="<?php echo esc_attr( $label ); ?>">
+        <svg viewBox="0 0 64 64" class="ah-tvisual-mark" aria-hidden="true"><?php echo $mark; // phpcs:ignore WordPress.Security.EscapeOutput ?></svg>
+        <span class="ah-tvisual-label"><?php echo esc_html( $label ); ?></span>
+    </div>
+    <?php
+    return (string) ob_get_clean();
+}
+
 function ah_booking_url() {
     return ah_option( 'eligibility_url', '/weight-loss-eligibility/' );
 }
