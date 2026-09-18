@@ -81,7 +81,7 @@ get_header();
           if ( $wg_image ) :
               echo wp_get_attachment_image( $wg_image, 'hero-image', false, array( 'class' => 'w-full h-[400px] object-cover' ) );
           else : ?>
-            <?php echo ah_treatment_visual( 'injection', 'h-[400px]' ); ?>
+            <img src="https://c.animaapp.com/mkl3lxzpWoqisd/img/wegovy-%281%29.jpg" alt="Wegovy packaging" class="w-full h-[400px] object-cover" />
           <?php endif; ?>
           <div class="p-8">
             <div class="flex items-baseline gap-2 mb-4">

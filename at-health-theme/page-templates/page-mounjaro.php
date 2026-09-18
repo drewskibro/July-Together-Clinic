@@ -91,7 +91,7 @@ get_header();
           if ( $mj_image ) :
               echo wp_get_attachment_image( $mj_image, 'hero-image', false, array( 'class' => 'w-full h-[400px] object-cover' ) );
           else : ?>
-            <?php echo ah_treatment_visual( 'injection', 'h-[400px]' ); ?>
+            <img src="https://c.animaapp.com/mkl3lxzpWoqisd/img/mounjaro.jpg" alt="Mounjaro packaging" class="w-full h-[400px] object-cover" />
           <?php endif; ?>
 
           <div class="p-8">

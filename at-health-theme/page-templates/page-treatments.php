@@ -136,7 +136,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
           <span class="absolute top-4 left-4 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full">Most Popular</span>
           <?php $mj_img = ah_field( 'tr_mounjaro_image', '' ); ?>
           <?php if ( $mj_img ) : echo wp_get_attachment_image( $mj_img, 'treatment-card', false, array( 'class' => 'w-full h-56 object-cover' ) ); else : ?>
-          <?php echo ah_treatment_visual( 'injection', 'h-56' ); ?>
+          <img src="https://c.animaapp.com/mkl3lxzpWoqisd/img/mounjaro.jpg" alt="Mounjaro packaging" class="w-full h-56 object-cover" />
           <?php endif; ?>
         </div>
         <div class="p-8">
@@ -159,7 +159,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
           <span class="absolute top-4 left-4 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">Proven Results</span>
           <?php $wg_img = ah_field( 'tr_wegovy_image', '' ); ?>
           <?php if ( $wg_img ) : echo wp_get_attachment_image( $wg_img, 'treatment-card', false, array( 'class' => 'w-full h-56 object-cover' ) ); else : ?>
-          <?php echo ah_treatment_visual( 'injection', 'h-56' ); ?>
+          <img src="https://c.animaapp.com/mkl3lxzpWoqisd/img/wegovy-%281%29.jpg" alt="Wegovy packaging" class="w-full h-56 object-cover" />
           <?php endif; ?>
         </div>
         <div class="p-8">
