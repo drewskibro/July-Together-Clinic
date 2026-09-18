@@ -82,7 +82,7 @@ get_header();
           if ( $wt_image ) :
               echo wp_get_attachment_image( $wt_image, 'hero-image', false, array( 'class' => 'w-full h-[400px] object-cover' ) );
           else : ?>
-            <img src="https://c.animaapp.com/mkl3lxzpWoqisd/img/wegovy-%281%29.jpg" alt="Wegovy Tablets packaging" class="w-full h-[400px] object-cover" />
+            <?php echo ah_treatment_visual( 'tablet', 'h-[400px]' ); ?>
           <?php endif; ?>
           <div class="p-8">
             <div class="flex items-baseline gap-2 mb-4">

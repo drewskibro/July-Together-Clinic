@@ -136,7 +136,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
           <span class="absolute top-4 left-4 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-full">Most Popular</span>
           <?php $mj_img = ah_field( 'tr_mounjaro_image', '' ); ?>
           <?php if ( $mj_img ) : echo wp_get_attachment_image( $mj_img, 'treatment-card', false, array( 'class' => 'w-full h-56 object-cover' ) ); else : ?>
-          <img src="https://c.animaapp.com/mkl3lxzpWoqisd/img/mounjaro.jpg" alt="Mounjaro" class="w-full h-56 object-cover" />
+          <?php echo ah_treatment_visual( 'injection', 'h-56' ); ?>
           <?php endif; ?>
         </div>
         <div class="p-8">
@@ -159,7 +159,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
           <span class="absolute top-4 left-4 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">Proven Results</span>
           <?php $wg_img = ah_field( 'tr_wegovy_image', '' ); ?>
           <?php if ( $wg_img ) : echo wp_get_attachment_image( $wg_img, 'treatment-card', false, array( 'class' => 'w-full h-56 object-cover' ) ); else : ?>
-          <img src="https://c.animaapp.com/mkl3lxzpWoqisd/img/wegovy-%281%29.jpg" alt="Wegovy" class="w-full h-56 object-cover" />
+          <?php echo ah_treatment_visual( 'injection', 'h-56' ); ?>
           <?php endif; ?>
         </div>
         <div class="p-8">
@@ -189,9 +189,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
           <span class="absolute top-4 left-4 bg-indigo-500 text-white text-xs font-bold px-3 py-1 rounded-full">Needle-Free</span>
           <?php $wt_img = ah_field( 'tr_wegovy_tablets_image', '' ); ?>
           <?php if ( $wt_img ) : echo wp_get_attachment_image( $wt_img, 'treatment-card', false, array( 'class' => 'w-full h-56 object-cover' ) ); else : ?>
-          <div class="w-full h-56 flex items-center justify-center" style="background: linear-gradient(135deg, #eef0fb 0%, #d9dcf5 100%);">
-            <svg class="w-20 h-20 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.5 12.75l6 6 9-13.5"/></svg>
-          </div>
+          <?php echo ah_treatment_visual( 'tablet', 'h-56' ); ?>
           <?php endif; ?>
         </div>
         <div class="p-8">
@@ -212,9 +210,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
           <span class="absolute top-4 left-4 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full">New</span>
           <?php $fd_img = ah_field( 'tr_foundayo_image', '' ); ?>
           <?php if ( $fd_img ) : echo wp_get_attachment_image( $fd_img, 'treatment-card', false, array( 'class' => 'w-full h-56 object-cover' ) ); else : ?>
-          <div class="w-full h-56 flex items-center justify-center" style="background: linear-gradient(135deg, #eef0fb 0%, #d9dcf5 100%);">
-            <svg class="w-20 h-20 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.5 12.75l6 6 9-13.5"/></svg>
-          </div>
+          <?php echo ah_treatment_visual( 'tablet', 'h-56' ); ?>
           <?php endif; ?>
         </div>
         <div class="p-8">
@@ -235,9 +231,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
           <span class="absolute top-4 left-4 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">Capsule</span>
           <?php $or_img = ah_field( 'tr_orlistat_image', '' ); ?>
           <?php if ( $or_img ) : echo wp_get_attachment_image( $or_img, 'treatment-card', false, array( 'class' => 'w-full h-56 object-cover' ) ); else : ?>
-          <div class="w-full h-56 flex items-center justify-center" style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);">
-            <svg class="w-20 h-20 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.5 12.75l6 6 9-13.5"/></svg>
-          </div>
+          <?php echo ah_treatment_visual( 'tablet', 'h-56' ); ?>
           <?php endif; ?>
         </div>
         <div class="p-8">

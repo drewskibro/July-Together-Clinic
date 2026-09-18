@@ -255,6 +255,51 @@ a {
     border-top: 1px solid rgba(17, 24, 39, 0.10);
 }
 
+/* ── Treatment visual (stands in for product photography) ──
+   Not a packshot by design — see ah_treatment_visual() in functions.php. */
+.ah-tvisual {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    overflow: hidden;
+}
+.ah-tvisual::after {
+    /* Off-centre bloom, so the panel has a light source rather than a flat fill */
+    content: '';
+    position: absolute;
+    width: 150%;
+    aspect-ratio: 1;
+    top: -55%;
+    left: -25%;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 62%);
+    pointer-events: none;
+}
+.ah-tvisual--tablet { background: linear-gradient(150deg, #eef0fb 0%, #ddd9f3 100%); }
+.ah-tvisual--inject { background: linear-gradient(150deg, #e9eef7 0%, #d5dcee 100%); }
+
+.ah-tvisual-mark {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    color: var(--ah-purple-700);
+    opacity: 0.55;
+}
+.ah-tvisual-label {
+    position: relative;
+    font-family: var(--ah-font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--ah-purple-700);
+    opacity: 0.8;
+}
+
 /* ── Footer ──
    Column labels are <h3>, which the global heading rule sets to the serif
    display face; at 11px that is hairline-thin on dark. Override to the
