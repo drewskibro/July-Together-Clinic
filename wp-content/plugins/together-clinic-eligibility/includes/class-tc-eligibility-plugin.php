@@ -23,6 +23,7 @@ class TC_Eligibility_Plugin {
 		TC_Review_Status::init();
 		TC_Review_Payment::init();
 		TC_Secure_Docs::init();
+		TC_Identity::init();
 
 		new TC_Review_Actions();
 		new TC_Review_Cron();
