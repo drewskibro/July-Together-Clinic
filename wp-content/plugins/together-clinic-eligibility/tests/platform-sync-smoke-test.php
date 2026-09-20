@@ -45,16 +45,10 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', sys_get_temp_dir() . '/' ); // satisfy the plugin file guard
 }
-// TC_Platform_Sync's RETRY_DELAYS class constant is a compile-time constant
-// expression that references these two WordPress time constants directly
-// (the same way core itself defines them) — normally set up by wp-load.php
-// long before this file would ever be included.
-if ( ! defined( 'MINUTE_IN_SECONDS' ) ) {
-	define( 'MINUTE_IN_SECONDS', 60 );
-}
-if ( ! defined( 'HOUR_IN_SECONDS' ) ) {
-	define( 'HOUR_IN_SECONDS', 60 * MINUTE_IN_SECONDS );
-}
+// No other WordPress constant or function needs defining here: retry_delays()
+// (Opus review, minor 8) reads MINUTE_IN_SECONDS at call time with its own
+// fallback rather than a class constant's compile-time expression, so this
+// file loads standalone with nothing else set up first.
 
 require __DIR__ . '/../includes/class-tc-platform-sync.php';
 
@@ -171,6 +165,20 @@ check(
 	'an ambiguous slash-separated date PHP cannot parse safely returns empty, not a guess',
 	$normalise_dob->invoke( null, '14/05/1990' ) === ''
 );
+
+echo "\n— externalReference namespacing (Opus review, M1) —\n";
+$order_id_from_ref = new ReflectionMethod( 'TC_Platform_Sync', 'order_id_from_external_reference' );
+$order_id_from_ref->setAccessible( true );
+check( 'a namespaced reference resolves to the order id', $order_id_from_ref->invoke( null, 'tc-order-501' ) === 501 );
+check( 'a namespaced reference with a large id still resolves', $order_id_from_ref->invoke( null, 'tc-order-999999' ) === 999999 );
+check(
+	'a bare numeric reference (the old, unnamespaced shape) is refused, not silently accepted',
+	$order_id_from_ref->invoke( null, '501' ) === null
+);
+check( 'an empty reference is refused', $order_id_from_ref->invoke( null, '' ) === null );
+check( 'a reference from an unrelated namespace is refused', $order_id_from_ref->invoke( null, 'other-order-501' ) === null );
+check( 'a non-numeric suffix is refused', $order_id_from_ref->invoke( null, 'tc-order-abc' ) === null );
+check( 'trailing garbage after the id is refused', $order_id_from_ref->invoke( null, 'tc-order-501x' ) === null );
 
 echo "\n========================================\n";
 echo "  $pass passed, $fail failed\n";

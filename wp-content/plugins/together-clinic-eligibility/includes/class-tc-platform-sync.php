@@ -33,7 +33,6 @@ class TC_Platform_Sync {
 	const META_SYNCED_AT      = '_tc_platform_synced_at';
 	const META_SYNC_ATTEMPTS  = '_tc_platform_sync_attempts';
 	const META_SYNC_LAST_ERROR = '_tc_platform_sync_last_error';
-	const META_PROCESSED_EVENTS = '_tc_platform_processed_events';
 
 	/** `packages/contracts/src/signature.ts`: WEBHOOK_SIGNATURE_HEADER / TOLERANCE_SECONDS. */
 	const SIGNATURE_HEADER    = 'X-Together-Signature';
@@ -41,8 +40,10 @@ class TC_Platform_Sync {
 
 	const RETRY_HOOK  = 'tc_platform_sync_retry';
 	const MAX_ATTEMPTS = 3;
-	/** Delay before retry N (1-indexed by the attempt that just failed). */
-	const RETRY_DELAYS = [ 5 * MINUTE_IN_SECONDS, 30 * MINUTE_IN_SECONDS ];
+
+	/** Bounded (last 500) list of processed webhook event ids, one site option — never per-order meta. */
+	const OPTION_PROCESSED_EVENTS = 'tc_platform_processed_event_ids';
+	const PROCESSED_EVENTS_LIMIT  = 500;
 
 	/** Identity fields stripped from the raw payload before it is sent as `answers`. */
 	const IDENTITY_KEYS = [
@@ -93,6 +94,33 @@ class TC_Platform_Sync {
 			}
 		}
 		return '';
+	}
+
+	/**
+	 * Delay before retry N (1-indexed by the attempt that just failed).
+	 * A method, not a class constant: a class constant's expression is
+	 * evaluated when the file is parsed, so `5 * MINUTE_IN_SECONDS` would
+	 * fatal-error the moment this file loads outside WordPress (Opus
+	 * review, minor 8) — tests/platform-sync-smoke-test.php included.
+	 */
+	private static function retry_delays() {
+		$minute = defined( 'MINUTE_IN_SECONDS' ) ? MINUTE_IN_SECONDS : 60;
+		return [ 5 * $minute, 30 * $minute ];
+	}
+
+	/**
+	 * `tc-order-<id>` -> `<id>`, or null when the reference is not shaped
+	 * that way at all. Namespaced rather than a bare order id (Opus review,
+	 * M1): externalReference is unique only per tenant, not per API key, so
+	 * an unnamespaced numeric id would let any OTHER key-holder in the same
+	 * tenant reach this same patient through the upsert on `POST
+	 * /v1/patients` just by guessing a small integer.
+	 */
+	private static function order_id_from_external_reference( $external_reference ) {
+		if ( 1 === preg_match( '/^tc-order-(\d+)$/', (string) $external_reference, $matches ) ) {
+			return (int) $matches[1];
+		}
+		return null;
 	}
 
 	/**
@@ -151,8 +179,25 @@ class TC_Platform_Sync {
 			return;
 		}
 
+		// A dob that fails to parse is a data problem, not a transient one:
+		// fail fast with an order note and schedule no retry (Opus review,
+		// minor 6). "Send to prescribing platform" is the only way back,
+		// after the date is fixed on the order.
+		$raw_dob = trim( (string) ( $payload['dob'] ?? '' ) );
+		if ( '' !== $raw_dob && '' === self::normalise_dob( $raw_dob ) ) {
+			$order->add_order_note( sprintf(
+				'Prescribing platform sync stopped: the date of birth on this assessment ("%s") could not be read. Correct it and use "Send to prescribing platform" to retry.',
+				sanitize_text_field( $raw_dob )
+			) );
+			$order->save();
+			TC_Log::warn( 'platform_sync_unparseable_dob', [ 'order_id' => $order->get_id() ] );
+			return;
+		}
+
 		$order_id           = $order->get_id();
-		$external_reference = (string) $order_id;
+		// Namespaced, not a bare order id (Opus review, M1) — see
+		// order_id_from_external_reference()'s own comment.
+		$external_reference = 'tc-order-' . $order_id;
 
 		$patient_body = self::patient_request_body( $order, $payload, $external_reference );
 		$patient      = self::request(
@@ -201,7 +246,7 @@ class TC_Platform_Sync {
 	/**
 	 * @param WC_Order $order
 	 * @param array    $payload             Raw eligibility assessment payload.
-	 * @param string   $external_reference  The order id, as the platform's patient key.
+	 * @param string   $external_reference  `tc-order-<id>`, the platform's patient key.
 	 */
 	private static function patient_request_body( WC_Order $order, array $payload, $external_reference ) {
 		$first_name = $payload['firstName'] ?? '';
@@ -279,15 +324,16 @@ class TC_Platform_Sync {
 			// this is what json_safe_answers() and the two builders above
 			// can validly produce (no GP details, no reported height/weight).
 			'answers'      => (object) self::json_safe_answers( $answers ),
-			// The site has no separate "consent to hold GP records" question
-			// distinct from submitting the assessment at all, so gpRecords —
-			// like SERVICE — is the platform's own always-true PATIENT_LINK
-			// convention (cmd_submit_pre_consultation_v2). gpShare and
-			// scrAccess are exactly what the site captured; scrAccess is
-			// false unless the site captured it, per the P6 spec.
+			// Exactly the three questions this site actually asks (Opus
+			// review, B2): terms_agreed, gp_consent_share, gp_consent_scr.
+			// There is no gpRecords question at all, so that key is never
+			// sent — the platform records nothing for a consent key that is
+			// absent, rather than coercing a question nobody was asked into
+			// a recorded decline. service defaults to false, never true,
+			// when termsAgreed is somehow absent: it must never be assumed
+			// given.
 			'consents'     => [
-				'service'   => self::truthy( $payload['termsAgreed'] ?? true ),
-				'gpRecords' => true,
+				'service'   => self::truthy( $payload['termsAgreed'] ?? false ),
 				'gpShare'   => self::truthy( $payload['gpConsentShare'] ?? false ),
 				'scrAccess' => isset( $payload['gpConsentSCR'] ) ? self::truthy( $payload['gpConsentSCR'] ) : false,
 			],
@@ -405,7 +451,8 @@ class TC_Platform_Sync {
 		] );
 
 		if ( $attempts < self::MAX_ATTEMPTS ) {
-			$delay = self::RETRY_DELAYS[ $attempts - 1 ] ?? end( self::RETRY_DELAYS );
+			$delays = self::retry_delays();
+			$delay  = $delays[ $attempts - 1 ] ?? end( $delays );
 			wp_schedule_single_event( time() + $delay, self::RETRY_HOOK, [ $order->get_id() ] );
 		}
 	}
@@ -485,7 +532,8 @@ class TC_Platform_Sync {
 
 		$data                = is_array( $event['data'] ?? null ) ? $event['data'] : [];
 		$external_reference  = isset( $data['externalReference'] ) ? (string) $data['externalReference'] : '';
-		$order               = ( '' !== $external_reference ) ? wc_get_order( (int) $external_reference ) : false;
+		$order_id            = self::order_id_from_external_reference( $external_reference );
+		$order               = ( null !== $order_id ) ? wc_get_order( $order_id ) : false;
 
 		if ( ! $order instanceof WC_Order ) {
 			TC_Log::warn( 'platform_webhook_unresolved_order', [
@@ -496,21 +544,52 @@ class TC_Platform_Sync {
 		}
 
 		$event_id = (string) $event['id'];
-		if ( self::event_already_processed( $order, $event_id ) ) {
+		if ( self::event_already_processed( $event_id ) ) {
 			return new WP_REST_Response( [ 'status' => 'duplicate' ], 200 );
 		}
-		self::mark_event_processed( $order, $event_id );
 
-		// TC_Review_Actions::approve()/reject() already no-op on an order
-		// that is not awaiting-review, so no extra status check is needed
-		// here.
-		TC_Review_Actions::set_reviewer_override( 'Prescribing platform' );
-		if ( 'prescription.issued' === $type ) {
-			TC_Review_Actions::approve( $order );
-		} else {
-			TC_Review_Actions::reject( $order );
+		// The order has moved on since it was pushed (approved, rejected or
+		// cancelled some other way) — the platform's decision arrived too
+		// late to apply. Never silently dropped (Opus review, M2): a loud
+		// order note plus a warn log, and the event is still marked
+		// processed and answered 200 so the platform does not retry forever.
+		if ( TC_Review_Status::STATUS !== $order->get_status() ) {
+			$note = ( 'consultation.declined' === $type )
+				? 'Prescribing platform declined treatment after this order was approved. Review urgently.'
+				: sprintf(
+					'Prescribing platform issued a prescription for an order that is no longer awaiting review (currently "%s"). Review urgently.',
+					$order->get_status()
+				);
+			$order->add_order_note( $note );
+
+			TC_Log::warn( 'platform_webhook_unexpected_order_state', [
+				'type'     => $type,
+				'order_id' => $order->get_id(),
+				'status'   => $order->get_status(),
+			] );
+
+			self::mark_event_processed( $event_id );
+			return new WP_REST_Response( [ 'status' => 'ok' ], 200 );
 		}
-		TC_Review_Actions::set_reviewer_override( null );
+
+		// Marked processed only after the action below actually runs (Opus
+		// review, minor 2): a crash between marking and acting would
+		// otherwise permanently swallow a legitimate delivery.
+		TC_Review_Actions::set_reviewer_override( 'Prescribing platform' );
+		try {
+			if ( 'prescription.issued' === $type ) {
+				TC_Review_Actions::approve( $order );
+			} else {
+				TC_Review_Actions::reject( $order );
+			}
+		} finally {
+			// Always cleared, success or exception (Opus review, minor 1):
+			// this is a static override on a shared class and must never
+			// leak into an unrelated request that happens to reuse this
+			// worker process.
+			TC_Review_Actions::set_reviewer_override( null );
+		}
+		self::mark_event_processed( $event_id );
 
 		TC_Log::info( 'platform_webhook_processed', [
 			'type'     => $type,
@@ -554,19 +633,24 @@ class TC_Platform_Sync {
 		return hash_equals( $expected, $signature );
 	}
 
-	private static function event_already_processed( WC_Order $order, $event_id ) {
-		$ids = (array) $order->get_meta( self::META_PROCESSED_EVENTS );
+	/**
+	 * Dedupe list lives in one site option, not per-order meta (Opus
+	 * review, minor 3): an event id is meaningful platform-wide, and a
+	 * single bounded list is simpler to reason about and to inspect than
+	 * one growing list per order.
+	 */
+	private static function event_already_processed( $event_id ) {
+		$ids = (array) get_option( self::OPTION_PROCESSED_EVENTS, [] );
 		return in_array( $event_id, $ids, true );
 	}
 
-	private static function mark_event_processed( WC_Order $order, $event_id ) {
-		$ids   = (array) $order->get_meta( self::META_PROCESSED_EVENTS );
+	private static function mark_event_processed( $event_id ) {
+		$ids   = (array) get_option( self::OPTION_PROCESSED_EVENTS, [] );
 		$ids[] = $event_id;
-		// One order carries at most a couple of these events in practice;
-		// capped so a pathological retry storm can never grow this meta
-		// value unboundedly.
-		$ids = array_slice( array_values( array_unique( $ids ) ), -20 );
-		$order->update_meta_data( self::META_PROCESSED_EVENTS, $ids );
-		$order->save();
+		$ids   = array_slice( array_values( array_unique( $ids ) ), -self::PROCESSED_EVENTS_LIMIT );
+		// 'no', not the boolean false: this plugin's floor is WP 6.4, and
+		// update_option()'s $autoload only reliably accepts the yes/no
+		// strings before WP 6.6 started also taking a bool.
+		update_option( self::OPTION_PROCESSED_EVENTS, $ids, 'no' );
 	}
 }

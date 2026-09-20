@@ -236,14 +236,14 @@ class TC_Settings {
 					<tr>
 						<th><label for="tc_platform_api_key">API key</label></th>
 						<td>
-							<input type="password" name="tc_platform_api_key" id="tc_platform_api_key" class="regular-text" value="" autocomplete="off" placeholder="<?php echo self::secret_configured( 'TC_PLATFORM_API_KEY', 'tc_platform_api_key' ) ? 'A key is currently stored — leave blank to keep it' : 'tk_...'; ?>" />
+							<input type="password" name="tc_platform_api_key" id="tc_platform_api_key" class="regular-text" value="" autocomplete="off" placeholder="<?php echo esc_attr( self::secret_configured( 'TC_PLATFORM_API_KEY', 'tc_platform_api_key' ) ? 'A key is currently stored, leave blank to keep it' : 'tk_...' ); ?>" />
 							<p class="description">Stored with the same care as the Stripe secret key: leave blank to keep the value already saved. Can instead be set as the <code>TC_PLATFORM_API_KEY</code> constant, which always takes precedence and never touches the database.</p>
 						</td>
 					</tr>
 					<tr>
 						<th><label for="tc_platform_webhook_secret">Webhook secret</label></th>
 						<td>
-							<input type="password" name="tc_platform_webhook_secret" id="tc_platform_webhook_secret" class="regular-text" value="" autocomplete="off" placeholder="<?php echo self::secret_configured( 'TC_PLATFORM_WEBHOOK_SECRET', 'tc_platform_webhook_secret' ) ? 'A secret is currently stored — leave blank to keep it' : ''; ?>" />
+							<input type="password" name="tc_platform_webhook_secret" id="tc_platform_webhook_secret" class="regular-text" value="" autocomplete="off" placeholder="<?php echo esc_attr( self::secret_configured( 'TC_PLATFORM_WEBHOOK_SECRET', 'tc_platform_webhook_secret' ) ? 'A secret is currently stored, leave blank to keep it' : '' ); ?>" />
 							<p class="description">Verifies deliveries to <code><?php echo esc_html( rest_url( 'tc/v1/platform-webhook' ) ); ?></code>. Leave blank to keep the value already saved, or set the <code>TC_PLATFORM_WEBHOOK_SECRET</code> constant instead.</p>
 						</td>
 					</tr>
