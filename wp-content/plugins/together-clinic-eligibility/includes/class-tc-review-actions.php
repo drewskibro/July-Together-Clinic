@@ -24,6 +24,21 @@ class TC_Review_Actions {
 	const META_PAYLINK_AT  = '_tc_review_paylink_sent_at';
 	const META_REMINDER_AT = '_tc_review_reminder_sent_at';
 
+	/**
+	 * Set by TC_Platform_Sync immediately before calling approve()/reject()
+	 * for a webhook-driven decision, and cleared straight after. The
+	 * prescribing platform's own prescriber already made the decision there
+	 * (CD-09 item 4); this records that honestly as "Prescribing platform"
+	 * rather than spoofing a WordPress user with wp_set_current_user(), which
+	 * would misattribute the decision in the order notes and this class's
+	 * own audit meta.
+	 */
+	private static $reviewer_override = null;
+
+	public static function set_reviewer_override( $label ) {
+		self::$reviewer_override = $label;
+	}
+
 	public function __construct() {
 		add_filter( 'woocommerce_order_actions', [ $this, 'add_actions' ], 10, 2 );
 		add_action( 'woocommerce_order_action_tc_review_approve', [ __CLASS__, 'approve' ] );
@@ -167,6 +182,9 @@ class TC_Review_Actions {
 	}
 
 	private static function current_reviewer() {
+		if ( null !== self::$reviewer_override ) {
+			return self::$reviewer_override;
+		}
 		$user = wp_get_current_user();
 		return ( $user && $user->exists() ) ? $user->display_name : 'system';
 	}

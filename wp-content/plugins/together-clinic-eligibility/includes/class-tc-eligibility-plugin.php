@@ -33,6 +33,7 @@ class TC_Eligibility_Plugin {
 		new TC_Change_Treatment();
 		new TC_Order_Admin();
 		new TC_Settings();
+		new TC_Platform_Sync();
 		new TC_Cron();
 		new TC_My_Account();
 

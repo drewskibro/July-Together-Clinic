@@ -77,6 +77,15 @@ class TC_Review_Order {
 			'user_id'       => (int) $user_id,
 		] );
 
+		/**
+		 * Fired once an awaiting-review treatment order exists, with the
+		 * order and the raw assessment payload that created it. Consumed
+		 * by TC_Platform_Sync to push the patient and their intake to the
+		 * prescribing platform (CD-09 item 4), fail closed and never
+		 * blocking the order's own creation above.
+		 */
+		do_action( 'tc_review_order_created', $order, $payload );
+
 		return $order;
 	}
 
