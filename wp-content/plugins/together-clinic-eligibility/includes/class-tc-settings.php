@@ -43,6 +43,10 @@ class TC_Settings {
 			'tc_eligibility_min_bmi_south_asian',
 			'tc_eligibility_retention_days',
 			TC_Variation_Map::OPTION_KEY,
+			'tc_platform_sync_enabled',
+			'tc_platform_base_url',
+			'tc_platform_api_key',
+			'tc_platform_webhook_secret',
 		];
 
 		foreach ( $opts as $opt ) {
@@ -212,6 +216,39 @@ class TC_Settings {
 					</tr>
 				</table>
 
+				<h2>Prescribing platform</h2>
+				<p class="description">The Together Health Prescribing &amp; Consultation Platform (CD-16 item 4). While this is off, or any field below is blank, orders are never sent &mdash; a persistent notice on the orders screen says so.</p>
+				<table class="form-table">
+					<tr>
+						<th>Send orders to the prescribing platform</th>
+						<td>
+							<label><input type="checkbox" name="tc_platform_sync_enabled" value="1" <?php checked( get_option( 'tc_platform_sync_enabled', '0' ), '1' ); ?> /> Enabled</label>
+							<p class="description">Kill switch. Uncheck to immediately stop pushing patients and intake to the platform without a deploy.</p>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="tc_platform_base_url">Platform base URL</label></th>
+						<td>
+							<input type="url" name="tc_platform_base_url" id="tc_platform_base_url" class="large-text" value="<?php echo esc_attr( get_option( 'tc_platform_base_url', '' ) ); ?>" placeholder="https://consultation-api.example.com" />
+							<p class="description">The platform's REST API, no trailing slash. Can instead be set as the <code>TC_PLATFORM_BASE_URL</code> constant in <code>wp-config.php</code>, which always takes precedence.</p>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="tc_platform_api_key">API key</label></th>
+						<td>
+							<input type="password" name="tc_platform_api_key" id="tc_platform_api_key" class="regular-text" value="" autocomplete="off" placeholder="<?php echo esc_attr( self::secret_configured( 'TC_PLATFORM_API_KEY', 'tc_platform_api_key' ) ? 'A key is currently stored, leave blank to keep it' : 'tk_...' ); ?>" />
+							<p class="description">Stored with the same care as the Stripe secret key: leave blank to keep the value already saved. Can instead be set as the <code>TC_PLATFORM_API_KEY</code> constant, which always takes precedence and never touches the database.</p>
+						</td>
+					</tr>
+					<tr>
+						<th><label for="tc_platform_webhook_secret">Webhook secret</label></th>
+						<td>
+							<input type="password" name="tc_platform_webhook_secret" id="tc_platform_webhook_secret" class="regular-text" value="" autocomplete="off" placeholder="<?php echo esc_attr( self::secret_configured( 'TC_PLATFORM_WEBHOOK_SECRET', 'tc_platform_webhook_secret' ) ? 'A secret is currently stored, leave blank to keep it' : '' ); ?>" />
+							<p class="description">Verifies deliveries to <code><?php echo esc_html( rest_url( 'tc/v1/platform-webhook' ) ); ?></code>. Leave blank to keep the value already saved, or set the <code>TC_PLATFORM_WEBHOOK_SECRET</code> constant instead.</p>
+						</td>
+					</tr>
+				</table>
+
 				<h2>Data retention</h2>
 				<table class="form-table">
 					<tr>
@@ -307,14 +344,44 @@ class TC_Settings {
 			'tc_eligibility_send_clinician_emails',
 			'tc_eligibility_enforce_assessment_before_checkout',
 			'tc_eligibility_block_direct_add_to_cart',
+			'tc_platform_sync_enabled',
 		];
 		foreach ( $checkboxes as $key ) {
 			update_option( $key, isset( $_POST[ $key ] ) ? '1' : '0' );
 		}
 
+		if ( isset( $_POST['tc_platform_base_url'] ) ) {
+			update_option( 'tc_platform_base_url', esc_url_raw( wp_unslash( $_POST['tc_platform_base_url'] ) ) );
+		}
+
+		// Masked secret fields: an empty submission means "leave it alone",
+		// never "clear it" — the field is never pre-filled with the real
+		// value (self::secret_configured() only says whether one exists), so
+		// a blank field on save is what happens when the admin didn't touch
+		// it, not a deliberate clear.
+		$secrets = [ 'tc_platform_api_key', 'tc_platform_webhook_secret' ];
+		foreach ( $secrets as $key ) {
+			if ( ! empty( $_POST[ $key ] ) ) {
+				update_option( $key, sanitize_text_field( wp_unslash( $_POST[ $key ] ) ) );
+			}
+		}
+
 		if ( isset( $_POST['tc_variation_map'] ) && is_array( $_POST['tc_variation_map'] ) ) {
 			TC_Variation_Map::save( wp_unslash( $_POST['tc_variation_map'] ) );
 		}
+	}
+
+	/**
+	 * Whether a secret is set via either the constant (wp-config.php,
+	 * preferred) or the stored option — never returns the value itself, only
+	 * whether the masked field's placeholder should say one is on file.
+	 */
+	private static function secret_configured( $constant, $option ) {
+		if ( defined( $constant ) && constant( $constant ) ) {
+			return true;
+		}
+		$value = get_option( $option, '' );
+		return is_string( $value ) && '' !== trim( $value );
 	}
 
 	private function render_status() {

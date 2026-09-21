@@ -58,5 +58,8 @@ In WP admin: Products &rarr; All Products &rarr; Edit Wegovy/Mounjaro &rarr; Var
 
 == Changelog ==
 
+= 2.4.0 =
+* Prescribing platform hand-off (CD-16 item 4): pushes the patient and their eligibility intake to Together Health's Prescribing & Consultation Platform once an awaiting-review order exists, and accepts its signed `prescription.issued` / `consultation.declined` webhook back to approve or reject the order. Fail-closed while unconfigured — see WooCommerce &rarr; Eligibility &rarr; Prescribing platform.
+
 = 1.0.0 =
 * Initial release.

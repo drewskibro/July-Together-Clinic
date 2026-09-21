@@ -369,3 +369,44 @@ A sibling project with the same two-plugin architecture produced months of firef
 | Key/table/option renames during unification | **Forbidden** (no `tc_clinical` rename; review's evidence) |
 | Blocks checkout hook | Keep `woocommerce_store_api_checkout_update_order_from_request` for any residual paths; do **not** switch to `…_order_processed` |
 | Clinical rules (±1, switching matrix, no max reference age, propose+flag) | **Locked** (§3, unchanged from v2) |
+
+---
+
+## 10. Prescribing platform hand-off
+
+Together Health's Prescribing & Consultation Platform is a separate product
+with its own database and hosting (`athealthcode/Prescribing-Consultation-
+Platform`). This site pushes to it; the platform never polls this site
+(owner decision CD-16 item 4).
+
+**Flow.** `TC_Review_Order::create_from_assessment` fires
+`tc_review_order_created` once an awaiting-review order exists.
+`TC_Platform_Sync` (`includes/class-tc-platform-sync.php`) catches that
+action and, in order: `POST /v1/patients` (upserted on the order id as
+`externalReference`, so a retry is safe), then
+`POST /v1/patients/{id}/pre-consultation` with the assessment answers,
+consents, GP details and reported height/weight. Both calls carry an
+`Idempotency-Key` derived from the order id. `_tc_platform_patient_id` and
+`_tc_platform_synced_at` are recorded on the order (`WC_Order` CRUD, never
+`update_post_meta()`). A failure logs via `TC_Log`, adds an order note, and
+schedules a WP-Cron retry (three attempts, backoff); the order stays
+awaiting-review either way — sync failing never blocks or delays the
+prescriber's own review. A manual "Send to prescribing platform" order
+action covers a sync that exhausted its retries.
+
+The platform answers back over a signed webhook,
+`POST /wp-json/tc/v1/platform-webhook`: `prescription.issued` approves the
+order (`TC_Review_Actions::approve`, reviewer recorded as "Prescribing
+platform", never a spoofed WordPress user); `consultation.declined` rejects
+it (`TC_Review_Actions::reject`). Deliveries are verified against
+`packages/contracts/src/signature.ts`'s exact scheme before anything is
+parsed, and are idempotent on the event id.
+
+**Fail closed.** `tc_platform_sync_enabled` is unchecked, and
+`tc_platform_base_url` / `tc_platform_api_key` / `tc_platform_webhook_secret`
+are unset, until an administrator configures them under *WooCommerce →
+Eligibility → Prescribing platform*. While off or unconfigured,
+`TC_Platform_Sync` does nothing except show a persistent admin notice on the
+review queue saying orders are not being sent to the platform — it never
+sends a partial or unauthenticated push, and never invents a fallback
+destination.
