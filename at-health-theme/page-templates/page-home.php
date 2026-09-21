@@ -84,6 +84,14 @@ $team_members = array(
         'gphc_number' => ah_field( 'team_member2_gphc_number', '2047968' ),
         'gphc_url'    => ah_field( 'team_member2_gphc_url', 'https://www.pharmacyregulation.org/registers/pharmacist' ),
     ),
+    array(
+        'photo'       => ah_field( 'team_member3_photo', '' ),
+        'default_photo_url' => get_theme_file_uri( 'assets/images/malik-abdulgabar.png' ),
+        'name'        => ah_field( 'team_member3_name', 'Malik Abdulgabar' ),
+        'role'        => ah_field( 'team_member3_role', 'Pharmacist' ),
+        'gphc_number' => ah_field( 'team_member3_gphc_number', '2232372' ),
+        'gphc_url'    => ah_field( 'team_member3_gphc_url', 'https://www.pharmacyregulation.org/registers/pharmacist/2232372' ),
+    ),
 );
 ?>
 <section class="relative py-16 md:py-20" style="background: #fdf8f3;">
@@ -101,11 +109,13 @@ $team_members = array(
       </p>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto" data-stagger>
+    <div class="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto" data-stagger>
       <?php foreach ( $team_members as $i => $member ) : ?>
       <div class="bg-white rounded-3xl p-8 md:p-10 shadow-lg border border-gray-200 text-center" data-reveal style="--stagger-index:<?php echo (int) $i; ?>">
         <div class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden bg-purple-50 border-4 border-white shadow-md">
-          <?php if ( $member['photo'] !== null && $member['photo'] !== '' ) : ?>
+          <?php if ( isset( $member['default_photo_url'] ) && (int) $member['photo'] <= 0 ) : ?>
+            <img src="<?php echo esc_url( $member['default_photo_url'] ); ?>" alt="<?php echo esc_attr( $member['name'] ); ?>" width="592" height="592" class="w-full h-full object-cover" loading="lazy" decoding="async" />
+          <?php elseif ( $member['photo'] !== null && $member['photo'] !== '' ) : ?>
             <?php echo wp_get_attachment_image( $member['photo'], 'medium', false, array(
                 'class' => 'w-full h-full object-cover',
                 'alt'   => esc_attr( $member['name'] ),
