@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Together Health's Prescribing & Consultation Platform hand-off (CD-09
+ * Together Health's Prescribing & Consultation Platform hand-off (CD-16
  * item 4). This site pushes; the platform never polls it.
  *
  * Outbound: on `tc_review_order_created` (TC_Review_Order), POST the
