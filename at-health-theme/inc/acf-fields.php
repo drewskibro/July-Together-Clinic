@@ -306,6 +306,12 @@ acf_add_local_field_group( array(
         array( 'key' => 'field_ah_team_member2_role', 'label' => 'Member 2 Role', 'name' => 'team_member2_role', 'type' => 'text', 'default_value' => 'Independent Pharmacist Prescriber' ),
         array( 'key' => 'field_ah_team_member2_gphc_number', 'label' => 'Member 2 GPhC Number', 'name' => 'team_member2_gphc_number', 'type' => 'text', 'default_value' => '2047968' ),
         array( 'key' => 'field_ah_team_member2_gphc_url', 'label' => 'Member 2 GPhC URL', 'name' => 'team_member2_gphc_url', 'type' => 'url', 'default_value' => 'https://www.pharmacyregulation.org/registers/pharmacist' ),
+
+        array( 'key' => 'field_ah_team_member3_photo', 'label' => 'Member 3 Photo', 'name' => 'team_member3_photo', 'type' => 'image', 'return_format' => 'id' ),
+        array( 'key' => 'field_ah_team_member3_name', 'label' => 'Member 3 Name', 'name' => 'team_member3_name', 'type' => 'text', 'default_value' => 'Malik Abdulgabar' ),
+        array( 'key' => 'field_ah_team_member3_role', 'label' => 'Member 3 Role', 'name' => 'team_member3_role', 'type' => 'text', 'default_value' => 'Pharmacist' ),
+        array( 'key' => 'field_ah_team_member3_gphc_number', 'label' => 'Member 3 GPhC Number', 'name' => 'team_member3_gphc_number', 'type' => 'text', 'default_value' => '2232372' ),
+        array( 'key' => 'field_ah_team_member3_gphc_url', 'label' => 'Member 3 GPhC URL', 'name' => 'team_member3_gphc_url', 'type' => 'url', 'default_value' => 'https://www.pharmacyregulation.org/registers/pharmacist/2232372' ),
     ),
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-home.php' ) ) ),
 ) );
