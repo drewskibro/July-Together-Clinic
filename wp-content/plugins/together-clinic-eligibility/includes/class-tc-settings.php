@@ -217,7 +217,7 @@ class TC_Settings {
 				</table>
 
 				<h2>Prescribing platform</h2>
-				<p class="description">The Together Health Prescribing &amp; Consultation Platform (CD-09 item 4). While this is off, or any field below is blank, orders are never sent &mdash; a persistent notice on the orders screen says so.</p>
+				<p class="description">The Together Health Prescribing &amp; Consultation Platform (CD-16 item 4). While this is off, or any field below is blank, orders are never sent &mdash; a persistent notice on the orders screen says so.</p>
 				<table class="form-table">
 					<tr>
 						<th>Send orders to the prescribing platform</th>

@@ -377,7 +377,7 @@ A sibling project with the same two-plugin architecture produced months of firef
 Together Health's Prescribing & Consultation Platform is a separate product
 with its own database and hosting (`athealthcode/Prescribing-Consultation-
 Platform`). This site pushes to it; the platform never polls this site
-(owner decision CD-09 item 4).
+(owner decision CD-16 item 4).
 
 **Flow.** `TC_Review_Order::create_from_assessment` fires
 `tc_review_order_created` once an awaiting-review order exists.

@@ -28,7 +28,7 @@ class TC_Review_Actions {
 	 * Set by TC_Platform_Sync immediately before calling approve()/reject()
 	 * for a webhook-driven decision, and cleared straight after. The
 	 * prescribing platform's own prescriber already made the decision there
-	 * (CD-09 item 4); this records that honestly as "Prescribing platform"
+	 * (CD-16 item 4); this records that honestly as "Prescribing platform"
 	 * rather than spoofing a WordPress user with wp_set_current_user(), which
 	 * would misattribute the decision in the order notes and this class's
 	 * own audit meta.
