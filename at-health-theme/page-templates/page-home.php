@@ -1,7 +1,12 @@
 <?php
 /**
  * Template Name: Home
- * Description: AT Health pharmacy homepage. Section order: Hero, How It Works, Google Reviews, Know Your Team, Safe and Secure, Health Hub, FAQs, CTA.
+ * Description: AT Health pharmacy homepage. Section order: Hero, How It Works, Know Your Team, Safe and Secure, Health Hub, FAQs, CTA.
+ *
+ * No ratings, testimonials or patient numbers are rendered here unless they can
+ * be evidenced. Unsupported template claims (4.9 rating, 10,000+ patients,
+ * named testimonials) were removed in the compliance review; the only patient
+ * figure is the group statement approved by the superintendent (below).
  */
 get_header();
 
@@ -12,56 +17,6 @@ get_template_part( 'template-parts/section', 'hero' );
 // Section 2: How It Works
 get_template_part( 'template-parts/section', 'how-it-works' );
 ?>
-
-<!-- Section 3: Google Reviews -->
-<!-- PHASE 3: Replace with embedded Google Reviews widget -->
-<section class="relative py-16 md:py-20 overflow-hidden" style="background: #f7f4f9;">
-  <div class="ah-container-wide">
-    <div class="text-center mb-12">
-      <div class="inline-flex items-center gap-2 bg-white border border-amber-200 rounded-full px-5 py-2 shadow-sm mb-6">
-        <span class="text-amber-500 text-sm">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-        <span class="text-sm font-semibold text-gray-700"><?php echo esc_html( ah_field( 'testimonials_badge', 'Rated 4.9/5 by verified patients' ) ); ?></span>
-      </div>
-      <h2 class="text-3xl md:text-4xl lg:text-5xl font-serif text-gray-900 mb-4">
-        <?php echo wp_kses_post( ah_field( 'testimonials_title', 'Life-Changing Results' ) ); ?>
-      </h2>
-    </div>
-
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto" data-stagger>
-      <?php
-      $default_testimonials = array(
-          array( 'name' => 'Sophie Chaudhry', 'label' => 'Verified Patient', 'text' => "I no longer struggle with weight loss. It's changed my entire relationship with food." ),
-          array( 'name' => 'Stephen Matthews', 'label' => 'Verified Patient', 'text' => 'I have so far lost 3 stone (19kg). The support has been incredible.' ),
-          array( 'name' => 'Marie Clayton', 'label' => 'Verified Patient', 'text' => "I've got my life back. I feel confident, energetic, and happy again." ),
-          array( 'name' => 'Tanta Stefanescu', 'label' => 'Verified Patient', 'text' => 'I have lost almost 11kg and feel incredible. The best decision I\'ve made.' ),
-      );
-
-      $testimonials = ah_field( 'testimonials_items', '' );
-      if ( ! is_array( $testimonials ) || count( $testimonials ) === 0 ) {
-          $testimonials = $default_testimonials;
-      }
-
-      foreach ( $testimonials as $i => $t ) :
-          $name  = isset( $t['name'] ) ? $t['name'] : '';
-          $label = isset( $t['label'] ) ? $t['label'] : 'Verified Patient';
-          $text  = isset( $t['text'] ) ? $t['text'] : '';
-      ?>
-      <div class="hp-testimonial" data-reveal style="--stagger-index:<?php echo (int) $i; ?>">
-        <div class="flex gap-0.5 mb-4">
-          <?php for ( $s = 0; $s < 5; $s++ ) : ?>
-          <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-          <?php endfor; ?>
-        </div>
-        <p class="text-gray-700 text-[15px] leading-relaxed mb-6">"<?php echo esc_html( $text ); ?>"</p>
-        <div>
-          <p class="text-sm font-semibold text-gray-900"><?php echo esc_html( $name ); ?></p>
-          <p class="text-xs text-gray-500"><?php echo esc_html( $label ); ?></p>
-        </div>
-      </div>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</section>
 
 <!-- Section 4: Know Your Team -->
 <?php
@@ -148,21 +103,16 @@ $team_members = array(
     <div class="text-center mb-12 section-header">
       <div class="flex items-center justify-center gap-3 mb-4">
         <div class="w-1 h-8 bg-purple-600 rounded-full"></div>
-        <p class="text-purple-600 text-xs md:text-sm font-bold uppercase tracking-wider"><?php echo esc_html( ah_field( 'stats_eyebrow', 'Why Patients Choose Us' ) ); ?></p>
+        <p class="text-purple-600 text-xs md:text-sm font-bold uppercase tracking-wider"><?php echo esc_html( ah_field( 'stats_eyebrow', 'Why Choose Us' ) ); ?></p>
       </div>
       <h2 class="text-3xl md:text-4xl lg:text-5xl text-gray-800 font-serif leading-[1.1]">
-        <?php echo wp_kses_post( ah_field( 'stats_title', 'The Numbers Speak for Themselves' ) ); ?>
+        <?php echo wp_kses_post( ah_field( 'stats_title', 'Care from Registered Pharmacists' ) ); ?>
       </h2>
     </div>
 
     <?php
-    $stats_label_1     = ah_field( 'stats_label_1', 'Years combined clinical experience' );
-    $stats_label_2     = ah_field( 'stats_label_2', 'Patients treated since 2020' );
-    $stats_label_3     = ah_field( 'stats_label_3', 'Verified patient rating' );
-    $stats_label_4     = ah_field( 'stats_label_4', 'Tracked UK delivery' );
     $stats_badges_lbl  = ah_field( 'stats_badges_label', 'Fully regulated' );
     $stats_gphc_url    = ah_field( 'stats_gphc_url', 'https://www.pharmacyregulation.org/registers/pharmacy' );
-    $stats_mhra_url    = ah_field( 'stats_mhra_url', 'https://products.mhra.gov.uk/' );
     $stats_cta_text    = ah_field( 'stats_cta_text', 'Start your assessment' );
     $stats_cta_url     = ah_field( 'stats_cta_url', '' );
     if ( $stats_cta_url === null || $stats_cta_url === '' ) {
@@ -170,40 +120,15 @@ $team_members = array(
     }
     ?>
 
-    <!-- Stat cards: 4-up grid (2 cols mobile, 4 cols desktop) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 max-w-5xl mx-auto mb-12" data-stagger>
-      <!-- Stat 1: Years -->
-      <div class="hp-stat-card-v2" data-reveal style="--stagger-index:0">
-        <div class="hp-stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        </div>
-        <div class="hp-stat-number"><span data-count="30" data-suffix="+">0</span></div>
-        <p class="text-sm text-gray-600 leading-snug"><?php echo esc_html( $stats_label_1 ); ?></p>
+    <!-- Group proof point. Wording approved verbatim by the superintendent
+         (AT Health Ltd), who holds the consultation records that evidence it.
+         Deliberately not an ACF field: this is the site's only patient figure,
+         and it must not be edited without fresh evidence and approval. -->
+    <div class="hp-stat-card-v2 hp-proof-card max-w-2xl mx-auto mb-12" data-reveal>
+      <div class="hp-stat-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
       </div>
-      <!-- Stat 2: Patients -->
-      <div class="hp-stat-card-v2" data-reveal style="--stagger-index:1">
-        <div class="hp-stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-        </div>
-        <div class="hp-stat-number"><span data-count="10000" data-suffix="+">0</span></div>
-        <p class="text-sm text-gray-600 leading-snug"><?php echo esc_html( $stats_label_2 ); ?></p>
-      </div>
-      <!-- Stat 3: Rating -->
-      <div class="hp-stat-card-v2" data-reveal style="--stagger-index:2">
-        <div class="hp-stat-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0.6" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-        </div>
-        <div class="hp-stat-number">4.9</div>
-        <p class="text-sm text-gray-600 leading-snug"><?php echo esc_html( $stats_label_3 ); ?></p>
-      </div>
-      <!-- Stat 4: Delivery -->
-      <div class="hp-stat-card-v2" data-reveal style="--stagger-index:3">
-        <div class="hp-stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-        </div>
-        <div class="hp-stat-number"><span data-count="48" data-suffix="h">0h</span></div>
-        <p class="text-sm text-gray-600 leading-snug"><?php echo esc_html( $stats_label_4 ); ?></p>
-      </div>
+      <p class="text-lg md:text-xl text-gray-800 leading-relaxed">Our pharmacist prescribers have supported over 1,000 patients across the AT Health group.</p>
     </div>
 
     <!-- Trust badges strip -->
@@ -213,10 +138,6 @@ $team_members = array(
         <a href="<?php echo esc_url( $stats_gphc_url ); ?>" target="_blank" rel="noopener noreferrer" class="hp-trust-badge">
           <span class="hp-trust-badge-mark">GPhC</span>
           <span class="hp-trust-badge-sub">Registered Pharmacy</span>
-        </a>
-        <a href="<?php echo esc_url( $stats_mhra_url ); ?>" target="_blank" rel="noopener noreferrer" class="hp-trust-badge">
-          <span class="hp-trust-badge-mark">MHRA</span>
-          <span class="hp-trust-badge-sub">Regulated</span>
         </a>
       </div>
     </div>
@@ -241,8 +162,11 @@ $hh_subheading   = ah_field( 'health_hub_subheading', 'Honest health guidance fr
 // $words caps the dek: WordPress's raw excerpt is 55 words ending in "[...]",
 // which is a blog-archive convention, not a magazine one. Cards get a
 // two-line dek; the feature and the large sixth card get a little more.
+// Only published posts: get_post() also returns drafts, private and trashed
+// posts, so an article taken off the site would otherwise keep its card here
+// (title and excerpt visible, link 404ing). Unpublishing is enough to remove it.
 $hh_post_card = function ( $post_id, $read_time = '', $words = 18 ) {
-    if ( ! $post_id || ! get_post( $post_id ) ) {
+    if ( ! $post_id || get_post_status( $post_id ) !== 'publish' ) {
         return null;
     }
     $cats     = get_the_category( $post_id );

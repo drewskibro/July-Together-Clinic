@@ -71,16 +71,13 @@
                             </svg>
                         </a>
                         <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                            <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'mounjaro' ) ) ); ?>"
-                               class="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-t-lg transition-colors">Mounjaro</a>
-                            <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy' ) ) ); ?>"
-                               class="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">Wegovy</a>
-                            <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy-tablets' ) ) ); ?>"
-                               class="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">Wegovy Tablets</a>
-                            <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'foundayo' ) ) ); ?>"
-                               class="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors">Foundayo <span class="ml-1 text-[10px] font-bold uppercase tracking-wider text-indigo-600">New</span></a>
+                            <?php /* Service wording, not medicine or form names (compliance review:
+                                     no medicine names in site-wide navigation). The medicine pages
+                                     are reached from the treatments page. */ ?>
                             <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) ); ?>"
-                               class="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-b-lg transition-colors">All Treatments</a>
+                               class="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-t-lg transition-colors">Weight management</a>
+                            <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) . '#our-treatments' ); ?>"
+                               class="block px-4 py-3 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 rounded-b-lg transition-colors">Our treatments</a>
                         </div>
                     </div>
 
@@ -165,11 +162,8 @@
                         </svg>
                     </button>
                     <div id="mobile-treatments" class="hidden pl-4 space-y-1">
-                        <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'mounjaro' ) ) ); ?>" class="block px-4 py-3 rounded-xl hover:bg-purple-50 text-gray-600 hover:text-purple-600 text-sm font-medium">Mounjaro</a>
-                        <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy' ) ) ); ?>" class="block px-4 py-3 rounded-xl hover:bg-purple-50 text-gray-600 hover:text-purple-600 text-sm font-medium">Wegovy</a>
-                        <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy-tablets' ) ) ); ?>" class="block px-4 py-3 rounded-xl hover:bg-purple-50 text-gray-600 hover:text-purple-600 text-sm font-medium">Wegovy Tablets</a>
-                        <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'foundayo' ) ) ); ?>" class="block px-4 py-3 rounded-xl hover:bg-purple-50 text-gray-600 hover:text-purple-600 text-sm font-medium">Foundayo <span class="ml-1 text-[10px] font-bold uppercase tracking-wider text-indigo-600">New</span></a>
-                        <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) ); ?>" class="block px-4 py-3 rounded-xl hover:bg-purple-50 text-gray-600 hover:text-purple-600 text-sm font-medium">All Treatments</a>
+                        <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) ); ?>" class="block px-4 py-3 rounded-xl hover:bg-purple-50 text-gray-600 hover:text-purple-600 text-sm font-medium">Weight management</a>
+                        <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) . '#our-treatments' ); ?>" class="block px-4 py-3 rounded-xl hover:bg-purple-50 text-gray-600 hover:text-purple-600 text-sm font-medium">Our treatments</a>
                     </div>
                 </div>
 

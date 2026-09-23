@@ -112,8 +112,8 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
      22.5%" projection from a named drug's trial is an efficacy claim for a POM on a public landing page.
      The eligibility check in the hero replaces it. History: git log -- this file. -->
 
-<!-- Product Cards -->
-<section class="py-14 md:py-16" style="background: #f7f4f9;">
+<!-- Product Cards (anchor target for the header's "Our treatments" link) -->
+<section id="our-treatments" class="py-14 md:py-16" style="background: #f7f4f9; scroll-margin-top: 96px;">
   <div class="ah-container-wide">
     <div class="text-center mb-12 section-header">
       <div class="flex items-center justify-center gap-3 mb-4">

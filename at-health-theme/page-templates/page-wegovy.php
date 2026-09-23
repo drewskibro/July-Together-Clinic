@@ -29,15 +29,6 @@ get_header();
           <p class="text-purple-600 text-xs font-bold uppercase tracking-wider"><?php echo esc_html( ah_field( 'wg_eyebrow', 'Semaglutide · Once Weekly' ) ); ?></p>
         </div>
 
-        <div class="flex items-center gap-2 mb-4">
-          <div class="flex gap-0.5 text-amber-400">
-            <?php for ( $i = 0; $i < 5; $i++ ) : ?>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <?php endfor; ?>
-          </div>
-          <span class="text-sm text-gray-500"><?php echo esc_html( ah_field( 'wg_rating_text', '4.9 · 3,124 reviews' ) ); ?></span>
-        </div>
-
         <h1 class="text-5xl lg:text-6xl font-serif text-gray-900 mb-5 leading-[1.02] tracking-[-0.02em]"><?php echo esc_html( ah_field( 'wg_title', 'Wegovy' ) ); ?></h1>
 
         <p class="text-base md:text-lg text-gray-600 leading-relaxed mb-8 max-w-lg">
@@ -153,7 +144,7 @@ get_header();
       $default_faqs = array(
           array( 'question' => 'How does Wegovy work?', 'answer' => 'Wegovy (semaglutide) mimics a naturally occurring hormone called Glucagon-Like Peptide-1 (GLP-1) that targets areas of the brain involved in appetite regulation. It reduces hunger, slows digestion, and helps you feel satisfied with less food.' ),
           array( 'question' => 'What are the cardiovascular benefits?', 'answer' => 'Clinical studies show Wegovy reduces cardiovascular risk by 20%. It can lower blood pressure, improve cholesterol levels, and reduce inflammation — benefits that go beyond weight loss alone.' ),
-          array( 'question' => 'What side effects should I expect?', 'answer' => 'Common side effects include mild nausea, reduced appetite, and occasional digestive discomfort. These typically settle within 2-4 weeks. The gradual dosing schedule helps minimise side effects.' ),
+          array( 'question' => 'What side effects should I expect?', 'answer' => 'Common side effects include mild nausea, reduced appetite, and occasional digestive discomfort. Your prescriber will explain what to expect and how to manage them. The gradual dosing schedule helps minimise side effects.' ),
           array( 'question' => 'How long do I need to take Wegovy?', 'answer' => 'Wegovy is designed as an ongoing treatment. Clinical evidence shows weight management is most effective with continued use. Your prescriber will work with you on a long-term plan.' ),
       );
       $faqs = ah_field( 'wg_faqs', '' );

@@ -183,7 +183,7 @@ get_header();
           array( 'question' => 'Are Wegovy tablets the same as the injection?', 'answer' => 'They contain the same active ingredient — semaglutide — as Wegovy® injection, in a once-daily oral tablet instead of a once-weekly injection. It is designed for adults who prefer a needle-free option for weight management.' ),
           array( 'question' => 'How do I take Wegovy tablets?', 'answer' => 'One tablet, once a day, taken on an empty stomach with a small amount of water — then wait around 30 minutes before eating, drinking or taking other oral medicines. Your prescriber will go through the full instructions with you when you start.' ),
           array( 'question' => 'Can I switch from injections to tablets?', 'answer' => 'Yes. Use the screening form and let us know your current treatment and dose — we\'ll guide you to the right tablet strength.' ),
-          array( 'question' => 'What side effects should I expect?', 'answer' => 'Common side effects include mild nausea, reduced appetite, and occasional digestive discomfort. These typically settle within 2-4 weeks. The gradual increase across the four dose strengths helps minimise side effects.' ),
+          array( 'question' => 'What side effects should I expect?', 'answer' => 'Common side effects include mild nausea, reduced appetite, and occasional digestive discomfort. Your prescriber will explain what to expect and how to manage them. The gradual increase across the four dose strengths helps minimise side effects.' ),
       );
       $faqs = ah_field( 'wt_faqs', '' );
       if ( ! is_array( $faqs ) || count( $faqs ) === 0 ) { $faqs = $default_faqs; }

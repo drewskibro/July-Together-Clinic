@@ -56,6 +56,13 @@
     box-shadow: 0 12px 32px rgba(26, 26, 46, 0.08);
     border-color: var(--ah-purple-300);
 }
+/* Single proof point (group figure) — one wider card, not a stat grid */
+.hp-proof-card {
+    padding: 36px 32px;
+}
+.hp-proof-card:hover {
+    transform: none;
+}
 .hp-stat-icon {
     width: 48px;
     height: 48px;

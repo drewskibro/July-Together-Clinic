@@ -76,7 +76,6 @@ acf_add_local_field_group( array(
         array( 'key' => 'field_ah_registered_name', 'label' => 'Registered Business Name', 'name' => 'registered_name', 'type' => 'text', 'default_value' => '', 'instructions' => 'The legal owner of the pharmacy (e.g. "AT Health Ltd"). Renders as "Together Clinic is a trading name of …".' ),
         array( 'key' => 'field_ah_registered_address', 'label' => 'Registered Address', 'name' => 'registered_address', 'type' => 'textarea', 'default_value' => '', 'rows' => 3 ),
         array( 'key' => 'field_ah_trust_badge_1', 'label' => 'Trust Badge 1', 'name' => 'trust_badge_1', 'type' => 'text', 'default_value' => 'GPhC-registered pharmacy' ),
-        array( 'key' => 'field_ah_trust_badge_2', 'label' => 'Trust Badge 2', 'name' => 'trust_badge_2', 'type' => 'text', 'default_value' => '4.9/5 patient rating' ),
         array( 'key' => 'field_ah_trust_badge_3', 'label' => 'Trust Badge 3', 'name' => 'trust_badge_3', 'type' => 'text', 'default_value' => '256-bit SSL Encrypted' ),
         array( 'key' => 'field_ah_trust_badge_4', 'label' => 'Trust Badge 4', 'name' => 'trust_badge_4', 'type' => 'text', 'default_value' => 'Tracked 48h Delivery' ),
     ),
@@ -143,29 +142,9 @@ acf_add_local_field_group( array(
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-home.php' ) ) ),
 ) );
 
-acf_add_local_field_group( array(
-    'key'      => 'group_ah_b3_home_testimonials',
-    'title'    => 'B3 — Home: Testimonials',
-    'fields'   => array(
-        array( 'key' => 'field_ah_testimonials_badge', 'label' => 'Trust Badge Text', 'name' => 'testimonials_badge', 'type' => 'text', 'default_value' => 'Rated 4.9/5 by verified patients', 'instructions' => 'Do not use the word "Excellent" unless the rating is from Trustpilot — it is their label.' ),
-        array( 'key' => 'field_ah_testimonials_title', 'label' => 'Section Title', 'name' => 'testimonials_title', 'type' => 'text', 'default_value' => 'Life-Changing Results' ),
-        array(
-            'key'        => 'field_ah_testimonials_items',
-            'label'      => 'Testimonials',
-            'name'       => 'testimonials_items',
-            'type'       => 'repeater',
-            'min'        => 0,
-            'max'        => 8,
-            'layout'     => 'block',
-            'sub_fields' => array(
-                array( 'key' => 'field_ah_testimonial_name', 'label' => 'Name', 'name' => 'name', 'type' => 'text' ),
-                array( 'key' => 'field_ah_testimonial_label', 'label' => 'Label', 'name' => 'label', 'type' => 'text', 'default_value' => 'Verified Patient' ),
-                array( 'key' => 'field_ah_testimonial_text', 'label' => 'Testimonial Text', 'name' => 'text', 'type' => 'textarea', 'rows' => 3 ),
-            ),
-        ),
-    ),
-    'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-home.php' ) ) ),
-) );
+// B3 — Home: Testimonials was removed in the compliance review (no patient
+// history to evidence ratings or testimonials). Do not reinstate without
+// verifiable, consented reviews.
 
 acf_add_local_field_group( array(
     'key'      => 'group_ah_b4_home_faq',
@@ -202,7 +181,6 @@ acf_add_local_field_group( array(
     'title'    => 'D1 — Mounjaro: All Fields',
     'fields'   => array(
         array( 'key' => 'field_ah_mj_eyebrow', 'label' => 'Eyebrow', 'name' => 'mj_eyebrow', 'type' => 'text', 'default_value' => 'Tirzepatide · Once Weekly' ),
-        array( 'key' => 'field_ah_mj_rating_text', 'label' => 'Rating Text', 'name' => 'mj_rating_text', 'type' => 'text', 'default_value' => '4.9 · 2,847 reviews' ),
         array( 'key' => 'field_ah_mj_title', 'label' => 'Page Title', 'name' => 'mj_title', 'type' => 'text', 'default_value' => 'Mounjaro' ),
         array( 'key' => 'field_ah_mj_description', 'label' => 'Description', 'name' => 'mj_description', 'type' => 'textarea', 'rows' => 4 ),
         array( 'key' => 'field_ah_mj_product_image', 'label' => 'Product Image', 'name' => 'mj_product_image', 'type' => 'image', 'return_format' => 'id' ),
@@ -221,7 +199,6 @@ acf_add_local_field_group( array(
     'title'    => 'E1 — Wegovy: All Fields',
     'fields'   => array(
         array( 'key' => 'field_ah_wg_eyebrow', 'label' => 'Eyebrow', 'name' => 'wg_eyebrow', 'type' => 'text', 'default_value' => 'Semaglutide · Once Weekly' ),
-        array( 'key' => 'field_ah_wg_rating_text', 'label' => 'Rating Text', 'name' => 'wg_rating_text', 'type' => 'text', 'default_value' => '4.9 · 3,124 reviews' ),
         array( 'key' => 'field_ah_wg_title', 'label' => 'Page Title', 'name' => 'wg_title', 'type' => 'text', 'default_value' => 'Wegovy' ),
         array( 'key' => 'field_ah_wg_description', 'label' => 'Description', 'name' => 'wg_description', 'type' => 'textarea', 'rows' => 4 ),
         array( 'key' => 'field_ah_wg_product_image', 'label' => 'Product Image', 'name' => 'wg_product_image', 'type' => 'image', 'return_format' => 'id' ),
@@ -252,7 +229,6 @@ acf_add_local_field_group( array(
     'key'   => 'group_ah_b6_home_treatments',
     'title' => 'B6 — Home: Treatment Showcase',
     'fields' => array(
-        array( 'key' => 'field_ah_treatments_eyebrow', 'label' => 'Eyebrow', 'name' => 'treatments_eyebrow', 'type' => 'text', 'default_value' => 'Trusted by 10,000+ patients' ),
         array( 'key' => 'field_ah_treatments_title', 'label' => 'Title (HTML)', 'name' => 'treatments_title', 'type' => 'textarea', 'rows' => 2 ),
         array( 'key' => 'field_ah_treatments_subtitle', 'label' => 'Subtitle', 'name' => 'treatments_subtitle', 'type' => 'text' ),
         array( 'key' => 'field_ah_home_mounjaro_image', 'label' => 'Mounjaro Card Image', 'name' => 'home_mounjaro_image', 'type' => 'image', 'return_format' => 'id' ),
@@ -271,15 +247,10 @@ acf_add_local_field_group( array(
     'key'   => 'group_ah_b7_home_stats',
     'title' => 'B7 — Home: Stats',
     'fields' => array(
-        array( 'key' => 'field_ah_stats_eyebrow', 'label' => 'Eyebrow', 'name' => 'stats_eyebrow', 'type' => 'text', 'default_value' => 'Why Patients Choose Us' ),
+        array( 'key' => 'field_ah_stats_eyebrow', 'label' => 'Eyebrow', 'name' => 'stats_eyebrow', 'type' => 'text', 'default_value' => 'Why Choose Us' ),
         array( 'key' => 'field_ah_stats_title', 'label' => 'Title (HTML)', 'name' => 'stats_title', 'type' => 'textarea', 'rows' => 2 ),
-        array( 'key' => 'field_ah_stats_label_1', 'label' => 'Stat 1 Label', 'name' => 'stats_label_1', 'type' => 'text', 'default_value' => 'Years combined clinical experience' ),
-        array( 'key' => 'field_ah_stats_label_2', 'label' => 'Stat 2 Label', 'name' => 'stats_label_2', 'type' => 'text', 'default_value' => 'Patients treated since 2020' ),
-        array( 'key' => 'field_ah_stats_label_3', 'label' => 'Stat 3 Label', 'name' => 'stats_label_3', 'type' => 'text', 'default_value' => 'Verified patient rating' ),
-        array( 'key' => 'field_ah_stats_label_4', 'label' => 'Stat 4 Label', 'name' => 'stats_label_4', 'type' => 'text', 'default_value' => 'Tracked UK delivery' ),
         array( 'key' => 'field_ah_stats_badges_label', 'label' => 'Badges Strip Label', 'name' => 'stats_badges_label', 'type' => 'text', 'default_value' => 'Fully regulated' ),
         array( 'key' => 'field_ah_stats_gphc_url', 'label' => 'GPhC Link URL', 'name' => 'stats_gphc_url', 'type' => 'url', 'default_value' => 'https://www.pharmacyregulation.org/registers/pharmacy' ),
-        array( 'key' => 'field_ah_stats_mhra_url', 'label' => 'MHRA Link URL', 'name' => 'stats_mhra_url', 'type' => 'url', 'default_value' => 'https://products.mhra.gov.uk/' ),
         array( 'key' => 'field_ah_stats_cta_text', 'label' => 'CTA Button Text', 'name' => 'stats_cta_text', 'type' => 'text', 'default_value' => 'Start your assessment' ),
         array( 'key' => 'field_ah_stats_cta_url', 'label' => 'CTA Button URL', 'name' => 'stats_cta_url', 'type' => 'url' ),
     ),

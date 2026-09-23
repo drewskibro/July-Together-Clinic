@@ -30,15 +30,6 @@ get_header();
           <p class="text-purple-600 text-xs font-bold uppercase tracking-wider"><?php echo esc_html( ah_field( 'mj_eyebrow', 'Tirzepatide · Once Weekly' ) ); ?></p>
         </div>
 
-        <div class="flex items-center gap-2 mb-4">
-          <div class="flex gap-0.5 text-amber-400">
-            <?php for ( $i = 0; $i < 5; $i++ ) : ?>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <?php endfor; ?>
-          </div>
-          <span class="text-sm text-gray-500"><?php echo esc_html( ah_field( 'mj_rating_text', '4.9 · 2,847 reviews' ) ); ?></span>
-        </div>
-
         <h1 class="text-5xl lg:text-6xl font-serif text-gray-900 mb-5 leading-[1.02] tracking-[-0.02em]"><?php echo esc_html( ah_field( 'mj_title', 'Mounjaro' ) ); ?></h1>
 
         <p class="text-base md:text-lg text-gray-600 leading-relaxed mb-8 max-w-lg">
@@ -180,8 +171,8 @@ get_header();
       <?php
       $default_faqs = array(
           array( 'question' => 'How does Mounjaro work?', 'answer' => 'Mounjaro (tirzepatide) works by activating both GLP-1 and GIP receptors, which reduces appetite, slows digestion, and helps regulate blood sugar. This dual-action mechanism makes it one of the most effective weight loss treatments available.' ),
-          array( 'question' => 'What are the common side effects?', 'answer' => 'The most common side effects are mild nausea, reduced appetite, and occasional digestive discomfort. These typically settle within 2-4 weeks as your body adjusts. Starting at a low dose and gradually increasing helps minimise side effects.' ),
-          array( 'question' => 'How quickly will I see results?', 'answer' => 'Most patients notice appetite changes within the first week and visible weight loss within 2-4 weeks. Clinical trials show average losses of 22.5% body weight over 72 weeks.' ),
+          array( 'question' => 'What are the common side effects?', 'answer' => 'The most common side effects are mild nausea, reduced appetite, and occasional digestive discomfort. Your prescriber will explain what to expect and how to manage them. Starting at a low dose and gradually increasing helps minimise side effects.' ),
+          array( 'question' => 'What results can I expect?', 'answer' => 'Results vary from person to person, and your prescriber will review your progress each time you reorder. Clinical trials show average losses of 22.5% body weight over 72 weeks.' ),
           array( 'question' => 'Can I take Mounjaro with other medications?', 'answer' => 'Your prescriber will review your full medical history and current medications before approving treatment. Mounjaro can interact with some medications, so it\'s important to disclose everything during your assessment.' ),
       );
       $faqs = ah_field( 'mj_faqs', '' );

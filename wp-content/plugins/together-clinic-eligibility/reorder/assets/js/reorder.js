@@ -408,7 +408,7 @@
 				'<div style="background:#f7f4f9;border-radius:8px;padding:16px;text-align:left;margin:16px 0;">' +
 					'<p style="margin:0;"><strong>No payment is taken now.</strong> Once your prescriber approves your treatment (usually within 24 hours), we will email you a secure payment link. Your medication is dispatched after review and payment.</p>' +
 				'</div>' +
-				'<small>Questions? Contact us at <a href="mailto:care@togetherclinic.co.uk">care@togetherclinic.co.uk</a></small>' +
+				'<small>Questions? Contact us at <a href="mailto:info@togetherclinic.co.uk">info@togetherclinic.co.uk</a></small>' +
 			'</div>';
 		window.scrollTo({ top: 0, behavior: 'smooth' });
 	}

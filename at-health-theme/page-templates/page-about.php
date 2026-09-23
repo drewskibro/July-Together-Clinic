@@ -13,24 +13,9 @@ get_header();
     <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif text-white leading-tight mb-6">
       <?php echo wp_kses_post( ah_field( 'ab_title', 'The People Behind<br>Your <em class="not-italic" style="color: #a89dd6;">Transformation</em>' ) ); ?>
     </h1>
-    <p class="text-lg text-gray-400 max-w-2xl mx-auto mb-12">
-      <?php echo esc_html( ah_field( 'ab_subtitle', 'Since 2021, Together Clinic has helped over 10,000 people across the UK lose weight and regain their confidence through clinically-proven, medically supervised weight loss programmes.' ) ); ?>
+    <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+      <?php echo esc_html( ah_field( 'ab_subtitle', 'Together Clinic is a pharmacist-led weight management service. Our pharmacist prescribers have supported over 1,000 patients across the AT Health group.' ) ); ?>
     </p>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
-      <?php
-      $stats = array(
-          array( 'number' => '10,000+', 'label' => 'Lives Transformed' ),
-          array( 'number' => '48h', 'label' => 'Delivery Time' ),
-          array( 'number' => '4.9★', 'label' => 'Patient Rating' ),
-          array( 'number' => '2021', 'label' => 'Established' ),
-      );
-      foreach ( $stats as $stat ) : ?>
-      <div>
-        <p class="text-3xl font-serif text-white font-bold"><?php echo esc_html( $stat['number'] ); ?></p>
-        <p class="text-sm text-gray-500 mt-1"><?php echo esc_html( $stat['label'] ); ?></p>
-      </div>
-      <?php endforeach; ?>
-    </div>
   </div>
 </section>
 

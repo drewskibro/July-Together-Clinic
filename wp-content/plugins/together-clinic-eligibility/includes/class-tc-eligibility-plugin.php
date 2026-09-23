@@ -19,6 +19,7 @@ class TC_Eligibility_Plugin {
 
 	private function __construct() {
 		TC_DB::maybe_upgrade();
+		self::maybe_migrate_contact_address();
 
 		TC_Review_Status::init();
 		TC_Review_Payment::init();
@@ -48,13 +49,47 @@ class TC_Eligibility_Plugin {
 		add_action( 'woocommerce_thankyou', [ $this, 'output_calendly_swap' ], 5, 1 );
 	}
 
+	/**
+	 * One-off (2.3.4): the public contact address moved from care@ to info@
+	 * on the superintendent's instruction (care@ and support@ forward into
+	 * info@ at the mailbox). Changing the defaults alone would not reach the
+	 * live site, because the settings were saved on activation. Only the old
+	 * default is rewritten; any address someone set deliberately is left as is.
+	 */
+	private static function maybe_migrate_contact_address() {
+		if ( get_option( 'tc_contact_address_migrated' ) ) {
+			return;
+		}
+
+		$old = 'care@togetherclinic.co.uk';
+		$new = 'info@togetherclinic.co.uk';
+
+		if ( strtolower( trim( (string) get_option( 'tc_eligibility_from_email', '' ) ) ) === $old ) {
+			update_option( 'tc_eligibility_from_email', $new );
+		}
+
+		$recipients = get_option( 'tc_eligibility_clinician_recipients', '' );
+		if ( is_string( $recipients ) && $recipients !== '' ) {
+			$list = array_map( 'trim', explode( ',', $recipients ) );
+			if ( in_array( $old, array_map( 'strtolower', $list ), true ) ) {
+				$list = array_map( function ( $email ) use ( $old, $new ) {
+					return strtolower( $email ) === $old ? $new : $email;
+				}, $list );
+				update_option( 'tc_eligibility_clinician_recipients', implode( ',', array_unique( $list ) ) );
+			}
+		}
+
+		update_option( 'tc_contact_address_migrated', TC_ELIGIBILITY_VERSION );
+		TC_Log::info( 'contact_address_migrated', [ 'to' => $new ] );
+	}
+
 	public static function on_activate() {
 		TC_DB::create_table();
 
 		$defaults = [
-			'tc_eligibility_from_email'                         => 'care@togetherclinic.co.uk',
+			'tc_eligibility_from_email'                         => 'info@togetherclinic.co.uk',
 			'tc_eligibility_from_name'                          => 'Together Clinic',
-			'tc_eligibility_clinician_recipients'               => 'ahmed@at-health.co.uk,care@togetherclinic.co.uk',
+			'tc_eligibility_clinician_recipients'               => 'ahmed@at-health.co.uk,info@togetherclinic.co.uk',
 			'tc_eligibility_send_clinician_emails'              => '1',
 			'tc_eligibility_enforce_assessment_before_checkout' => '1',
 			'tc_eligibility_block_direct_add_to_cart'           => '1',

@@ -43,7 +43,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 </p>
 <p style="font-size: 13px; color: #6b7280;">First time logging in? Click "Lost your password?" on the login page and we'll email you a link to set one.</p>
 
-<p style="margin-top: 32px;">If you have any questions, reply to this email or contact us at <a href="mailto:care@togetherclinic.co.uk">care@togetherclinic.co.uk</a>.</p>
+<p style="margin-top: 32px;">If you have any questions, reply to this email or contact us at <a href="mailto:info@togetherclinic.co.uk">info@togetherclinic.co.uk</a>.</p>
 
 <p>Best wishes,<br>The Together Clinic team</p>
 
