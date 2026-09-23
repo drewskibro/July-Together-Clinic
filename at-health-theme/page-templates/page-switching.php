@@ -40,63 +40,124 @@ get_header();
   .savings-badge { animation: savings-pulse 2.5s infinite; }
 </style>
 
-  <section class="relative w-full overflow-hidden" style="background: #fdf8f3;">
+  <?php
+  // Hero mirrors the homepage hero (section-hero.php): same eyebrow marker,
+  // ink headline with one italic accent, brand CTA + returning-patient link,
+  // assurance line and a single proof strip. Shared styles live in globals.css.
+  $sw_eyebrow  = ah_field( 'sw_eyebrow', 'Switching providers' );
+  $sw_title    = ah_field( 'sw_title', 'Switch provider with <em>confidence</em>.' );
+  $sw_subtitle = ah_field( 'sw_subtitle', 'Already on weight management treatment with another provider? We review your current treatment and dose, so switching doesn\'t have to mean starting again from the lowest dose.' );
+  $sw_image    = ah_field( 'sw_hero_image', '' );
+  ?>
+  <section class="ah-hero-section relative w-full overflow-hidden" style="background: #fdf8f3;">
     <div class="max-w-[1920px] mx-auto">
       <div class="grid grid-cols-1 lg:grid-cols-2 min-h-0">
 
-        <!-- Left: Content -->
-        <div class="flex flex-col justify-center order-2 lg:order-1 px-6 md:px-12 lg:px-20 xl:px-28 py-12 lg:py-16">
-          <!-- Eyebrow -->
-          <div class="mb-4 opacity-0 animate-fade-in-up delay-100" style="animation-fill-mode: forwards;">
-            <p class="text-gray-400 text-[11px] font-bold uppercase tracking-[0.25em]">Seamless Provider Switching</p>
+        <?php $sw_has_photo = ( $sw_image !== null && $sw_image !== '' ); ?>
+        <!-- Left: Content (photo leads on mobile, like the homepage; the designed panel follows the text) -->
+        <div class="flex flex-col justify-center <?php echo $sw_has_photo ? 'order-2' : 'order-1'; ?> lg:order-1 px-6 md:px-12 lg:px-20 xl:px-28 py-12 lg:py-20">
+          <div class="flex items-center gap-3 mb-6 opacity-0 animate-fade-in-up delay-100" style="animation-fill-mode: forwards;">
+            <span class="ah-hero-eyebrow-bar" aria-hidden="true"></span>
+            <p class="text-[12px] font-semibold uppercase tracking-[0.18em] text-gray-700"><?php echo esc_html( $sw_eyebrow ); ?></p>
           </div>
 
-          <!-- Headline -->
-          <h1 class="text-[2.75rem] sm:text-[3.25rem] md:text-[3.75rem] lg:text-[4.25rem] xl:text-[5rem] 2xl:text-[5.5rem] leading-[1.02] tracking-[-0.035em] mb-5 opacity-0 animate-fade-in-up delay-200" style="animation-fill-mode: forwards;">
-            <span class="text-gray-900 block font-serif">Switch Your</span>
-            <span class="block font-serif" style="color: #6366f1;">Provider with</span>
-            <span class="text-gray-900 block font-serif">Confidence</span>
+          <h1 class="text-[2.75rem] sm:text-[3.25rem] md:text-[3.75rem] lg:text-[4.25rem] xl:text-[5rem] 2xl:text-[5.5rem] leading-[1.02] tracking-[-0.035em] text-gray-900 mb-6 opacity-0 animate-fade-in-up delay-200" style="animation-fill-mode: forwards;">
+            <?php echo wp_kses_post( $sw_title ); ?>
           </h1>
 
-          <!-- Sub -->
-          <p class="text-[15px] md:text-[17px] text-gray-500 leading-[1.7] mb-8 max-w-[520px] opacity-0 animate-fade-in-up delay-300" style="animation-fill-mode: forwards;">
-            Already on weight management treatment with another provider? We review your current treatment and dose, so switching doesn&rsquo;t have to mean starting again from the lowest dose. Our pharmacist prescribers have supported over 1,000 patients across the AT Health group.
+          <p class="text-[16px] md:text-[18px] text-gray-600 leading-[1.65] mb-9 max-w-[520px] opacity-0 animate-fade-in-up delay-300" style="animation-fill-mode: forwards;">
+            <?php echo esc_html( $sw_subtitle ); ?>
           </p>
 
-          <!-- CTA -->
-          <div class="flex items-center gap-5 opacity-0 animate-fade-in-up delay-400" style="animation-fill-mode: forwards;">
-            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="inline-flex items-center justify-center gap-2.5 bg-gray-900 hover:bg-gray-800 text-white text-[15px] font-semibold px-9 py-4 rounded-lg transition-all hover-lift">
+          <div class="flex flex-wrap items-center gap-x-7 gap-y-4 opacity-0 animate-fade-in-up delay-400" style="animation-fill-mode: forwards;">
+            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="ah-hero-cta inline-flex items-center justify-center gap-2.5 text-white text-[15px] font-semibold px-9 py-4 rounded-lg transition-all" style="background: #8e88d0;">
               Start Your Switch
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </a>
-            <span class="text-gray-400 text-xs font-medium tracking-wide uppercase hidden sm:inline">GPhC Regulated</span>
+            <p class="ah-hero-login text-[14px] text-gray-600">
+              Already a patient? <a href="/my-account/" class="inline-block py-2.5 -my-2.5 font-semibold text-gray-900 transition-colors duration-200">Log in to reorder</a>
+            </p>
           </div>
 
-          <!-- Trust strip — clean inline -->
-          <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mt-8 opacity-0 animate-fade-in-up delay-500" style="animation-fill-mode: forwards;">
-            <div class="flex items-center gap-2 text-gray-500 text-sm">
-              <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              No prescription transfer
-            </div>
-            <div class="flex items-center gap-2 text-gray-500 text-sm">
-              <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Current dose reviewed
-            </div>
-            <div class="flex items-center gap-2 text-gray-500 text-sm">
-              <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Pharmacist prescriber review
-            </div>
-            <div class="flex items-center gap-2 text-gray-500 text-sm">
-              <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Transparent pricing
-            </div>
-          </div>
+          <p class="flex items-start gap-2 mt-4 text-[13.5px] leading-[1.5] text-gray-600 max-w-[520px] opacity-0 animate-fade-in-up delay-[450ms]" style="animation-fill-mode: forwards;">
+            <svg class="w-4 h-4 mt-[2px] text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Nothing is charged until a prescriber approves your treatment.</span>
+          </p>
+
+          <ul class="ah-hero-proof flex flex-wrap items-center gap-x-7 gap-y-3 opacity-0 animate-fade-in-up delay-[500ms]" style="animation-fill-mode: forwards;">
+          <li class="flex items-center gap-2 text-[13px] font-medium text-gray-700">
+            <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+            GPhC-registered pharmacy
+          </li>
+          <li class="flex items-center gap-2 text-[13px] font-medium text-gray-700">
+            <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+            Current dose reviewed
+          </li>
+          <li class="flex items-center gap-2 text-[13px] font-medium text-gray-700">
+            <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+            No prescription transfer needed
+          </li>
+          </ul>
         </div>
 
-        <!-- Right: Hero Image — flush edge-to-edge -->
-        <div class="order-1 lg:order-2 opacity-0 animate-fade-in-up delay-300" style="animation-fill-mode: forwards;">
-          <div class="relative w-full h-[340px] sm:h-[420px] lg:h-full lg:min-h-[520px]">
-            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=900&fit=crop" alt="Happy patient who switched to Together Clinic" class="absolute inset-0 w-full h-full object-cover object-[25%]" />
+        <!-- Right: photo if one is chosen in wp-admin (Switching: Hero Image),
+             otherwise a designed panel — no stock photography by default. -->
+        <div class="<?php echo $sw_has_photo ? 'order-1' : 'order-2'; ?> lg:order-2 opacity-0 animate-fade-in-up delay-300" style="animation-fill-mode: forwards;">
+          <div class="relative w-full h-full <?php echo $sw_has_photo ? 'min-h-[340px] sm:min-h-[420px]' : ''; ?> lg:min-h-[600px] lg:rounded-l-[2.5rem] overflow-hidden<?php echo ( $sw_image === null || $sw_image === '' ) ? ' sw-hero-panel' : ''; ?>">
+            <?php if ( $sw_image !== null && $sw_image !== '' ) : ?>
+              <?php echo wp_get_attachment_image( $sw_image, 'full', false, array( 'class' => 'absolute inset-0 w-full h-full object-cover' ) ); ?>
+            <?php else : ?>
+            <div class="relative h-full flex items-center justify-center px-6 py-12 md:px-12">
+              <div class="w-full max-w-[440px] space-y-4">
+                <div class="bg-white rounded-3xl p-7 md:p-9 shadow-xl border border-white/60">
+                  <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-600 mb-2">What your prescriber reviews</p>
+                  <p class="font-serif text-2xl text-gray-900 leading-tight mb-6">A full clinical review, not a transfer.</p>
+                  <ul class="space-y-3.5">
+                  <li class="flex items-start gap-3">
+                    <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center" style="background:#ede6f8; color:#7d76ba;"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></span>
+                    <span class="text-[14.5px] text-gray-700 leading-snug">The medicine you take now, and your current dose</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center" style="background:#ede6f8; color:#7d76ba;"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></span>
+                    <span class="text-[14.5px] text-gray-700 leading-snug">When you last took it, and how you have got on</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center" style="background:#ede6f8; color:#7d76ba;"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></span>
+                    <span class="text-[14.5px] text-gray-700 leading-snug">Any side effects, and your health since you started</span>
+                  </li>
+                  <li class="flex items-start gap-3">
+                    <span class="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center" style="background:#ede6f8; color:#7d76ba;"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></span>
+                    <span class="text-[14.5px] text-gray-700 leading-snug">The right dose for you to continue on</span>
+                  </li>
+                  </ul>
+                </div>
+                <div class="sm:ml-10 bg-white/95 backdrop-blur-md rounded-2xl p-5 shadow-xl border border-gray-200/60">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg,#f3eff9,#ede6f8); color:#7d76ba;">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                  </span>
+                  <span class="font-serif text-3xl text-gray-900 leading-none">1,000+</span>
+                </div>
+                <?php /* Wording approved verbatim by the superintendent — do not edit. */ ?>
+                <p class="text-[13px] text-gray-600 leading-snug">Our pharmacist prescribers have supported over 1,000 patients across the AT Health group.</p>
+              </div>
+              </div>
+            </div>
+            <?php endif; ?>
+
+            <?php if ( $sw_image !== null && $sw_image !== '' ) : ?>
+            <!-- Group proof point over the photo -->
+            <div class="absolute bottom-5 left-5 right-5 sm:right-auto sm:bottom-8 sm:left-8 sm:max-w-[300px] bg-white/95 backdrop-blur-md rounded-2xl p-5 shadow-xl border border-gray-200/60">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg,#f3eff9,#ede6f8); color:#7d76ba;">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                  </span>
+                  <span class="font-serif text-3xl text-gray-900 leading-none">1,000+</span>
+                </div>
+                <?php /* Wording approved verbatim by the superintendent — do not edit. */ ?>
+                <p class="text-[13px] text-gray-600 leading-snug">Our pharmacist prescribers have supported over 1,000 patients across the AT Health group.</p>
+              </div>
+            <?php endif; ?>
           </div>
         </div>
 

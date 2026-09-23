@@ -740,7 +740,7 @@ acf_add_local_field_group( array(
     'key'   => 'group_ah_h1_switching',
     'title' => 'H1 — Switching: All Fields',
     'fields' => array(
-        array( 'key' => 'field_ah_sw_eyebrow', 'label' => 'Eyebrow', 'name' => 'sw_eyebrow', 'type' => 'text', 'default_value' => 'Seamless Provider Switching' ),
+        array( 'key' => 'field_ah_sw_eyebrow', 'label' => 'Eyebrow', 'name' => 'sw_eyebrow', 'type' => 'text', 'default_value' => 'Switching providers' ),
         array( 'key' => 'field_ah_sw_title', 'label' => 'Title (HTML)', 'name' => 'sw_title', 'type' => 'textarea', 'rows' => 2 ),
         array( 'key' => 'field_ah_sw_subtitle', 'label' => 'Subtitle', 'name' => 'sw_subtitle', 'type' => 'textarea', 'rows' => 3 ),
         array( 'key' => 'field_ah_sw_hero_image', 'label' => 'Hero Image', 'name' => 'sw_hero_image', 'type' => 'image', 'return_format' => 'id' ),
