@@ -50,7 +50,7 @@ class TC_Eligibility_Plugin {
 	}
 
 	/**
-	 * One-off (2.3.4): the public contact address moved from care@ to info@
+	 * One-off (2.3.5): the public contact address moved from care@ to info@
 	 * on the superintendent's instruction (care@ and support@ forward into
 	 * info@ at the mailbox). Changing the defaults alone would not reach the
 	 * live site, because the settings were saved on activation. Only the old

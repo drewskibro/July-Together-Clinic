@@ -14,11 +14,11 @@ $step1_badge       = ah_field( 'hiw_step1_badge', 'Takes 5 minutes' );
 
 $step2_title       = ah_field( 'hiw_step2_title', 'Prescriber<br>Review' );
 $step2_description = ah_field( 'hiw_step2_description', 'One of our independent pharmacist prescribers reviews your assessment in full — and may contact you for more information — before any treatment is prescribed.' );
-$step2_badge       = ah_field( 'hiw_step2_badge', 'Reviewed within 24 hours' );
+$step2_badge       = ah_field( 'hiw_step2_badge', 'Full clinical review' );
 
 $step3_title       = ah_field( 'hiw_step3_title', 'Delivered to<br>Your Door' );
 $step3_description = ah_field( 'hiw_step3_description', 'Your treatment arrives discreetly packaged, with guidance materials and support from our pharmacy team.' );
-$step3_badge       = ah_field( 'hiw_step3_badge', 'Within 48 hours' );
+$step3_badge       = ah_field( 'hiw_step3_badge', 'Discreet, tracked delivery' );
 
 $hiw_trust1 = ah_field( 'hiw_trust1', 'No prescription transfer needed' );
 $hiw_trust2 = ah_field( 'hiw_trust2', 'Prescriber review included at every reorder' );

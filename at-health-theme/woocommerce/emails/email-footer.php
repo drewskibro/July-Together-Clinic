@@ -43,7 +43,7 @@ $company = function_exists( 'ah_company_name' ) ? ah_company_name() : 'Together 
                         <td style="text-align: center; padding: 16px 0; border-top: 1px solid #e5e7eb;">
                             <!-- Trust badges -->
                             <p style="margin: 0 0 12px; font-size: 12px; color: #9ca3af;">
-                                &#9989; GPhC-registered pharmacy &nbsp;&middot;&nbsp; &#128274; 256-bit SSL encrypted &nbsp;&middot;&nbsp; &#128230; Tracked 48h delivery
+                                &#9989; GPhC-registered pharmacy &nbsp;&middot;&nbsp; &#128274; 256-bit SSL encrypted &nbsp;&middot;&nbsp; &#128230; Tracked, discreet delivery
                             </p>
 
                             <!-- Legal -->

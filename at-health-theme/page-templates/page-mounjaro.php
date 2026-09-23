@@ -43,7 +43,7 @@ get_header();
               '<strong>Up to 22.5% body weight loss</strong> in clinical trials',
               '<strong>Once-weekly injection</strong> — convenient dosing',
               '<strong>Dual-action formula</strong> — Glucagon-Like Peptide-1 (GLP-1) and Glucose-dependent Insulinotropic Polypeptide (GIP) receptor agonist',
-              '<strong>Delivered within 48 hours</strong> with ongoing support',
+              '<strong>Tracked, discreet delivery</strong> with ongoing support',
           );
           $acf_benefits = ah_field( 'mj_benefits', '' );
           if ( is_array( $acf_benefits ) && count( $acf_benefits ) > 0 ) {
@@ -96,9 +96,9 @@ get_header();
               <?php echo esc_html( ah_field( 'mj_cta_text', 'Start Journey →' ) ); ?>
             </a>
             <div class="flex items-center justify-center gap-4 mt-4 text-xs text-gray-500">
-              <span>Same-day prescription approval</span>
+              <span>Reviewed by a pharmacist prescriber</span>
               <span>·</span>
-              <span>Delivered within 48 hours</span>
+              <span>Tracked, discreet delivery</span>
               <span>·</span>
               <span>Cancel anytime</span>
             </div>
@@ -156,7 +156,7 @@ get_header();
     </div>
 
     <div class="max-w-3xl mx-auto mt-8 bg-purple-50 border border-purple-200 rounded-2xl p-6" data-reveal>
-      <p class="text-sm text-purple-800"><strong>Important: Personalised Dosing</strong> — <?php echo esc_html( ah_field( 'mj_dosing_note', 'Many patients achieve excellent results at 5mg or 7.5mg. Your prescriber will recommend the optimal dose based on your individual response.' ) ); ?></p>
+      <p class="text-sm text-purple-800"><strong>Important: Personalised Dosing</strong> — <?php echo esc_html( ah_field( 'mj_dosing_note', 'Not everyone needs the highest dose. Your prescriber will recommend the right dose based on your individual response.' ) ); ?></p>
     </div>
   </div>
 </section>
@@ -209,14 +209,14 @@ get_header();
       <?php echo wp_kses_post( ah_field( 'mj_cta_title', 'Ready to start your<br><em class="not-italic" style="color: #a89dd6;">Mounjaro journey?</em>' ) ); ?>
     </h2>
     <p class="text-base md:text-lg text-gray-400 leading-relaxed mb-10 max-w-xl mx-auto">
-      <?php echo esc_html( ah_field( 'mj_cta_subtitle', 'Join thousands achieving life-changing results with clinically proven weight loss treatment.' ) ); ?>
+      <?php echo esc_html( ah_field( 'mj_cta_subtitle', 'Start with a short online assessment, reviewed by a UK-registered prescriber.' ) ); ?>
     </p>
     <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="inline-flex items-center gap-3 bg-white hover:bg-gray-100 text-gray-900 text-[15px] font-semibold px-10 py-4 rounded-xl transition-all hover-lift shadow-xl mb-10">
       Start Journey
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
     </a>
     <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-white/[0.07] pt-8">
-      <?php foreach ( array( 'From £199/month', 'Same-day approval', 'Delivered within 48 hours', 'Cancel anytime' ) as $t ) : ?>
+      <?php foreach ( array( 'From £199/month', 'Prescriber-reviewed', 'Tracked delivery', 'Cancel anytime' ) as $t ) : ?>
       <div class="flex items-center gap-2 text-gray-400 text-sm">
         <svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
         <?php echo esc_html( $t ); ?>

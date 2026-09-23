@@ -17,10 +17,10 @@ get_header();
       <?php echo wp_kses_post( ah_field( 'ro_title', 'Welcome Back<br>Reorder in <span style="color:#8e88d0;">Minutes</span>' ) ); ?>
     </h1>
     <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-      <?php echo esc_html( ah_field( 'ro_subtitle', 'Continue your journey with ease. Quick reorder process, next-day delivery, and ongoing prescriber support.' ) ); ?>
+      <?php echo esc_html( ah_field( 'ro_subtitle', 'Continue your treatment with ease. A simple reorder process, tracked delivery, and ongoing prescriber support.' ) ); ?>
     </p>
     <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600">
-      <?php foreach ( array( 'Quick reorder process', 'Fast delivery', 'Expert prescriber support' ) as $t ) : ?>
+      <?php foreach ( array( 'Quick reorder process', 'Tracked delivery', 'Expert prescriber support' ) as $t ) : ?>
       <div class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="font-medium"><?php echo esc_html( $t ); ?></span></div>
       <?php endforeach; ?>
     </div>

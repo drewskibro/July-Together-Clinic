@@ -28,7 +28,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
           <?php echo esc_html( ah_field( 'tr_subtitle', 'Five prescription treatments, one clinical standard. Every assessment is reviewed by a UK-registered independent prescriber — and nothing is charged unless they approve.' ) ); ?>
         </p>
         <div class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-gray-700">
-          <?php foreach ( array( 'GPhC Regulated', 'We Verify Identity', 'Confidential', 'Delivered within 48 hours' ) as $t ) : ?>
+          <?php foreach ( array( 'GPhC Regulated', 'We Verify Identity', 'Confidential', 'Tracked delivery' ) as $t ) : ?>
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
             <span class="font-medium"><?php echo esc_html( $t ); ?></span>
@@ -156,7 +156,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
       <!-- Wegovy Card -->
       <div class="tr-treatment-card" data-reveal style="--stagger-index:1">
         <div class="relative">
-          <span class="absolute top-4 left-4 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">Proven Results</span>
+          <span class="absolute top-4 left-4 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">Once weekly</span>
           <?php $wg_img = ah_field( 'tr_wegovy_image', '' ); ?>
           <?php if ( $wg_img ) : echo wp_get_attachment_image( $wg_img, 'treatment-card', false, array( 'class' => 'w-full h-56 object-cover' ) ); else : ?>
           <img src="https://c.animaapp.com/mkl3lxzpWoqisd/img/wegovy-%281%29.jpg" alt="Wegovy packaging" class="w-full h-56 object-cover" />
@@ -279,7 +279,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
               <tr><td class="font-semibold text-gray-900">How It's Taken</td><td class="text-purple-700 font-bold">Any time, with or without food</td><td>Empty stomach, 30 min before food</td></tr>
               <tr><td class="font-semibold text-gray-900">Dose Strengths</td><td>Six (0.8mg &ndash; 17.2mg)</td><td>Four (1.5mg &ndash; 25mg)</td></tr>
               <tr><td class="font-semibold text-gray-900">Dosing Plan</td><td>Minimum 30 days per step</td><td>Four tablet strengths</td></tr>
-              <tr><td class="font-semibold text-gray-900">Delivery</td><td>Within 48 hours</td><td>Within 48 hours</td></tr>
+              <tr><td class="font-semibold text-gray-900">Delivery</td><td>Tracked &amp; discreet</td><td>Tracked &amp; discreet</td></tr>
               <tr><td class="font-semibold text-gray-900">Side Effects</td><td>Nausea, diarrhoea, reduced appetite</td><td>Nausea, diarrhoea, reduced appetite</td></tr>
             </tbody>
           </table>
@@ -301,7 +301,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
               <tr><td class="font-semibold text-gray-900">How It's Taken</td><td>Once-weekly injection</td><td>Once-weekly injection</td></tr>
               <tr><td class="font-semibold text-gray-900">Starting Dose</td><td>2.5mg</td><td>0.25mg</td></tr>
               <tr><td class="font-semibold text-gray-900">Dosing Plan</td><td>20 weeks to full dose</td><td>16 weeks to full dose</td></tr>
-              <tr><td class="font-semibold text-gray-900">Delivery</td><td>Within 48 hours</td><td>Within 48 hours</td></tr>
+              <tr><td class="font-semibold text-gray-900">Delivery</td><td>Tracked &amp; discreet</td><td>Tracked &amp; discreet</td></tr>
               <tr><td class="font-semibold text-gray-900">Side Effects</td><td>Nausea, diarrhoea, reduced appetite</td><td>Nausea, diarrhoea, reduced appetite</td></tr>
             </tbody>
           </table>

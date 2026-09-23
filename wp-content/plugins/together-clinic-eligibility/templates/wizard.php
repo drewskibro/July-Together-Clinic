@@ -668,7 +668,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				<h3 style="margin-bottom:16px;">What happens next</h3>
 				<div class="timeline-item"><div class="timeline-number">1</div><div class="timeline-content"><p class="timeline-title">Clinician Review</p><p class="timeline-desc">Your assessment will be reviewed within 24 hours</p></div></div>
 				<div class="timeline-item"><div class="timeline-number">2</div><div class="timeline-content"><p class="timeline-title">Secure Payment Link</p><p class="timeline-desc">If approved, we email you a secure link to pay &mdash; nothing is charged before then</p></div></div>
-				<div class="timeline-item"><div class="timeline-number">3</div><div class="timeline-content"><p class="timeline-title">Fast Delivery</p><p class="timeline-desc">Free next-day delivery to your door</p></div></div>
+				<div class="timeline-item"><div class="timeline-number">3</div><div class="timeline-content"><p class="timeline-title">Tracked Delivery</p><p class="timeline-desc">Free tracked delivery to your door</p></div></div>
 			</div>
 			<button class="button button-primary" id="submit-button" data-action="submit-assessment" disabled>Submit Assessment for Review</button>
 		</div>
@@ -692,7 +692,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				<h3 style="margin-bottom:16px;">What happens next</h3>
 				<div class="timeline-item"><div class="timeline-number">1</div><div class="timeline-content"><p class="timeline-title">Prescriber Review</p><p class="timeline-desc">A prescriber will review your assessment within 24 hours</p></div></div>
 				<div class="timeline-item"><div class="timeline-number">2</div><div class="timeline-content"><p class="timeline-title">Secure Payment Link</p><p class="timeline-desc">If approved, we email you a secure link to pay &mdash; nothing is charged before then</p></div></div>
-				<div class="timeline-item"><div class="timeline-number">3</div><div class="timeline-content"><p class="timeline-title">Fast Delivery</p><p class="timeline-desc">Your medication will be dispatched with free next-day delivery</p></div></div>
+				<div class="timeline-item"><div class="timeline-number">3</div><div class="timeline-content"><p class="timeline-title">Tracked Delivery</p><p class="timeline-desc">Your medication will be dispatched with free tracked delivery</p></div></div>
 			</div>
 			<div class="confirmed-contact-box">
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>

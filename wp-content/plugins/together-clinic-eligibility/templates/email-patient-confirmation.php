@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <ol>
 	<li>One of our prescribers will review your assessment within 24 hours.</li>
 	<li>If your treatment is approved, we will email you a secure payment link. <strong>No payment is taken until then.</strong></li>
-	<li>Once you have paid, your medication will be dispatched with free next-day delivery.</li>
+	<li>Once you have paid, your medication will be dispatched with free tracked delivery.</li>
 </ol>
 
 <h3 style="margin-top: 24px;">Your assessment summary</h3>

@@ -6,7 +6,7 @@
 
 $cta_eyebrow     = ah_field( 'cta_eyebrow', 'Start Today' );
 $cta_title       = ah_field( 'cta_title', 'Ready to start<br><em class="not-italic" style="color: #a89dd6;">your journey?</em>' );
-$cta_subtitle    = ah_field( 'cta_subtitle', 'Start with a five-minute assessment. A UK-registered prescriber reviews it within 24 hours — and nothing is charged unless they approve.' );
+$cta_subtitle    = ah_field( 'cta_subtitle', 'Start with a five-minute assessment. A UK-registered prescriber reviews it in full — and nothing is charged unless they approve.' );
 $cta_button_text = ah_field( 'cta_button_text', 'Start Your Journey' );
 $cta_button_url  = ah_field( 'cta_button_url', '' );
 if ( $cta_button_url === null || $cta_button_url === '' ) {
@@ -16,7 +16,7 @@ if ( $cta_button_url === null || $cta_button_url === '' ) {
 $cta_trust1 = ah_field( 'cta_trust1', 'GPhC Regulated' );
 $cta_trust2 = ah_field( 'cta_trust2', 'Cancel Anytime' );
 $cta_trust3 = ah_field( 'cta_trust3', 'Discreet Delivery' );
-$cta_trust4 = ah_field( 'cta_trust4', 'Reviewed within 24 hours' );
+$cta_trust4 = ah_field( 'cta_trust4', 'No charge unless approved' );
 ?>
 
 <!-- CTA Section -->

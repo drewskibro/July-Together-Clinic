@@ -11,7 +11,7 @@ get_header();
   <div class="ah-container text-center" data-reveal>
     <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-gray-500 mb-6"><?php echo esc_html( ah_field( 'ab_eyebrow', 'Our Story' ) ); ?></p>
     <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif text-white leading-tight mb-6">
-      <?php echo wp_kses_post( ah_field( 'ab_title', 'The People Behind<br>Your <em class="not-italic" style="color: #a89dd6;">Transformation</em>' ) ); ?>
+      <?php echo wp_kses_post( ah_field( 'ab_title', 'The People Behind<br>Your <em class="not-italic" style="color: #a89dd6;">Care</em>' ) ); ?>
     </h1>
     <p class="text-lg text-gray-400 max-w-2xl mx-auto">
       <?php echo esc_html( ah_field( 'ab_subtitle', 'Together Clinic is a pharmacist-led weight management service. Our pharmacist prescribers have supported over 1,000 patients across the AT Health group.' ) ); ?>
@@ -41,11 +41,11 @@ get_header();
           </div>
           <div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">Solving the Access Problem</h3>
-            <p class="text-gray-600 leading-relaxed"><?php echo esc_html( ah_field( 'ab_story_2', 'Getting expert care used to mean waiting weeks. We removed the barriers — prescriber review within 24 hours, tracked 48-hour delivery, and transparent pricing with nothing charged until you are approved.' ) ); ?></p>
+            <p class="text-gray-600 leading-relaxed"><?php echo esc_html( ah_field( 'ab_story_2', 'Expert care should be straightforward to reach. Every assessment is reviewed in full by a prescriber, delivery is tracked and discreet, and pricing is transparent, with nothing charged until you are approved.' ) ); ?></p>
           </div>
           <div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">No Compromise on Quality</h3>
-            <p class="text-gray-600 leading-relaxed"><?php echo esc_html( ah_field( 'ab_story_3', 'Expert guidance, genuine UK-licensed medication, fast delivery, and ongoing support — everything you need for safe, effective treatment.' ) ); ?></p>
+            <p class="text-gray-600 leading-relaxed"><?php echo esc_html( ah_field( 'ab_story_3', 'Expert guidance, genuine UK-licensed medication, discreet delivery, and ongoing support — everything you need for safe, effective treatment.' ) ); ?></p>
           </div>
         </div>
         <div class="mt-8 bg-purple-50 border border-purple-200 rounded-2xl p-6">
