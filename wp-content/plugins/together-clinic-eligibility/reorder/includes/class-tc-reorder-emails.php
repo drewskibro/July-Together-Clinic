@@ -102,7 +102,7 @@ class TC_Reorder_Emails {
 		$body .= '<h3 style="margin-top:24px;">What happens next</h3><ol>';
 		$body .= '<li>One of our prescribers will review your reorder within 24 hours.</li>';
 		$body .= '<li>If your treatment is approved, we will email you a secure payment link. <strong>No payment is taken until then.</strong></li>';
-		$body .= '<li>Once you have paid, your medication will be dispatched with free next-day delivery.</li></ol>';
+		$body .= '<li>Once you have paid, your medication will be dispatched with free tracked delivery.</li></ol>';
 		$body .= sprintf(
 			'<p style="margin-top:24px;">If you have any questions, contact us at <a href="mailto:%1$s">%1$s</a>.</p>',
 			esc_attr( sanitize_email( get_option( 'tc_eligibility_from_email', 'info@togetherclinic.co.uk' ) ) )

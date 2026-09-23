@@ -41,7 +41,7 @@ get_header();
               '<strong>Up to 20.7% body weight loss</strong> in clinical trials',
               '<strong>Once-weekly injection</strong> — simple and convenient',
               '<strong>Reduces cardiovascular risk by 20%</strong> in clinical studies',
-              '<strong>Delivered within 48 hours</strong> with ongoing support',
+              '<strong>Tracked, discreet delivery</strong> with ongoing support',
           );
           $acf_benefits = ah_field( 'wg_benefits', '' );
           if ( is_array( $acf_benefits ) && count( $acf_benefits ) > 0 ) {
@@ -128,7 +128,7 @@ get_header();
       <?php endforeach; ?>
     </div>
     <div class="max-w-3xl mx-auto mt-8 bg-purple-50 border border-purple-200 rounded-2xl p-6" data-reveal>
-      <p class="text-sm text-purple-800"><strong>Important: Personalised Dosing</strong> — <?php echo esc_html( ah_field( 'wg_dosing_note', 'Many patients achieve excellent results at 1mg or 1.7mg. Your prescriber will recommend the optimal dose.' ) ); ?></p>
+      <p class="text-sm text-purple-800"><strong>Important: Personalised Dosing</strong> — <?php echo esc_html( ah_field( 'wg_dosing_note', 'Not everyone needs the highest dose. Your prescriber will recommend the right dose based on your individual response.' ) ); ?></p>
     </div>
   </div>
 </section>
@@ -175,7 +175,7 @@ get_header();
       <?php echo wp_kses_post( ah_field( 'wg_cta_title', 'Ready to start your<br><em class="not-italic" style="color: #a89dd6;">Wegovy journey?</em>' ) ); ?>
     </h2>
     <p class="text-base md:text-lg text-gray-400 leading-relaxed mb-10 max-w-xl mx-auto">
-      <?php echo esc_html( ah_field( 'wg_cta_subtitle', 'Join thousands achieving life-changing results with clinically proven weight loss.' ) ); ?>
+      <?php echo esc_html( ah_field( 'wg_cta_subtitle', 'Start with a short online assessment, reviewed by a UK-registered prescriber.' ) ); ?>
     </p>
     <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="inline-flex items-center gap-3 bg-white hover:bg-gray-100 text-gray-900 text-[15px] font-semibold px-10 py-4 rounded-xl transition-all hover-lift shadow-xl">
       Start Journey <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>

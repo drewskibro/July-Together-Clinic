@@ -26,7 +26,7 @@ class TC_Review_Emails {
 		$body .= sprintf( '<p>Good news &mdash; our prescriber has reviewed and approved your treatment: <strong>%s</strong>.</p>', esc_html( $items ) );
 		$body .= sprintf( '<p>To complete your order, please pay securely using the link below. The total is <strong>%s</strong>.</p>', esc_html( $total ) );
 		$body .= self::button( $order->get_checkout_payment_url(), 'Pay securely now' );
-		$body .= sprintf( '<p style="font-size:13px;color:#6b7280;">This payment link is valid until %s. Once you have paid, your medication will be dispatched with free next-day delivery.</p>', esc_html( $expiry ) );
+		$body .= sprintf( '<p style="font-size:13px;color:#6b7280;">This payment link is valid until %s. Once you have paid, your medication will be dispatched with free tracked delivery.</p>', esc_html( $expiry ) );
 		$body .= self::footer();
 
 		return self::send( $order, $email, $subject, $body, 'approved' );

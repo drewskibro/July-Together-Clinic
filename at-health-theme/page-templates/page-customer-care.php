@@ -40,7 +40,7 @@ get_header();
           <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
         </div>
         <h3 class="text-xl font-serif text-gray-900 mb-3"><?php echo esc_html( ah_field( 'cc_card2_title', 'Fast & Secure' ) ); ?></h3>
-        <p class="text-gray-600 text-[15px] leading-relaxed"><?php echo esc_html( ah_field( 'cc_card2_desc', 'Tracked next-day delivery with temperature-controlled packaging to ensure medication quality.' ) ); ?></p>
+        <p class="text-gray-600 text-[15px] leading-relaxed"><?php echo esc_html( ah_field( 'cc_card2_desc', 'Tracked delivery with temperature-controlled packaging to ensure medication quality.' ) ); ?></p>
       </div>
       <div class="cc-channel-card" data-reveal style="--stagger-index:2">
         <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center mb-5">

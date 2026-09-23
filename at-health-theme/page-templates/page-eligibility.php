@@ -16,7 +16,7 @@ get_header();
           <?php echo wp_kses_post( ah_field( 'el_title', 'Feel Confident in<br>Your <span style="color:#6366f1;">Body Again</span>' ) ); ?>
         </h1>
         <p class="text-lg text-gray-600 leading-relaxed mb-8 max-w-lg">
-          <?php echo esc_html( ah_field( 'el_subtitle', 'Join thousands who\'ve lost 2-4 stone, dropped clothing sizes, and regained their energy. Find out if you qualify for clinically-proven treatment in under 2 minutes.' ) ); ?>
+          <?php echo esc_html( ah_field( 'el_subtitle', 'Answer a few questions to find out whether a prescription weight management treatment could be suitable for you. Every assessment is reviewed by a UK-registered prescriber.' ) ); ?>
         </p>
         <a href="#eligibility-form" class="ah-btn-purple mb-6">Check Your Eligibility <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
         <p class="text-sm text-gray-500">Takes 2 min · Free · No obligation</p>

@@ -54,13 +54,13 @@ get_header();
           <!-- Headline -->
           <h1 class="text-[2.75rem] sm:text-[3.25rem] md:text-[3.75rem] lg:text-[4.25rem] xl:text-[5rem] 2xl:text-[5.5rem] leading-[1.02] tracking-[-0.035em] mb-5 opacity-0 animate-fade-in-up delay-200" style="animation-fill-mode: forwards;">
             <span class="text-gray-900 block font-serif">Switch Your</span>
-            <span class="block font-serif" style="color: #6366f1;">Provider in</span>
-            <span class="text-gray-900 block font-serif">Under 5 Minutes</span>
+            <span class="block font-serif" style="color: #6366f1;">Provider with</span>
+            <span class="text-gray-900 block font-serif">Confidence</span>
           </h1>
 
           <!-- Sub -->
           <p class="text-[15px] md:text-[17px] text-gray-500 leading-[1.7] mb-8 max-w-[520px] opacity-0 animate-fade-in-up delay-300" style="animation-fill-mode: forwards;">
-            Already using Mounjaro or Wegovy? We make switching effortless. Save up to 27%, get better support, and continue your treatment without any gap.
+            Already on weight management treatment with another provider? We review your current treatment and dose, so switching doesn&rsquo;t have to mean starting again from the lowest dose. Our pharmacist prescribers have supported over 1,000 patients across the AT Health group.
           </p>
 
           <!-- CTA -->
@@ -80,15 +80,15 @@ get_header();
             </div>
             <div class="flex items-center gap-2 text-gray-500 text-sm">
               <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Zero gap in treatment
+              Current dose reviewed
             </div>
             <div class="flex items-center gap-2 text-gray-500 text-sm">
               <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Same-day approval
+              Pharmacist prescriber review
             </div>
             <div class="flex items-center gap-2 text-gray-500 text-sm">
               <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-              Save up to &pound;516/year
+              Transparent pricing
             </div>
           </div>
         </div>
@@ -121,7 +121,7 @@ get_header();
           </div>
         </div>
         <h2 class="text-3xl md:text-4xl lg:text-5xl text-gray-800 font-serif leading-[1.1] mb-4">
-          Switch in <span class="text-purple-600">Under 5 Minutes</span>
+          How Switching <span class="text-purple-600">Works</span>
         </h2>
         <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
           No paperwork, no phone calls, no hassle. Just three quick steps.
@@ -164,10 +164,10 @@ get_header();
                   <svg class="w-12 h-12 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 </div>
                 <h3 class="text-2xl lg:text-3xl font-serif text-gray-900 mb-5 leading-tight">Clinical<br/>Approval</h3>
-                <p class="text-base text-gray-600 leading-relaxed mb-6">Our UK-registered prescribers review your case and approve your treatment continuation same day.</p>
+                <p class="text-base text-gray-600 leading-relaxed mb-6">Our UK-registered prescribers review your case and current dose in full before approving your treatment continuation.</p>
                 <div class="inline-flex items-center gap-2 bg-purple-50 text-purple-700 px-5 py-2.5 rounded-full text-sm font-semibold">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                  Same-day approval
+                  Full clinical review
                 </div>
               </div>
             </div>
@@ -184,10 +184,10 @@ get_header();
                   <svg class="w-12 h-12 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 </div>
                 <h3 class="text-2xl lg:text-3xl font-serif text-gray-900 mb-5 leading-tight">Medication<br/>Delivered</h3>
-                <p class="text-base text-gray-600 leading-relaxed mb-6">Your medication is dispatched to your door discreetly packaged and fully tracked. No gap in treatment.</p>
+                <p class="text-base text-gray-600 leading-relaxed mb-6">Your medication is dispatched to your door discreetly packaged and fully tracked.</p>
                 <div class="inline-flex items-center gap-2 bg-purple-50 text-purple-700 px-5 py-2.5 rounded-full text-sm font-semibold">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/></svg>
-                  Within 48 hours
+                  Tracked &amp; discreet
                 </div>
               </div>
             </div>
@@ -227,7 +227,6 @@ get_header();
           </div>
           <h3 class="text-2xl font-serif text-gray-900 mb-4">Pay Less for the Same Treatment</h3>
           <ul class="space-y-3">
-            <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Save up to 27% compared to Boots Online Doctor</span></li>
             <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Transparent pricing with no hidden consultation fees</span></li>
             <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Mounjaro from &pound;199/month, Wegovy from &pound;179/month</span></li>
             <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Cancel anytime with no penalties</span></li>
@@ -243,20 +242,20 @@ get_header();
           <ul class="space-y-3">
             <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Unlimited messaging with UK-registered clinicians</span></li>
             <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Monthly check-ins to optimise your dosage</span></li>
-            <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Respond within 4 hours, not 48 hours</span></li>
+            <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">We aim to reply to messages within 4 hours</span></li>
             <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Real ongoing support, not just prescription renewal</span></li>
           </ul>
         </div>
 
-        <!-- Faster Delivery -->
+        <!-- Delivery -->
         <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-200/80 hover:shadow-lg hover:border-purple-200 transition-all duration-500 hover:-translate-y-1" data-reveal style="--stagger-index:2">
           <div class="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center mb-6">
             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/></svg>
           </div>
-          <h3 class="text-2xl font-serif text-gray-900 mb-4">Delivered Within 48 Hours, Not Next Week</h3>
+          <h3 class="text-2xl font-serif text-gray-900 mb-4">Tracked, Discreet Delivery</h3>
           <ul class="space-y-3">
-            <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Prescription approved same-day by our clinical team</span></li>
-            <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Delivered to your door within 48 hours</span></li>
+            <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Every prescription reviewed by our clinical team</span></li>
+            <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Delivered to your door</span></li>
             <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Discreet packaging, tracked delivery</span></li>
             <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Never run out — automatic reminders before you need to reorder</span></li>
           </ul>
@@ -453,7 +452,7 @@ get_header();
                 </td>
                 <td class="at-col-cell py-5 px-5 text-center" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
                   <div class="text-white font-bold text-[17px]">Within 4 hours</div>
-                  <div class="text-[11px] mt-0.5" style="color: rgba(196,183,255,0.7);">guaranteed</div>
+                  <div class="text-[11px] mt-0.5" style="color: rgba(196,183,255,0.7);">our aim</div>
                 </td>
                 <td class="other-cell py-5 px-6 text-center transition-colors" style="background:#faf9ff; border-bottom: 1px solid #f0ecfb;">
                   <span class="text-gray-400 text-[15px] font-medium">24&ndash;72 hours</span>
@@ -495,15 +494,14 @@ get_header();
                     <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg,#f3f0ff,#ebe6ff);">
                       <svg class="w-4 h-4" style="color:#7c6fba;" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"/></svg>
                     </div>
-                    <span class="text-gray-700 font-medium text-[15px]">Delivery speed</span>
+                    <span class="text-gray-700 font-medium text-[15px]">Delivery</span>
                   </div>
                 </td>
                 <td class="at-col-cell py-5 px-5 text-center" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
-                  <div class="text-white font-bold text-[17px]">Within 48 hours</div>
-                  <div class="text-[11px] mt-0.5" style="color: rgba(196,183,255,0.7);">tracked &amp; discreet</div>
+                  <div class="text-white font-bold text-[17px]">Tracked &amp; discreet</div>
                 </td>
                 <td class="other-cell py-5 px-6 text-center transition-colors" style="background:#faf9ff; border-bottom: 1px solid #f0ecfb;">
-                  <span class="text-gray-400 text-[15px] font-medium">3&ndash;7 days</span>
+                  <span class="text-gray-400 text-[15px] font-medium">Varies</span>
                 </td>
               </tr>
 
@@ -607,8 +605,8 @@ get_header();
               </span>
             </div>
             <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02);">
-              <span class="text-[13px]" style="color: rgba(196,183,255,0.8);">Delivery speed</span>
-              <span class="text-white font-bold text-[14px]">Within 48 hours</span>
+              <span class="text-[13px]" style="color: rgba(196,183,255,0.8);">Delivery</span>
+              <span class="text-white font-bold text-[14px]">Tracked &amp; discreet</span>
             </div>
             <div class="flex items-center justify-between px-6 py-4">
               <span class="text-[13px]" style="color: rgba(196,183,255,0.8);">Cancel anytime</span>
@@ -654,8 +652,8 @@ get_header();
               <span class="text-red-400 font-semibold text-[13px]">Extra cost</span>
             </div>
             <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid #f7f5ff; background:#faf9ff;">
-              <span class="text-gray-500 text-[13px]">Delivery speed</span>
-              <span class="text-gray-400 font-semibold text-[13px]">3&ndash;7 days</span>
+              <span class="text-gray-500 text-[13px]">Delivery</span>
+              <span class="text-gray-400 font-semibold text-[13px]">Varies</span>
             </div>
             <div class="flex items-center justify-between px-6 py-4">
               <span class="text-gray-500 text-[13px]">Cancel anytime</span>
@@ -711,20 +709,20 @@ get_header();
             </div>
           </button>
           <div class="faq-body max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-            <div class="px-6 md:px-8 pb-6 text-gray-600 leading-relaxed text-[15px]">We strongly recommend starting your switch before your current supply runs out. With same-day clinical approval and 48-hour delivery, most patients receive their Together Clinic medication within 2 days, ensuring zero interruption to their treatment.</div>
+            <div class="px-6 md:px-8 pb-6 text-gray-600 leading-relaxed text-[15px]">We recommend starting your switch well before your current supply runs out. Your prescriber reviews your assessment and current dose, and once your treatment is approved we dispatch it by tracked delivery, so you can plan around the supply you have left.</div>
           </div>
         </div>
 
         <!-- FAQ 3 -->
         <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden transition-all duration-300 hover:border-purple-200" data-reveal style="--stagger-index:2">
           <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 md:px-8 py-5 text-left group">
-            <span class="text-base md:text-lg font-semibold text-gray-900 pr-4 group-hover:text-purple-600 transition-colors">How much will I actually save?</span>
+            <span class="text-base md:text-lg font-semibold text-gray-900 pr-4 group-hover:text-purple-600 transition-colors">What&#39;s included in the price?</span>
             <div class="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center flex-shrink-0 group-hover:bg-purple-100 transition-colors">
               <svg class="w-4 h-4 text-purple-600 transition-transform duration-300 faq-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </div>
           </button>
           <div class="faq-body max-h-0 overflow-hidden transition-all duration-300 ease-in-out">
-            <div class="px-6 md:px-8 pb-6 text-gray-600 leading-relaxed text-[15px]">On average, patients switching to Together Clinic save up to 27% compared to major online pharmacies like Boots. That&#39;s up to &pound;516 per year. Our prices include everything — medication, clinical consultations, and delivery. No hidden fees, no surprise charges.</div>
+            <div class="px-6 md:px-8 pb-6 text-gray-600 leading-relaxed text-[15px]">Our prices are shown on each treatment page and include everything — medication, clinical consultations, and delivery. No hidden fees, no surprise charges.</div>
           </div>
         </div>
 
@@ -801,10 +799,10 @@ get_header();
     <div class="max-w-4xl mx-auto px-6 text-center relative z-10" data-reveal>
       <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-gray-500 mb-6">Ready to Switch?</p>
       <h2 class="text-4xl md:text-5xl lg:text-6xl font-serif text-white leading-[1.05] mb-5 tracking-[-0.02em]">
-        Make the switch<br/><em class="not-italic" style="color: #a89dd6;">in 5 minutes</em>
+        Make the switch<br/><em class="not-italic" style="color: #a89dd6;">with confidence</em>
       </h2>
       <p class="text-base md:text-lg text-gray-400 leading-relaxed mb-10 max-w-xl mx-auto">
-        Better prices, better support, zero treatment gaps.
+        Transparent pricing, pharmacist prescriber support, and your current dose reviewed.
       </p>
       <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="inline-flex items-center gap-3 bg-white hover:bg-gray-100 text-gray-900 text-[15px] font-semibold px-10 py-4 rounded-xl transition-all hover-lift shadow-xl mb-10">
         Start Your Switch
@@ -825,7 +823,7 @@ get_header();
         </div>
         <div class="flex items-center gap-2 text-gray-400 text-sm">
           <svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-          Same-Day Approval
+          Prescriber-Reviewed
         </div>
       </div>
     </div>
