@@ -1,7 +1,9 @@
 <?php
 /**
  * Template Name: Switching Providers
- * Description: Provider switching page — full conversion from static HTML with comparison table, testimonials, FAQ.
+ * Description: Provider switching page — full conversion from static HTML with comparison table and FAQ.
+ * (Template patient numbers, ratings and testimonials removed in the compliance review:
+ * Together Clinic has no patient history to evidence them.)
  */
 get_header();
 ?>
@@ -58,7 +60,7 @@ get_header();
 
           <!-- Sub -->
           <p class="text-[15px] md:text-[17px] text-gray-500 leading-[1.7] mb-8 max-w-[520px] opacity-0 animate-fade-in-up delay-300" style="animation-fill-mode: forwards;">
-            Already using Mounjaro or Wegovy? We make switching effortless. Save up to 27%, get better support, and continue your treatment without any gap. Over 2,400 patients switched in 2024.
+            Already using Mounjaro or Wegovy? We make switching effortless. Save up to 27%, get better support, and continue your treatment without any gap.
           </p>
 
           <!-- CTA -->
@@ -95,11 +97,6 @@ get_header();
         <div class="order-1 lg:order-2 opacity-0 animate-fade-in-up delay-300" style="animation-fill-mode: forwards;">
           <div class="relative w-full h-[340px] sm:h-[420px] lg:h-full lg:min-h-[520px]">
             <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=900&fit=crop" alt="Happy patient who switched to Together Clinic" class="absolute inset-0 w-full h-full object-cover object-[25%]" />
-            <!-- Floating stat badge -->
-            <div class="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 bg-white/95 backdrop-blur-md rounded-2xl p-5 shadow-xl border border-gray-200/50 max-w-[220px]">
-              <div class="text-3xl font-serif font-bold text-gray-900 mb-1">2,400+</div>
-              <p class="text-sm text-gray-500">Patients switched in 2024</p>
-            </div>
           </div>
         </div>
 
@@ -676,146 +673,6 @@ get_header();
 
 
   <!-- ═══════════════════════════════════════════════════ -->
-  <!-- TRUST STATS — deep brand purple strip               -->
-  <!-- ═══════════════════════════════════════════════════ -->
-  <section class="relative overflow-hidden" style="background: linear-gradient(135deg, #2d1f6e 0%, #3a2878 50%, #2d1f6e 100%);">
-    <!-- subtle texture -->
-    <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse at 50% 0%, rgba(161,140,255,0.12) 0%, transparent 60%);"></div>
-    <div class="max-w-[1400px] mx-auto px-6 md:px-[60px] relative z-10">
-      <div class="flex flex-col sm:flex-row items-stretch divide-y sm:divide-y-0 sm:divide-x" style="border-color: rgba(255,255,255,0.1);" data-stagger>
-
-        <div class="flex-1 flex flex-col items-center justify-center py-10 px-6 text-center" data-reveal style="--stagger-index:0">
-          <div class="text-4xl md:text-5xl font-serif font-bold text-white mb-2 tracking-tight">2,400+</div>
-          <p class="text-sm font-medium leading-snug" style="color: rgba(196,183,255,0.7);">Patients Switched<br/>in 2024</p>
-        </div>
-
-        <div class="flex-1 flex flex-col items-center justify-center py-10 px-6 text-center" data-reveal style="--stagger-index:1">
-          <div class="text-4xl md:text-5xl font-serif font-bold text-white mb-2 tracking-tight">27%</div>
-          <p class="text-sm font-medium leading-snug" style="color: rgba(196,183,255,0.7);">Average<br/>Savings</p>
-        </div>
-
-        <div class="flex-1 flex flex-col items-center justify-center py-10 px-6 text-center" data-reveal style="--stagger-index:2">
-          <div class="text-4xl md:text-5xl font-serif font-bold text-white mb-2 tracking-tight">4.9<span class="text-3xl text-amber-300">&starf;</span></div>
-          <p class="text-sm font-medium leading-snug" style="color: rgba(196,183,255,0.7);">Patient<br/>Rating</p>
-        </div>
-
-        <div class="flex-1 flex flex-col items-center justify-center py-10 px-6 text-center" data-reveal style="--stagger-index:3">
-          <div class="text-4xl md:text-5xl font-serif font-bold text-white mb-2 tracking-tight">48h</div>
-          <p class="text-sm font-medium leading-snug" style="color: rgba(196,183,255,0.7);">Tracked<br/>Delivery</p>
-        </div>
-
-        <div class="flex-1 flex flex-col items-center justify-center py-10 px-6 text-center" data-reveal style="--stagger-index:4">
-          <div class="flex items-center justify-center mb-2">
-            <svg class="w-8 h-8 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-          </div>
-          <p class="text-sm font-bold leading-snug text-white">GPhC &amp; MHRA<br/>Regulated</p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ═══════════════════════════════════════════════════ -->
-  <!-- NEW: SWITCHER TESTIMONIALS — full-width            -->
-  <!-- ═══════════════════════════════════════════════════ -->
-  <section class="relative py-14 md:py-16 overflow-hidden">
-    <div class="absolute inset-0" style="background: #f7f4f9;"></div>
-    <div class="max-w-[1400px] mx-auto px-6 md:px-[60px] relative z-10">
-      <div class="text-center mb-10 md:mb-12" data-reveal>
-        <div class="inline-flex items-center gap-3 bg-white px-5 py-2.5 rounded-full border border-gray-200 shadow-sm mb-5">
-          <div class="flex gap-0.5 text-amber-400">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-          </div>
-          <span class="text-sm font-semibold text-gray-800">What patients say after switching</span>
-        </div>
-        <h2 class="text-3xl md:text-4xl lg:text-5xl font-serif text-gray-900 mb-4 tracking-tight">Happy <span class="text-purple-600">Switchers</span></h2>
-      </div>
-
-      <div class="grid md:grid-cols-3 gap-6" data-stagger>
-        <!-- Review 1 -->
-        <div class="group relative bg-white rounded-[2rem] p-8 shadow-md border border-gray-100 hover:border-purple-200 transition-all duration-500 hover:-translate-y-2 flex flex-col" data-reveal style="--stagger-index:0">
-          <div class="absolute top-6 right-8 text-8xl font-serif text-purple-50 opacity-60 leading-none select-none">&ldquo;</div>
-          <div class="flex gap-1 mb-6 text-amber-400 relative z-10">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-          </div>
-          <blockquote class="relative z-10 mb-8 flex-grow">
-            <p class="text-xl font-serif text-gray-900 leading-tight">&ldquo;Switched from Boots and I&#39;m saving &pound;43 a month. The process took literally 5 minutes.&rdquo;</p>
-          </blockquote>
-          <div class="flex items-center justify-between mt-auto pt-6 border-t border-gray-50 relative z-10">
-            <div>
-              <div class="font-bold text-gray-900 text-sm uppercase tracking-wide mb-1">Rachel D.</div>
-              <div class="flex items-center gap-1.5 text-xs text-purple-600 font-bold bg-purple-50 px-2 py-1 rounded-md inline-flex">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                Verified Switcher
-              </div>
-            </div>
-            <div class="bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md">Saves &pound;43/mo</div>
-          </div>
-        </div>
-
-        <!-- Review 2 -->
-        <div class="group relative bg-white rounded-[2rem] p-8 shadow-md border border-gray-100 hover:border-purple-200 transition-all duration-500 hover:-translate-y-2 flex flex-col" data-reveal style="--stagger-index:1">
-          <div class="absolute top-6 right-8 text-8xl font-serif text-purple-50 opacity-60 leading-none select-none">&ldquo;</div>
-          <div class="flex gap-1 mb-6 text-amber-400 relative z-10">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-          </div>
-          <blockquote class="relative z-10 mb-8 flex-grow">
-            <p class="text-xl font-serif text-gray-900 leading-tight">&ldquo;My old provider took days to reply. Together Clinic responded within 2 hours. Night and day difference.&rdquo;</p>
-          </blockquote>
-          <div class="flex items-center justify-between mt-auto pt-6 border-t border-gray-50 relative z-10">
-            <div>
-              <div class="font-bold text-gray-900 text-sm uppercase tracking-wide mb-1">James T.</div>
-              <div class="flex items-center gap-1.5 text-xs text-purple-600 font-bold bg-purple-50 px-2 py-1 rounded-md inline-flex">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                Verified Switcher
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Review 3 -->
-        <div class="group relative bg-white rounded-[2rem] p-8 shadow-md border border-gray-100 hover:border-purple-200 transition-all duration-500 hover:-translate-y-2 flex flex-col" data-reveal style="--stagger-index:2">
-          <div class="absolute top-6 right-8 text-8xl font-serif text-purple-50 opacity-60 leading-none select-none">&ldquo;</div>
-          <div class="flex gap-1 mb-6 text-amber-400 relative z-10">
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-          </div>
-          <blockquote class="relative z-10 mb-8 flex-grow">
-            <p class="text-xl font-serif text-gray-900 leading-tight">&ldquo;Was worried about a gap in my medication but there was none. Seamless transition and cheaper too.&rdquo;</p>
-          </blockquote>
-          <div class="flex items-center justify-between mt-auto pt-6 border-t border-gray-50 relative z-10">
-            <div>
-              <div class="font-bold text-gray-900 text-sm uppercase tracking-wide mb-1">Priya K.</div>
-              <div class="flex items-center gap-1.5 text-xs text-purple-600 font-bold bg-purple-50 px-2 py-1 rounded-md inline-flex">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                Verified Switcher
-              </div>
-            </div>
-            <div class="bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md">Zero gap</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ═══════════════════════════════════════════════════ -->
   <!-- FAQ — Switching-specific questions                  -->
   <!-- ═══════════════════════════════════════════════════ -->
   <section class="relative py-14 md:py-16 overflow-hidden">
@@ -947,7 +804,7 @@ get_header();
         Make the switch<br/><em class="not-italic" style="color: #a89dd6;">in 5 minutes</em>
       </h2>
       <p class="text-base md:text-lg text-gray-400 leading-relaxed mb-10 max-w-xl mx-auto">
-        Join 2,400+ patients who switched to Together Clinic in 2024. Better prices, better support, zero treatment gaps.
+        Better prices, better support, zero treatment gaps.
       </p>
       <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="inline-flex items-center gap-3 bg-white hover:bg-gray-100 text-gray-900 text-[15px] font-semibold px-10 py-4 rounded-xl transition-all hover-lift shadow-xl mb-10">
         Start Your Switch

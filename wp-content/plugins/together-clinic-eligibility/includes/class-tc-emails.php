@@ -81,13 +81,13 @@ class TC_Emails {
 	}
 
 	public static function clinician_recipients() {
-		$raw = get_option( self::OPT_CLINICIAN_RECIPIENTS, 'ahmed@at-health.co.uk,care@togetherclinic.co.uk' );
+		$raw = get_option( self::OPT_CLINICIAN_RECIPIENTS, 'ahmed@at-health.co.uk,info@togetherclinic.co.uk' );
 		$arr = array_filter( array_map( 'trim', explode( ',', (string) $raw ) ), 'is_email' );
 		return array_values( $arr );
 	}
 
 	private static function build_headers() {
-		$from_email = sanitize_email( get_option( self::OPT_FROM_EMAIL, 'care@togetherclinic.co.uk' ) );
+		$from_email = sanitize_email( get_option( self::OPT_FROM_EMAIL, 'info@togetherclinic.co.uk' ) );
 		$from_name  = sanitize_text_field( get_option( self::OPT_FROM_NAME, 'Together Clinic' ) );
 
 		$headers = [ 'Content-Type: text/html; charset=UTF-8' ];

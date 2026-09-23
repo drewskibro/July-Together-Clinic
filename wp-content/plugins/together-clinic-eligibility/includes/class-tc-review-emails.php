@@ -124,12 +124,12 @@ class TC_Review_Emails {
 	private static function footer() {
 		return sprintf(
 			'<p style="margin-top:32px;">If you have any questions, contact us at <a href="mailto:%1$s">%1$s</a>.</p><p>Best wishes,<br>The Together Clinic team</p>',
-			esc_attr( sanitize_email( get_option( 'tc_eligibility_from_email', 'care@togetherclinic.co.uk' ) ) )
+			esc_attr( sanitize_email( get_option( 'tc_eligibility_from_email', 'info@togetherclinic.co.uk' ) ) )
 		);
 	}
 
 	private static function send( WC_Order $order, $email, $subject, $body, $kind ) {
-		$from_email = sanitize_email( get_option( 'tc_eligibility_from_email', 'care@togetherclinic.co.uk' ) );
+		$from_email = sanitize_email( get_option( 'tc_eligibility_from_email', 'info@togetherclinic.co.uk' ) );
 		$from_name  = sanitize_text_field( get_option( 'tc_eligibility_from_name', 'Together Clinic' ) );
 
 		$headers = [ 'Content-Type: text/html; charset=UTF-8' ];

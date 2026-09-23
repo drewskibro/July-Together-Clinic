@@ -26,10 +26,6 @@ get_header();
         <?php if ( $el_image ) : echo wp_get_attachment_image( $el_image, 'hero-image', false, array( 'class' => 'w-full rounded-3xl shadow-2xl' ) ); else : ?>
         <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=1000&fit=crop" alt="Woman feeling confident" class="w-full rounded-3xl shadow-2xl" />
         <?php endif; ?>
-        <div class="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl p-4 border border-gray-100">
-          <p class="text-2xl font-serif text-purple-700 font-bold">84%</p>
-          <p class="text-xs text-gray-600">Lose weight in month 1</p>
-        </div>
       </div>
     </div>
   </div>

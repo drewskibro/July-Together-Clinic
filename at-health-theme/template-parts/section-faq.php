@@ -16,7 +16,7 @@ $default_faqs = array(
     ),
     array(
         'question' => 'What are the common side effects?',
-        'answer'   => 'The most common side effects are mild nausea, reduced appetite, and occasional digestive changes — these typically settle within the first 2-4 weeks as your body adjusts. Our clinical team starts you on a low dose and gradually increases it to minimise discomfort. You\'ll have direct access to our team throughout.',
+        'answer'   => 'The most common side effects are mild nausea, reduced appetite, and occasional digestive changes — your prescriber will explain what to expect and how to manage them. Our clinical team starts you on a low dose and gradually increases it to minimise discomfort. You\'ll have direct access to our team throughout.',
     ),
     array(
         'question' => 'How much does treatment cost?',
@@ -27,12 +27,12 @@ $default_faqs = array(
         'answer'   => 'Absolutely. There are no minimum commitments or cancellation fees. You can pause or cancel your treatment at any time through your patient portal or by contacting our customer care team. We believe in earning your trust every month, not locking you in.',
     ),
     array(
-        'question' => 'How quickly will I see results?',
-        'answer'   => 'Most patients notice appetite changes within the first week and visible weight loss within 2-4 weeks. Over 84% of our patients lose weight in their first month. Clinical trial data shows average losses of 15-22% body weight over 12 months, though individual results vary based on adherence and lifestyle.',
+        'question' => 'What results can I expect?',
+        'answer'   => 'Results vary from person to person and depend on the treatment prescribed, your dose, and the diet and activity changes that go alongside it. Your prescriber will explain what to expect for your treatment and review your progress each time you reorder.',
     ),
     array(
         'question' => 'Is this safe? Who prescribes my medication?',
-        'answer'   => 'All prescriptions are reviewed and approved by UK-registered prescribers (General Medical Council (GMC) / GPhC qualified). We\'re fully regulated by the GPhC and the Medicines and Healthcare products Regulatory Agency (MHRA). Every medication we dispense is genuine, UK-sourced, and fully traceable. Your safety is our absolute priority.',
+        'answer'   => 'All prescriptions are reviewed and approved by UK-registered prescribers (General Medical Council (GMC) / GPhC qualified). We\'re a pharmacy registered with the General Pharmaceutical Council (GPhC). Every medication we dispense is genuine, UK-sourced, and fully traceable. Your safety is our absolute priority.',
     ),
 );
 

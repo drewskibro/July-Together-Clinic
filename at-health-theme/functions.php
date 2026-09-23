@@ -185,7 +185,7 @@ function ah_terms_default_content() {
 <h2>2. Company Details</h2>
 <p><strong>Company Name:</strong> At Health Ltd (trading as Together Clinic)<br>
 <strong>Website:</strong> www.togetherclinic.co.uk<br>
-<strong>Email:</strong> support@togetherclinic.co.uk<br>
+<strong>Email:</strong> info@togetherclinic.co.uk<br>
 <strong>Superintendent Pharmacist:</strong> Ahmed Nizar Al-Liabi (GPhC No.: 2208502)<br>
 <strong>GPhC Registration Status:</strong> Registered | Expiry: 31 July 2027<br>
 <strong>GPhC Annotations:</strong> Independent Prescriber, Superintendent<br>
@@ -239,14 +239,14 @@ function ah_terms_default_content() {
 <p>At Health Ltd reserves the right to amend these Terms &amp; Conditions at any time. Any changes will be posted on this page with an updated revision date. Your continued use of our website following any changes shall constitute your acceptance of those changes. We encourage you to review this page periodically.</p>
 
 <h2>13. Complaints</h2>
-<p>If you have a complaint about any aspect of our service, please contact us in the first instance at support@togetherclinic.co.uk. We aim to acknowledge all complaints within two working days and to resolve them within 14 working days.</p>
+<p>If you have a complaint about any aspect of our service, please contact us in the first instance at info@togetherclinic.co.uk. We aim to acknowledge all complaints within two working days and to resolve them within 14 working days.</p>
 <p>If you are dissatisfied with our response, you may also raise concerns with the General Pharmaceutical Council (GPhC) at www.pharmacyregulation.org, or with the relevant Responsible Body. For disputes relating to online purchases, you may also refer your complaint to an ADR (Alternative Dispute Resolution) provider.</p>
 
 <h2>14. Contact Information</h2>
 <p>If you have any questions about these Terms &amp; Conditions, please contact us:</p>
 <p><strong>Company:</strong> At Health Ltd (t/a Together Clinic)<br>
 <strong>Website:</strong> www.togetherclinic.co.uk<br>
-<strong>Email:</strong> support@togetherclinic.co.uk</p>
+<strong>Email:</strong> info@togetherclinic.co.uk</p>
 
 <p>&copy; At Health Ltd. All rights reserved. Together Clinic is a trading name of At Health Ltd.</p>
 TERMS_HTML;
@@ -277,7 +277,7 @@ function ah_refund_policy_default_content() {
 
 <h3>1.1 Cancellation by You</h3>
 <ul>
-<li>You may cancel or reschedule a consultation at any time before your appointment, free of charge, by contacting us at support@togetherclinic.co.uk.</li>
+<li>You may cancel or reschedule a consultation at any time before your appointment, free of charge, by contacting us at info@togetherclinic.co.uk.</li>
 <li>If you cancel a paid consultation before it takes place, a full refund will be issued to your original payment method within 2–5 working days.</li>
 <li>If you fail to attend a booked consultation without prior notice (a "no-show"), no refund will be issued. You will need to rebook and pay for a new appointment if you wish to proceed.</li>
 <li>If you cancel a consultation at short notice (less than 24 hours before the scheduled time), we reserve the right to apply a cancellation fee of up to the full consultation cost. Any applicable fee will be communicated to you at the time of booking.</li>
@@ -313,7 +313,7 @@ function ah_refund_policy_default_content() {
 
 <h3>2.2 Cancellation Before Prescription Is Approved</h3>
 <ul>
-<li>You may cancel your order at any time before your prescription has been approved and payment captured. Please contact us at support@togetherclinic.co.uk as soon as possible.</li>
+<li>You may cancel your order at any time before your prescription has been approved and payment captured. Please contact us at info@togetherclinic.co.uk as soon as possible.</li>
 <li>Upon cancellation at this stage, your payment authorisation will be released immediately. No charge will be made to your account. Depending on your card issuer, the released authorisation may take 2–5 working days to no longer show as pending on your statement.</li>
 </ul>
 
@@ -376,7 +376,7 @@ function ah_refund_policy_default_content() {
 <li>The incorrect medication or dosage has been supplied.</li>
 <li>Your order is confirmed as lost by the courier or delivery service.</li>
 </ul>
-<p>To report an issue, please contact us at support@togetherclinic.co.uk with your order reference and, where possible, photographic evidence of any damage or discrepancy. We aim to investigate and resolve all such cases within 5 working days.</p>
+<p>To report an issue, please contact us at info@togetherclinic.co.uk with your order reference and, where possible, photographic evidence of any damage or discrepancy. We aim to investigate and resolve all such cases within 5 working days.</p>
 <p>For certain prescription medicines — particularly injectables or cold-chain products — a clinical review may be required before a replacement can be approved. Where this is the case, we will notify you promptly.</p>
 
 <h2>6. Repeat &amp; Subscription Orders</h2>
@@ -413,14 +413,14 @@ function ah_refund_policy_default_content() {
 <p>Nothing in this policy limits or excludes your statutory rights under the Consumer Rights Act 2015 or any other applicable legislation, including your right to a repair, replacement, or refund where goods are faulty or not as described.</p>
 
 <h2>8. Complaints</h2>
-<p>If you are dissatisfied with how your cancellation or refund request has been handled, please contact us at support@togetherclinic.co.uk. We aim to acknowledge all complaints within two working days and to resolve them within 14 working days.</p>
+<p>If you are dissatisfied with how your cancellation or refund request has been handled, please contact us at info@togetherclinic.co.uk. We aim to acknowledge all complaints within two working days and to resolve them within 14 working days.</p>
 <p>If you remain dissatisfied following our response, you may raise a concern with the General Pharmaceutical Council (GPhC) at www.pharmacyregulation.org, or seek independent advice from Citizens Advice (www.citizensadvice.org.uk). For unresolved disputes relating to online purchases, you may also refer your complaint to an approved Alternative Dispute Resolution (ADR) provider.</p>
 
 <h2>9. Contact Us</h2>
 <p>To request a cancellation or refund, or if you have any questions about this policy, please contact our team:</p>
 <p><strong>Company:</strong> At Health Ltd (t/a Together Clinic)<br>
 <strong>Website:</strong> www.togetherclinic.co.uk<br>
-<strong>Email:</strong> support@togetherclinic.co.uk</p>
+<strong>Email:</strong> info@togetherclinic.co.uk</p>
 <p>Early contact gives us the best chance of resolving your request before a prescription has been issued.</p>
 
 <h2>10. Regulatory Information</h2>
@@ -457,9 +457,9 @@ function ah_privacy_policy_default_content() {
 <p>At Health Ltd (trading as Together Clinic) is the Data Controller responsible for your personal information. As Data Controller, we determine how and why your personal data is processed, and we are responsible for ensuring that processing is carried out in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
 <p><strong>Company:</strong> At Health Ltd (t/a Together Clinic)<br>
 <strong>Website:</strong> www.togetherclinic.co.uk<br>
-<strong>Email:</strong> support@togetherclinic.co.uk<br>
+<strong>Email:</strong> info@togetherclinic.co.uk<br>
 <strong>Superintendent Pharmacist:</strong> Ahmed Nizar Al-Liabi (GPhC No.: 2208502, Independent Prescriber)</p>
-<p>If you have any questions about how we handle your personal data, or wish to exercise your data protection rights, please contact us at support@togetherclinic.co.uk.</p>
+<p>If you have any questions about how we handle your personal data, or wish to exercise your data protection rights, please contact us at info@togetherclinic.co.uk.</p>
 
 <h2>3. Information We Collect</h2>
 
@@ -514,7 +514,7 @@ function ah_privacy_policy_default_content() {
 <li>To improve our website, services and clinical processes</li>
 <li>To send you marketing communications about our services where you have given your explicit consent</li>
 </ul>
-<p>You may withdraw your consent to marketing communications at any time by contacting us at support@togetherclinic.co.uk or by using the unsubscribe link in any marketing email.</p>
+<p>You may withdraw your consent to marketing communications at any time by contacting us at info@togetherclinic.co.uk or by using the unsubscribe link in any marketing email.</p>
 
 <h2>5. Legal Basis for Processing</h2>
 <p>We process your personal information on one or more of the following lawful bases under UK GDPR:</p>
@@ -585,7 +585,7 @@ function ah_privacy_policy_default_content() {
 <li>Regular security assessments and staff training</li>
 <li>Secure payment processing via Stripe — we do not store full card details on our systems</li>
 </ul>
-<p>While we take all reasonable steps to protect your information, no method of internet transmission or electronic storage is completely secure. If you have concerns about the security of your data, please contact us at support@togetherclinic.co.uk.</p>
+<p>While we take all reasonable steps to protect your information, no method of internet transmission or electronic storage is completely secure. If you have concerns about the security of your data, please contact us at info@togetherclinic.co.uk.</p>
 <p>In the event of a personal data breach that is likely to result in a high risk to your rights and freedoms, we will notify you without undue delay in accordance with our obligations under UK GDPR.</p>
 
 <h2>9. Data Retention</h2>
@@ -610,11 +610,11 @@ function ah_privacy_policy_default_content() {
 <li><strong>Right to data portability.</strong> Where processing is based on consent or contract and carried out by automated means, you may request a copy of your data in a structured, commonly used and machine-readable format.</li>
 <li><strong>Right to withdraw consent.</strong> Where we rely on consent as our lawful basis, you may withdraw that consent at any time without affecting the lawfulness of processing carried out before withdrawal.</li>
 </ul>
-<p>To exercise any of these rights, please contact us at support@togetherclinic.co.uk. We will respond to your request within one calendar month. In some cases, we may need to verify your identity before processing your request.</p>
+<p>To exercise any of these rights, please contact us at info@togetherclinic.co.uk. We will respond to your request within one calendar month. In some cases, we may need to verify your identity before processing your request.</p>
 <p>If you are not satisfied with our response, you have the right to lodge a complaint with the Information Commissioner's Office (ICO) at www.ico.org.uk or by calling 0303 123 1113.</p>
 
 <h2>11. Children's Privacy</h2>
-<p>Our services are intended for adults aged 18 and over. We do not knowingly collect personal information from individuals under the age of 18. If you believe that we have inadvertently collected information from a minor, please contact us immediately at support@togetherclinic.co.uk and we will take steps to delete it.</p>
+<p>Our services are intended for adults aged 18 and over. We do not knowingly collect personal information from individuals under the age of 18. If you believe that we have inadvertently collected information from a minor, please contact us immediately at info@togetherclinic.co.uk and we will take steps to delete it.</p>
 
 <h2>12. International Data Transfers</h2>
 <p>We aim to process and store your personal information within the United Kingdom and the European Economic Area (EEA). Where any of our third-party providers process data outside the UK or EEA, we ensure that appropriate safeguards are in place — such as Standard Contractual Clauses approved by the ICO — to protect your personal information in accordance with UK GDPR.</p>
@@ -630,7 +630,7 @@ function ah_privacy_policy_default_content() {
 <p>If you have any questions about this Privacy Policy, wish to exercise your data protection rights, or have a concern about how we handle your personal information, please contact us:</p>
 <p><strong>Company:</strong> At Health Ltd (t/a Together Clinic)<br>
 <strong>Website:</strong> www.togetherclinic.co.uk<br>
-<strong>Email:</strong> support@togetherclinic.co.uk</p>
+<strong>Email:</strong> info@togetherclinic.co.uk</p>
 <p>You also have the right to raise a concern directly with the Information Commissioner's Office (ICO):</p>
 <p><strong>ICO website:</strong> www.ico.org.uk<br>
 <strong>ICO helpline:</strong> 0303 123 1113</p>

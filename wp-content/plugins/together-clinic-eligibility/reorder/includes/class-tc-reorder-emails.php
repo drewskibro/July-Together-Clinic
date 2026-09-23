@@ -105,7 +105,7 @@ class TC_Reorder_Emails {
 		$body .= '<li>Once you have paid, your medication will be dispatched with free next-day delivery.</li></ol>';
 		$body .= sprintf(
 			'<p style="margin-top:24px;">If you have any questions, contact us at <a href="mailto:%1$s">%1$s</a>.</p>',
-			esc_attr( sanitize_email( get_option( 'tc_eligibility_from_email', 'care@togetherclinic.co.uk' ) ) )
+			esc_attr( sanitize_email( get_option( 'tc_eligibility_from_email', 'info@togetherclinic.co.uk' ) ) )
 		);
 		$body .= '<p>Best wishes,<br>The Together Clinic team</p>';
 		$body .= sprintf( '<p style="color:#6b7280;font-size:11px;margin-top:24px;">Reference: %s</p>', esc_html( $assessment_id ) );
@@ -121,13 +121,13 @@ class TC_Reorder_Emails {
 	}
 
 	private static function clinician_recipients() {
-		$raw = get_option( 'tc_eligibility_clinician_recipients', 'ahmed@at-health.co.uk,care@togetherclinic.co.uk' );
+		$raw = get_option( 'tc_eligibility_clinician_recipients', 'ahmed@at-health.co.uk,info@togetherclinic.co.uk' );
 		$arr = array_filter( array_map( 'trim', explode( ',', (string) $raw ) ), 'is_email' );
 		return array_values( $arr );
 	}
 
 	private static function headers() {
-		$from_email = sanitize_email( get_option( 'tc_eligibility_from_email', 'care@togetherclinic.co.uk' ) );
+		$from_email = sanitize_email( get_option( 'tc_eligibility_from_email', 'info@togetherclinic.co.uk' ) );
 		$from_name  = sanitize_text_field( get_option( 'tc_eligibility_from_name', 'Together Clinic' ) );
 
 		$headers = [ 'Content-Type: text/html; charset=UTF-8' ];

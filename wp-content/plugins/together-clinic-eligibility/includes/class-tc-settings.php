@@ -152,7 +152,7 @@ class TC_Settings {
 				<table class="form-table">
 					<tr>
 						<th><label for="tc_eligibility_from_email">From email</label></th>
-						<td><input type="email" name="tc_eligibility_from_email" id="tc_eligibility_from_email" class="regular-text" value="<?php echo esc_attr( get_option( 'tc_eligibility_from_email', 'care@togetherclinic.co.uk' ) ); ?>" /></td>
+						<td><input type="email" name="tc_eligibility_from_email" id="tc_eligibility_from_email" class="regular-text" value="<?php echo esc_attr( get_option( 'tc_eligibility_from_email', 'info@togetherclinic.co.uk' ) ); ?>" /></td>
 					</tr>
 					<tr>
 						<th><label for="tc_eligibility_from_name">From name</label></th>
@@ -161,7 +161,7 @@ class TC_Settings {
 					<tr>
 						<th><label for="tc_eligibility_clinician_recipients">Clinician recipients</label></th>
 						<td>
-							<input type="text" name="tc_eligibility_clinician_recipients" id="tc_eligibility_clinician_recipients" class="large-text" value="<?php echo esc_attr( get_option( 'tc_eligibility_clinician_recipients', 'ahmed@at-health.co.uk,care@togetherclinic.co.uk' ) ); ?>" />
+							<input type="text" name="tc_eligibility_clinician_recipients" id="tc_eligibility_clinician_recipients" class="large-text" value="<?php echo esc_attr( get_option( 'tc_eligibility_clinician_recipients', 'ahmed@at-health.co.uk,info@togetherclinic.co.uk' ) ); ?>" />
 							<p class="description">Comma-separated list of email addresses for clinician notifications.</p>
 						</td>
 					</tr>

@@ -29,22 +29,6 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				<label class="checkbox-item"><input type="checkbox" class="agreement-checkbox" data-index="4" /><span>I understand that withholding or providing false information can severely harm my health and may result in life-threatening consequences</span></label>
 			</div>
 			<button class="button button-primary" id="agree-continue" data-action="agree-continue" disabled>Agree and start consultation &rarr;</button>
-
-			<div class="testimonial-box">
-				<div class="testimonial-header">
-					<div>
-						<div class="testimonial-name">Lesley Slade</div>
-						<div class="stars">
-							<span class="star">&#9733;</span>
-							<span class="star">&#9733;</span>
-							<span class="star">&#9733;</span>
-							<span class="star">&#9733;</span>
-							<span class="star">&#9733;</span>
-						</div>
-					</div>
-				</div>
-				<p class="testimonial-text">&ldquo;This clinic is excellent. I needed help losing weight and the support and advice I've been given has been amazing. I would definitely recommend Together Clinic to anyone wanting to lose weight or wanting general health advice.&rdquo;</p>
-			</div>
 		</div>
 
 		<!-- Screen 1b: Early Capture -->
@@ -712,7 +696,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			</div>
 			<div class="confirmed-contact-box">
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-				<span style="font-size:14px;color:#6b7280;">Questions? Contact us at <a href="mailto:care@togetherclinic.co.uk">care@togetherclinic.co.uk</a></span>
+				<span style="font-size:14px;color:#6b7280;">Questions? Contact us at <a href="mailto:info@togetherclinic.co.uk">info@togetherclinic.co.uk</a></span>
 			</div>
 		</div>
 
