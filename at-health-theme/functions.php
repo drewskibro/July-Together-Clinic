@@ -764,6 +764,12 @@ require_once get_theme_file_path( 'inc/post-clinical-content.php' );
 // One-off corrections to saved content (owner's site check, September 2026)
 require_once get_theme_file_path( 'inc/content-fixes.php' );
 
+// Health Hub magazine: sections, story data and shared card rendering
+require_once get_theme_file_path( 'inc/health-hub.php' );
+
+// Health Hub launch set: six stories created once as drafts for pharmacist review
+require_once get_theme_file_path( 'inc/health-hub-launch.php' );
+
 // WooCommerce product setup (admin tool)
 if ( class_exists( 'WooCommerce' ) ) {
     require_once get_theme_file_path( 'inc/woocommerce-setup.php' );

@@ -749,3 +749,140 @@ a {
 .single-post .prose h2 {
     scroll-margin-top: 100px;
 }
+
+/* ═══════════════════════════════════════════════
+   HEALTH HUB — magazine components (inc/health-hub.php)
+   Shared by the home page section, the Health Hub page and articles.
+   ═══════════════════════════════════════════════ */
+
+/* Meta line: "Eat well · 4 min read" */
+.hh-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 0.55rem;
+    font-family: var(--ah-font-sans);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ah-gray-500);
+    font-weight: 500;
+}
+.hh-meta-section { color: var(--hh-ink, var(--ah-purple-700)); font-weight: 700; }
+.hh-meta-dot { color: var(--ah-gray-300); }
+.hh-meta--dark, .hh-meta--dark .hh-meta-section { color: rgba(253, 248, 244, 0.85); }
+
+/* Titles shift to the brand purple on hover, like a magazine link */
+.hh-card-title { transition: color 0.25s ease; text-wrap: balance; }
+.hh-card:hover .hh-card-title,
+.hh-row:hover .hh-card-title,
+.hh-lead:hover .hh-card-title { color: var(--ah-purple-700); }
+
+/* Photographs ease in slightly on hover */
+.hh-cover-img { transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.hh-card:hover .hh-cover-img,
+.hh-row:hover .hh-cover-img,
+.hh-lead:hover .hh-cover-img { transform: scale(1.035); }
+
+/* Designed cover: the section's colours and mark, until the story has a photo.
+   Deliberately editorial — never a medicine, pack or pen. */
+.hh-cover--designed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.9rem;
+    color: var(--hh-ink);
+    background: linear-gradient(150deg, var(--hh-a) 0%, var(--hh-b) 100%);
+}
+.hh-cover--designed::after {
+    /* Off-centre bloom, so the panel has a light source rather than a flat fill */
+    content: '';
+    position: absolute;
+    width: 140%;
+    aspect-ratio: 1;
+    top: -60%;
+    left: -35%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 62%);
+    pointer-events: none;
+}
+.hh-cover-mark { position: relative; width: 22%; max-width: 72px; min-width: 30px; opacity: 0.7; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+.hh-card:hover .hh-cover-mark,
+.hh-row:hover .hh-cover-mark,
+.hh-lead:hover .hh-cover-mark { transform: scale(1.08) rotate(-3deg); }
+.hh-cover-label {
+    position: relative;
+    font-family: var(--ah-font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+.hh-row .hh-cover-label { display: none; }
+.hh-row .hh-cover-mark { width: 34%; }
+
+/* Rows in the home page list */
+.hh-row + .hh-row { border-top: 1px solid rgba(142, 136, 208, 0.18); }
+
+/* Section pills */
+.hh-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(142, 136, 208, 0.28);
+    background: #fff;
+    font-family: var(--ah-font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--hh-ink, var(--ah-gray-700));
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.hh-pill:hover { border-color: var(--hh-ink, var(--ah-purple-600)); }
+.hh-pill.is-active { background: var(--hh-ink, var(--ah-gray-900)); border-color: var(--hh-ink, var(--ah-gray-900)); color: #fff; }
+
+.hh-browse-link { transition: gap 0.25s ease; }
+.hh-browse-link:hover { gap: 0.75rem; text-decoration: underline; text-underline-offset: 4px; }
+
+/* Lead story without a photograph: a feature panel in the section's colours */
+.hh-lead--panel {
+    color: var(--hh-ink);
+    background: linear-gradient(150deg, var(--hh-a) 0%, var(--hh-b) 100%);
+    isolation: isolate;
+}
+.hh-lead--panel::before {
+    /* Light source, top left */
+    content: '';
+    position: absolute;
+    width: 120%;
+    aspect-ratio: 1;
+    top: -70%;
+    left: -40%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 60%);
+    z-index: -1;
+    pointer-events: none;
+}
+.hh-lead-watermark {
+    position: absolute;
+    right: -6%;
+    bottom: -10%;
+    width: 52%;
+    max-width: 420px;
+    opacity: 0.16;
+    z-index: -1;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hh-lead--panel:hover .hh-lead-watermark { transform: rotate(-4deg) scale(1.04); }
+.hh-lead--panel .hh-card-title { text-wrap: balance; }
+.hh-lead--panel:hover .hh-card-title { color: var(--ah-gray-900); }
+/* In the narrower lead (home page) the text fills the lower half, so the mark
+   sits top-right, clear of the words; the wide lead keeps it bottom-right. */
+.hh-lead--panel:not(.hh-lead--wide) .hh-lead-watermark {
+    top: -6%;
+    bottom: auto;
+    right: -8%;
+    width: 46%;
+}
