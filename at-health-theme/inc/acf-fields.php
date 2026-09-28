@@ -288,46 +288,7 @@ acf_add_local_field_group( array(
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-home.php' ) ) ),
 ) );
 
-// B7c: Home — Health Hub Snapshot
-acf_add_local_field_group( array(
-    'key'   => 'group_ah_b7c_home_health_hub',
-    'title' => 'B7c — Home: Health Hub',
-    'fields' => array(
-        array( 'key' => 'field_ah_health_hub_eyebrow', 'label' => 'Eyebrow', 'name' => 'health_hub_eyebrow', 'type' => 'text', 'default_value' => 'HEALTH HUB' ),
-        array( 'key' => 'field_ah_health_hub_heading', 'label' => 'Heading', 'name' => 'health_hub_heading', 'type' => 'text', 'default_value' => 'Know More. Feel Better.' ),
-        array( 'key' => 'field_ah_health_hub_subheading', 'label' => 'Subheading', 'name' => 'health_hub_subheading', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'Honest health guidance from our pharmacist prescribers — written for real people, not medical textbooks.' ),
-
-        array( 'key' => 'field_ah_health_hub_hero_post', 'label' => 'Hero Article', 'name' => 'health_hub_hero_post', 'type' => 'post_object', 'post_type' => array( 'post' ), 'return_format' => 'id', 'allow_null' => 1, 'ui' => 1, 'instructions' => 'Pick a published post. The card pulls its title, excerpt, featured image, category and permalink automatically.' ),
-        array( 'key' => 'field_ah_health_hub_hero_read_time', 'label' => 'Hero Read Time', 'name' => 'health_hub_hero_read_time', 'type' => 'text', 'default_value' => '5 min read', 'instructions' => 'Optional. Posts have no native read time; this displays alongside the category.' ),
-
-        array(
-            'key'        => 'field_ah_health_hub_cards',
-            'label'      => 'Supporting Cards (up to 4)',
-            'name'       => 'health_hub_cards',
-            'type'       => 'repeater',
-            'min'        => 0,
-            'max'        => 4,
-            'layout'     => 'block',
-            'button_label' => 'Add Card',
-            'instructions' => 'Pick up to four. The grid adapts to how many you choose — three cards fill three columns, not four with a gap.',
-            'sub_fields' => array(
-                array( 'key' => 'field_ah_card_post', 'label' => 'Article', 'name' => 'card_post', 'type' => 'post_object', 'post_type' => array( 'post' ), 'return_format' => 'id', 'allow_null' => 1, 'ui' => 1, 'instructions' => 'Pick a published post for this card.' ),
-                array( 'key' => 'field_ah_card_read_time', 'label' => 'Read Time', 'name' => 'card_read_time', 'type' => 'text', 'instructions' => 'Optional. e.g. "4 min read".' ),
-            ),
-        ),
-
-        array( 'key' => 'field_ah_health_hub_sixth_post', 'label' => 'Sixth Article', 'name' => 'health_hub_sixth_post', 'type' => 'post_object', 'post_type' => array( 'post' ), 'return_format' => 'id', 'allow_null' => 1, 'ui' => 1, 'instructions' => 'Pick the published post for the large sixth card.' ),
-        array( 'key' => 'field_ah_health_hub_sixth_read_time', 'label' => 'Sixth Article Read Time', 'name' => 'health_hub_sixth_read_time', 'type' => 'text', 'default_value' => '5 min read' ),
-
-        array( 'key' => 'field_ah_health_hub_cta_heading', 'label' => 'CTA Heading', 'name' => 'health_hub_cta_heading', 'type' => 'text', 'default_value' => 'Ready to take the first step?' ),
-        array( 'key' => 'field_ah_health_hub_cta_subtext', 'label' => 'CTA Subtext', 'name' => 'health_hub_cta_subtext', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'Answer a few quick questions and find out which treatment is right for you.' ),
-        array( 'key' => 'field_ah_health_hub_cta_button_text', 'label' => 'CTA Button Text', 'name' => 'health_hub_cta_button_text', 'type' => 'text', 'default_value' => 'Check Your Eligibility' ),
-        array( 'key' => 'field_ah_health_hub_cta_button_url', 'label' => 'CTA Button URL', 'name' => 'health_hub_cta_button_url', 'type' => 'url' ),
-
-        array( 'key' => 'field_ah_health_hub_explore_url', 'label' => 'Explore All URL', 'name' => 'health_hub_explore_url', 'type' => 'url', 'default_value' => '/health-hub/' ),
-    ),
-    'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-home.php' ) ) ),
-) );
+// B7c (Home — Health Hub picks) removed: the section now picks its own stories.
 
 // B8: Home — How It Works (step details)
 acf_add_local_field_group( array(
@@ -808,14 +769,7 @@ acf_add_local_field_group( array(
 // L-SERIES: HEALTH HUB PAGE
 // ═══════════════════════════════════════════════
 
-acf_add_local_field_group( array(
-    'key'   => 'group_ah_l1_health_hub',
-    'title' => 'L1 — Health Hub: All Fields',
-    'fields' => array(
-        array( 'key' => 'field_ah_hh_title', 'label' => 'Title (HTML)', 'name' => 'hh_title', 'type' => 'textarea', 'rows' => 2 ),
-    ),
-    'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-health-hub.php' ) ) ),
-) );
+// L1 (Health Hub title) removed: the magazine masthead is part of the template.
 
 // ═══════════════════════════════════════════════
 // M-SERIES: REORDER PAGE
