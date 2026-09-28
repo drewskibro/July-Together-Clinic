@@ -17,7 +17,7 @@ get_header();
       <?php echo esc_html( ah_field( 'cc_subtitle', 'Your health journey is our priority. Find answers, review our policies, or get in touch with our UK-based clinical support team.' ) ); ?>
     </p>
     <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600">
-      <?php foreach ( array( 'UK-Based Support Team', 'Reply Within 4 Hours', 'GPhC Regulated' ) as $t ) : ?>
+      <?php foreach ( array( 'UK-Based Support Team', 'GPhC Regulated' ) as $t ) : ?>
       <div class="flex items-center gap-2"><svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="font-medium"><?php echo esc_html( $t ); ?></span></div>
       <?php endforeach; ?>
     </div>

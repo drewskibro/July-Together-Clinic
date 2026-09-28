@@ -54,7 +54,6 @@ acf_add_local_field_group( array(
     'fields'   => array(
         array( 'key' => 'field_ah_business_hours', 'label' => 'Business Hours', 'name' => 'business_hours', 'type' => 'text', 'default_value' => '9am - 6pm, Monday to Friday' ),
         array( 'key' => 'field_ah_email_address', 'label' => 'Email Address', 'name' => 'email_address', 'type' => 'email', 'default_value' => 'info@togetherclinic.co.uk' ),
-        array( 'key' => 'field_ah_email_response_time', 'label' => 'Email Response Time', 'name' => 'email_response_time', 'type' => 'text', 'default_value' => 'Reply within 4 hours' ),
         array( 'key' => 'field_ah_no_phone_notice', 'label' => 'No Phone Consultations Notice', 'name' => 'no_phone_notice', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'We do not offer telephone consultations. Please contact us via email or live chat.' ),
         array( 'key' => 'field_ah_eligibility_url', 'label' => 'Eligibility / Booking URL', 'name' => 'eligibility_url', 'type' => 'url', 'instructions' => 'The main CTA link used across the site.' ),
     ),
