@@ -355,6 +355,16 @@ a {
     transform: translateX(40px);
 }
 
+/* Below the two-column breakpoint the columns stack full-width, so a sideways
+   start offset pushes content past the screen edge until it is revealed — the
+   whole page could then be dragged sideways on phones. Slide up instead. */
+@media (max-width: 1023px) {
+    [data-reveal="left"],
+    [data-reveal="right"] {
+        transform: translateY(32px);
+    }
+}
+
 [data-reveal="scale"] {
     opacity: 0;
     transform: scale(0.92);

@@ -40,7 +40,7 @@ acf_add_local_field_group( array(
     'fields'   => array(
         array( 'key' => 'field_ah_site_logo', 'label' => 'Site Logo', 'name' => 'site_logo', 'type' => 'image', 'return_format' => 'id', 'instructions' => 'Upload the Together Clinic logo. Recommended: SVG or PNG with transparency.' ),
         array( 'key' => 'field_ah_company_name', 'label' => 'Company Name', 'name' => 'company_name', 'type' => 'text', 'default_value' => 'Together Clinic' ),
-        array( 'key' => 'field_ah_company_legal_name', 'label' => 'Company Legal Name', 'name' => 'company_legal_name', 'type' => 'text', 'default_value' => 'Together Clinic Ltd' ),
+        array( 'key' => 'field_ah_company_legal_name', 'label' => 'Company Legal Name', 'name' => 'company_legal_name', 'type' => 'text', 'default_value' => 'AT Health Ltd' ),
         array( 'key' => 'field_ah_company_registration', 'label' => 'Company Registration Text', 'name' => 'company_registration', 'type' => 'text', 'default_value' => 'Company registered in England & Wales.' ),
         array( 'key' => 'field_ah_footer_tagline', 'label' => 'Footer Tagline', 'name' => 'footer_tagline', 'type' => 'text', 'default_value' => 'Pharmacist-led care, delivered.' ),
     ),
@@ -52,7 +52,7 @@ acf_add_local_field_group( array(
     'key'      => 'group_ah_a2_contact',
     'title'    => 'A2 — Contact & Details',
     'fields'   => array(
-        array( 'key' => 'field_ah_business_hours', 'label' => 'Business Hours', 'name' => 'business_hours', 'type' => 'text', 'default_value' => '9am - 5pm, Monday to Friday' ),
+        array( 'key' => 'field_ah_business_hours', 'label' => 'Business Hours', 'name' => 'business_hours', 'type' => 'text', 'default_value' => '9am - 6pm, Monday to Friday' ),
         array( 'key' => 'field_ah_email_address', 'label' => 'Email Address', 'name' => 'email_address', 'type' => 'email', 'default_value' => 'info@togetherclinic.co.uk' ),
         array( 'key' => 'field_ah_email_response_time', 'label' => 'Email Response Time', 'name' => 'email_response_time', 'type' => 'text', 'default_value' => 'Reply within 4 hours' ),
         array( 'key' => 'field_ah_no_phone_notice', 'label' => 'No Phone Consultations Notice', 'name' => 'no_phone_notice', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'We do not offer telephone consultations. Please contact us via email or live chat.' ),
@@ -69,7 +69,9 @@ acf_add_local_field_group( array(
         // Defaults are deliberately blank (except the superintendent, who is already published in
         // Know Your Team). These previously defaulted to ANOTHER pharmacy's details — a template
         // leftover — and the footer now renders this block, so a wrong default would be published.
-        array( 'key' => 'field_ah_gphc_number', 'label' => 'Pharmacy Premises GPhC Number', 'name' => 'gphc_number', 'type' => 'text', 'default_value' => '', 'instructions' => 'The premises registration number (not a pharmacist\'s). Shown in the footer regulatory line once set.' ),
+        array( 'key' => 'field_ah_gphc_number', 'label' => 'Pharmacy Premises GPhC Number', 'name' => 'gphc_number', 'type' => 'text', 'default_value' => '', 'instructions' => 'The supplying pharmacy\'s premises registration number (not a pharmacist\'s). Shown in the footer regulatory line once set.' ),
+        array( 'key' => 'field_ah_supplying_pharmacy_name', 'label' => 'Supplying Pharmacy Name', 'name' => 'supplying_pharmacy_name', 'type' => 'text', 'default_value' => '', 'instructions' => 'The registered pharmacy that dispenses and supplies the medicines (e.g. "Wilmslow Pharmacy"). Renders as "Medicines are supplied by …".' ),
+        array( 'key' => 'field_ah_supplying_pharmacy_address', 'label' => 'Supplying Pharmacy Address', 'name' => 'supplying_pharmacy_address', 'type' => 'text', 'default_value' => '', 'instructions' => 'The pharmacy premises address, on one line. This is not a registered office address.' ),
         array( 'key' => 'field_ah_superintendent', 'label' => 'Superintendent Pharmacist', 'name' => 'superintendent', 'type' => 'text', 'default_value' => 'Ahmed Nizar Al-Liabi' ),
         array( 'key' => 'field_ah_superintendent_gphc_number', 'label' => 'Superintendent GPhC Number', 'name' => 'superintendent_gphc_number', 'type' => 'text', 'default_value' => '2208502' ),
         array( 'key' => 'field_ah_company_number', 'label' => 'Company Number', 'name' => 'company_number', 'type' => 'text', 'default_value' => '', 'instructions' => 'Companies House number of the owning company.' ),
