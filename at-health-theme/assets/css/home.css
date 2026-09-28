@@ -42,106 +42,88 @@
     padding: 32px 24px;
 }
 
-/* Stats v2 — bordered cards with icon */
-.hp-stat-card-v2 {
-    background: #fff;
-    border: 1px solid var(--ah-gray-200);
-    border-radius: 16px;
-    padding: 28px 20px;
-    text-align: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+/* ── Why choose us (Section 5): a warm feature panel in the Health Hub's style.
+   Replaces the stacked proof card and trust strip. ── */
+.hp-why-panel {
+    background: linear-gradient(150deg, #f2effb 0%, #ebe6f8 48%, #f8ecef 100%);
+    isolation: isolate;
 }
-.hp-stat-card-v2:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(26, 26, 46, 0.08);
-    border-color: var(--ah-purple-300);
+.hp-why-panel::before {
+    /* Light source, top left */
+    content: '';
+    position: absolute;
+    width: 90%;
+    aspect-ratio: 1;
+    top: -55%;
+    left: -25%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0) 62%);
+    z-index: -1;
+    pointer-events: none;
 }
-/* Single proof point (group figure) — one wider card, not a stat grid */
-.hp-proof-card {
-    padding: 36px 32px;
-}
-.hp-proof-card:hover {
-    transform: none;
-}
-.hp-stat-icon {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #f3eff9 0%, #ede6f8 100%);
-    border-radius: 12px;
+.hp-why-watermark {
+    position: absolute;
+    right: -5%;
+    bottom: -16%;
+    width: 44%;
+    max-width: 520px;
     color: #8e88d0;
+    opacity: 0.12;
+    z-index: -1;
 }
-.hp-stat-icon svg {
-    width: 24px;
-    height: 24px;
+/* The approved group figure, set as the section's statement */
+.hp-why-statement {
+    padding-left: 1.4rem;
+    border-left: 2px solid #a89dd6;
+    text-wrap: pretty;
 }
-.hp-stat-card-v2 .hp-stat-number {
-    font-family: var(--ah-font-serif);
-    font-size: 2.5rem;
-    line-height: 1;
-    color: var(--ah-gray-900);
-    margin-bottom: 8px;
+.hp-why-promise {
+    background: rgba(255, 255, 255, 0.74);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    padding: 1.6rem 1.6rem 1.75rem;
+    box-shadow: 0 1px 0 rgba(125, 118, 186, 0.06), 0 14px 34px -20px rgba(76, 64, 150, 0.28);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
 }
-
-/* Trust strip */
-.hp-trust-strip {
-    background: #fff;
-    border: 1px solid var(--ah-gray-200);
-    border-radius: 16px;
-    padding: 24px 28px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
+.hp-why-promise:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 1px 0 rgba(125, 118, 186, 0.08), 0 22px 44px -22px rgba(76, 64, 150, 0.38);
 }
-.hp-trust-strip-label {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--ah-gray-500, #6b7280);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-}
-.hp-trust-strip-logos {
-    display: flex;
-    flex-wrap: wrap;
+.hp-why-mark {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 16px;
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+    color: var(--hh-ink);
+    background: linear-gradient(150deg, var(--hh-a) 0%, var(--hh-b) 100%);
 }
-.hp-trust-badge {
-    display: flex;
-    flex-direction: column;
+.hp-why-mark svg { width: 27px; height: 27px; }
+.hp-why-credential {
+    background: rgba(255, 255, 255, 0.84);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+}
+.hp-why-seal {
+    flex-shrink: 0;
+    display: inline-flex;
     align-items: center;
-    text-decoration: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    transition: background 0.2s ease;
-}
-.hp-trust-badge:hover {
-    background: #f7f4f9;
-}
-.hp-trust-badge-mark {
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #fff;
     font-family: var(--ah-font-serif);
-    font-size: 22px;
-    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.01em;
     color: var(--ah-gray-900);
-    letter-spacing: 0.02em;
-    line-height: 1;
+    border: 1.5px solid rgba(125, 118, 186, 0.45);
+    box-shadow: inset 0 0 0 5px #fff, inset 0 0 0 6px rgba(125, 118, 186, 0.22);
 }
-.hp-trust-badge-sub {
-    font-size: 11px;
-    color: var(--ah-gray-500, #6b7280);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-top: 5px;
-}
-@media (min-width: 640px) {
-    .hp-trust-strip { flex-direction: row; justify-content: center; gap: 28px; }
-    .hp-trust-strip-logos { gap: 24px; }
-}
+.hp-why-verify { color: #7d76ba; transition: gap 0.25s ease; }
+.hp-why-verify:hover { gap: 0.7rem; text-decoration: underline; text-underline-offset: 4px; }
 
 .hp-stat-number {
     font-family: var(--ah-font-serif);

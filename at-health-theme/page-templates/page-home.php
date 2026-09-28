@@ -84,7 +84,15 @@ $team_members = array(
         </div>
         <h3 class="text-2xl font-serif text-gray-900 mb-2"><?php echo esc_html( $member['name'] ); ?></h3>
         <p class="text-base text-gray-600 mb-4"><?php echo esc_html( $member['role'] ); ?></p>
-        <a href="<?php echo esc_url( $member['gphc_url'] ); ?>" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors">
+        <?php
+        // A bare register address lands on a search page. Link straight to the
+        // pharmacist's own entry instead, so "every name here can be checked" is one click.
+        $gphc_link = (string) $member['gphc_url'];
+        if ( $member['gphc_number'] !== '' && ( $gphc_link === '' || preg_match( '#/registers/pharmacist/?$#', $gphc_link ) ) ) {
+            $gphc_link = 'https://www.pharmacyregulation.org/registers/pharmacist/' . rawurlencode( (string) $member['gphc_number'] );
+        }
+        ?>
+        <a href="<?php echo esc_url( $gphc_link ); ?>" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-sm font-semibold text-purple-600 hover:text-purple-700 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
           </svg>
@@ -96,58 +104,103 @@ $team_members = array(
   </div>
 </section>
 
-<!-- Section 5: Safe and Secure (GPhC backed) -->
-<!-- PHASE 3: Review and refine to focus on GPhC backing -->
-<section class="relative py-16 md:py-20" style="background: #fdf8f3;">
+<!-- Section 5: Why choose us — the standard of care, in the Health Hub's warm style.
+     The team (the people) is the section above; this one is the promise. -->
+<?php
+$why_eyebrow  = ah_field( 'stats_eyebrow', 'Why Choose Us' );
+$why_title    = ah_field( 'stats_title', 'Care from Registered Pharmacists' );
+$why_cta_text = ah_field( 'stats_cta_text', 'Start your assessment' );
+$why_cta_url  = ah_field( 'stats_cta_url', '' );
+if ( $why_cta_url === null || $why_cta_url === '' ) {
+    $why_cta_url = ah_booking_url();
+}
+// The supplying pharmacy and its premises number (footer settings). The link
+// opens the pharmacy's own entry on the GPhC register, not a search page.
+$why_pharmacy = trim( (string) ah_option( 'supplying_pharmacy_name', '' ) );
+$why_premises = trim( (string) ah_option( 'gphc_number', '' ) );
+$why_register = $why_premises
+    ? 'https://www.pharmacyregulation.org/registers/pharmacy/' . rawurlencode( $why_premises )
+    : ah_field( 'stats_gphc_url', 'https://www.pharmacyregulation.org/registers/pharmacy' );
+
+// Four promises. Each is something the service does, not a claim about results.
+$why_promises = array(
+    array(
+        'title' => 'A pharmacist reads every assessment.',
+        'text'  => 'Not an algorithm. One of our pharmacist prescribers reviews your answers in full before anything is prescribed.',
+        'tint'  => array( '#efecfb', '#dad4f3' ), 'ink' => '#5f56a6',
+        'mark'  => '<path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10.5a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5Z"/><path d="M13.5 3.5V8h4.5M9.5 14.2l2 2 3.5-3.6"/>',
+    ),
+    array(
+        'title' => 'Only charged if you’re approved.',
+        'text'  => 'Your card is held, not charged, while we review. If treatment isn’t right for you, the hold is released in full.',
+        'tint'  => array( '#fbefe2', '#f2d8bd' ), 'ink' => '#94562a',
+        'mark'  => '<rect x="3" y="6" width="18" height="12.5" rx="2.5"/><path d="M3 10.5h18M7 15h3"/>',
+    ),
+    array(
+        'title' => 'Every name here can be checked.',
+        'text'  => 'Our pharmacy and each of our pharmacists are on the General Pharmaceutical Council’s public register. Look us up any time.',
+        'tint'  => array( '#e8f4ed', '#cde6d7' ), 'ink' => '#2d6a4d',
+        'mark'  => '<circle cx="10.5" cy="10.5" r="6.2"/><path d="M15.2 15.2 20 20M8 10.6l1.8 1.8 3.4-3.5"/>',
+    ),
+    array(
+        'title' => 'Here between orders, too.',
+        'text'  => 'Our team answers your questions by email, and the Health Hub has practical help from our pharmacists for the weeks in between.',
+        'tint'  => array( '#fcebee', '#f3d1d8' ), 'ink' => '#9b4557',
+        'mark'  => '<path d="M4.5 18.8V6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-9l-4 2.3Z"/><path d="M9 10.3h6M9 13.2h3.8"/>',
+    ),
+);
+?>
+<section class="hp-why pt-2 md:pt-4 pb-16 md:pb-24" style="background: #fdf8f3;">
   <div class="ah-container-wide">
-    <div class="text-center mb-12 section-header">
-      <div class="flex items-center justify-center gap-3 mb-4">
-        <div class="w-1 h-8 bg-purple-600 rounded-full"></div>
-        <p class="text-purple-600 text-xs md:text-sm font-bold uppercase tracking-wider"><?php echo esc_html( ah_field( 'stats_eyebrow', 'Why Choose Us' ) ); ?></p>
+    <div class="hp-why-panel relative overflow-hidden rounded-[32px] md:rounded-[40px] px-6 py-12 sm:px-10 md:px-14 md:py-16 lg:px-20 lg:py-20" data-reveal>
+      <svg class="hp-why-watermark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7.2-4.4-7.2-10.1A4.1 4.1 0 0 1 12 7.2a4.1 4.1 0 0 1 7.2 2.7C19.2 15.6 12 20 12 20Z"/></svg>
+
+      <div class="relative grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+        <div class="lg:col-span-5">
+          <p class="text-[11px] md:text-xs font-bold uppercase tracking-[0.28em] mb-5" style="color: #7d76ba;"><?php echo esc_html( $why_eyebrow ); ?></p>
+          <h2 class="font-serif text-gray-900 leading-[1.04] tracking-[-0.025em] text-[2.4rem] md:text-[3.1rem] lg:text-[3.5rem] mb-8" style="text-wrap: balance;">
+            <?php echo wp_kses_post( $why_title ); ?>
+          </h2>
+
+          <!-- Group proof point. Wording approved verbatim by the superintendent
+               (AT Health Ltd), who holds the consultation records that evidence it.
+               Deliberately not an ACF field: this is the site's only patient figure,
+               and it must not be edited without fresh evidence and approval. -->
+          <p class="hp-why-statement font-serif text-gray-800 text-[1.4rem] md:text-[1.7rem] leading-[1.3] tracking-[-0.01em] mb-10">Our pharmacist prescribers have supported over 1,000 patients across the AT Health group.</p>
+
+          <a href="<?php echo esc_url( $why_cta_url ); ?>" class="inline-flex items-center justify-center gap-2.5 bg-purple-600 hover:bg-purple-700 text-white text-[15px] font-semibold px-8 py-4 rounded-xl transition-all hover-lift shadow-lg">
+            <?php echo esc_html( $why_cta_text ); ?>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+        </div>
+
+        <ul class="lg:col-span-7 grid sm:grid-cols-2 gap-4 md:gap-5" data-stagger>
+          <?php foreach ( $why_promises as $i => $promise ) : ?>
+          <li class="hp-why-promise" data-reveal style="--stagger-index:<?php echo (int) $i; ?>; --hh-a:<?php echo esc_attr( $promise['tint'][0] ); ?>; --hh-b:<?php echo esc_attr( $promise['tint'][1] ); ?>; --hh-ink:<?php echo esc_attr( $promise['ink'] ); ?>;">
+            <span class="hp-why-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><?php echo $promise['mark']; // phpcs:ignore WordPress.Security.EscapeOutput -- static markup above ?></svg></span>
+            <h3 class="font-serif text-gray-900 text-[1.3rem] md:text-[1.4rem] leading-[1.2] tracking-[-0.01em] mt-5 mb-2.5"><?php echo esc_html( $promise['title'] ); ?></h3>
+            <p class="text-[15px] text-gray-600 leading-[1.6]"><?php echo esc_html( $promise['text'] ); ?></p>
+          </li>
+          <?php endforeach; ?>
+        </ul>
       </div>
-      <h2 class="text-3xl md:text-4xl lg:text-5xl text-gray-800 font-serif leading-[1.1]">
-        <?php echo wp_kses_post( ah_field( 'stats_title', 'Care from Registered Pharmacists' ) ); ?>
-      </h2>
-    </div>
 
-    <?php
-    $stats_badges_lbl  = ah_field( 'stats_badges_label', 'Fully regulated' );
-    $stats_gphc_url    = ah_field( 'stats_gphc_url', 'https://www.pharmacyregulation.org/registers/pharmacy' );
-    $stats_cta_text    = ah_field( 'stats_cta_text', 'Start your assessment' );
-    $stats_cta_url     = ah_field( 'stats_cta_url', '' );
-    if ( $stats_cta_url === null || $stats_cta_url === '' ) {
-        $stats_cta_url = ah_booking_url();
-    }
-    ?>
-
-    <!-- Group proof point. Wording approved verbatim by the superintendent
-         (AT Health Ltd), who holds the consultation records that evidence it.
-         Deliberately not an ACF field: this is the site's only patient figure,
-         and it must not be edited without fresh evidence and approval. -->
-    <div class="hp-stat-card-v2 hp-proof-card max-w-2xl mx-auto mb-12" data-reveal>
-      <div class="hp-stat-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-      </div>
-      <p class="text-lg md:text-xl text-gray-800 leading-relaxed">Our pharmacist prescribers have supported over 1,000 patients across the AT Health group.</p>
-    </div>
-
-    <!-- Trust badges strip -->
-    <div class="hp-trust-strip max-w-3xl mx-auto mb-10 md:mb-12" data-reveal>
-      <span class="hp-trust-strip-label"><?php echo esc_html( $stats_badges_lbl ); ?></span>
-      <div class="hp-trust-strip-logos">
-        <a href="<?php echo esc_url( $stats_gphc_url ); ?>" target="_blank" rel="noopener noreferrer" class="hp-trust-badge">
-          <span class="hp-trust-badge-mark">GPhC</span>
-          <span class="hp-trust-badge-sub">Registered Pharmacy</span>
+      <!-- Credential: the supplying pharmacy, verifiable in one click -->
+      <div class="hp-why-credential relative mt-12 md:mt-16 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-7 rounded-2xl px-6 py-5 md:px-8 md:py-6" data-reveal>
+        <span class="hp-why-seal" aria-hidden="true">GPhC</span>
+        <p class="text-[14px] md:text-[15px] text-gray-700 leading-[1.55] flex-1">
+          <?php if ( $why_pharmacy ) : ?>
+            Medicines are supplied by <strong class="font-semibold text-gray-900"><?php echo esc_html( $why_pharmacy ); ?></strong>, a pharmacy registered with the General Pharmaceutical Council<?php echo $why_premises ? esc_html( ', premises no. ' . $why_premises ) : ''; ?>.
+          <?php else : ?>
+            A pharmacy registered with the General Pharmaceutical Council.
+          <?php endif; ?>
+        </p>
+        <a href="<?php echo esc_url( $why_register ); ?>" target="_blank" rel="noopener noreferrer" class="hp-why-verify inline-flex items-center gap-2 text-[14px] font-semibold whitespace-nowrap">
+          Check the register
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 17 17 7M9 7h8v8"/></svg>
+          <span class="sr-only">(opens the GPhC register in a new tab)</span>
         </a>
       </div>
-    </div>
-
-    <!-- CTA -->
-    <div class="text-center" data-reveal>
-      <a href="<?php echo esc_url( $stats_cta_url ); ?>" class="inline-flex items-center justify-center gap-2.5 bg-purple-600 hover:bg-purple-700 text-white text-[15px] font-semibold px-9 py-4 rounded-xl transition-all hover-lift shadow-lg">
-        <?php echo esc_html( $stats_cta_text ); ?>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-      </a>
     </div>
   </div>
 </section>
