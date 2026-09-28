@@ -20,7 +20,7 @@ get_header();
     </p>
     <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="ah-btn-purple">Start Your Journey <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
     <div class="flex flex-wrap items-center justify-center gap-6 mt-6 text-sm text-gray-500">
-      <span>Response within 4 hours</span><span>·</span><span>100% Confidential</span><span>·</span><span>UK-Registered Prescribers</span>
+      <span>100% Confidential</span><span>·</span><span>UK-Registered Prescribers</span>
     </div>
   </div>
 </section>
@@ -62,7 +62,6 @@ get_header();
         </div>
         <h3 class="text-xl font-serif text-gray-900 mb-3">Email Us</h3>
         <a href="mailto:<?php echo esc_attr( ah_email() ); ?>" class="text-lg text-purple-700 font-semibold hover:text-purple-600 transition-colors"><?php echo esc_html( ah_email() ); ?></a>
-        <p class="text-sm text-gray-500 mt-2"><?php echo esc_html( ah_option( 'email_response_time', 'Response within 4 hours' ) ); ?></p>
       </div>
     </div>
   </div>

@@ -303,7 +303,6 @@ get_header();
           <ul class="space-y-3">
             <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Unlimited messaging with UK-registered clinicians</span></li>
             <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Monthly check-ins to optimise your dosage</span></li>
-            <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">We aim to reply to messages within 4 hours</span></li>
             <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-600">Real ongoing support, not just prescription renewal</span></li>
           </ul>
         </div>
@@ -501,26 +500,8 @@ get_header();
                 </td>
               </tr>
 
-              <!-- Row 4: Response time -->
-              <tr class="cmp-row group">
-                <td class="cmp-feature-cell py-5 px-8 transition-colors" style="background:#faf9ff; border-bottom: 1px solid #f0ecfb;">
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg,#f3f0ff,#ebe6ff);">
-                      <svg class="w-4 h-4" style="color:#7c6fba;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <span class="text-gray-700 font-medium text-[15px]">Response time</span>
-                  </div>
-                </td>
-                <td class="at-col-cell py-5 px-5 text-center" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
-                  <div class="text-white font-bold text-[17px]">Within 4 hours</div>
-                  <div class="text-[11px] mt-0.5" style="color: rgba(196,183,255,0.7);">our aim</div>
-                </td>
-                <td class="other-cell py-5 px-6 text-center transition-colors" style="background:#faf9ff; border-bottom: 1px solid #f0ecfb;">
-                  <span class="text-gray-400 text-[15px] font-medium">24&ndash;72 hours</span>
-                </td>
-              </tr>
 
-              <!-- Row 5: Monthly check-ins -->
+              <!-- Row 4: Monthly check-ins -->
               <tr class="cmp-row group">
                 <td class="cmp-feature-cell py-5 px-8 transition-colors" style="background:#fff; border-bottom: 1px solid #f0ecfb;">
                   <div class="flex items-center gap-3">
@@ -548,7 +529,7 @@ get_header();
                 </td>
               </tr>
 
-              <!-- Row 6: Delivery speed -->
+              <!-- Row 5: Delivery speed -->
               <tr class="cmp-row group">
                 <td class="cmp-feature-cell py-5 px-8 transition-colors" style="background:#faf9ff; border-bottom: 1px solid #f0ecfb;">
                   <div class="flex items-center gap-3">
@@ -566,7 +547,7 @@ get_header();
                 </td>
               </tr>
 
-              <!-- Row 7: Cancel anytime -->
+              <!-- Row 6: Cancel anytime -->
               <tr class="cmp-row group">
                 <td class="cmp-feature-cell py-5 px-8 transition-colors" style="background:#fff;">
                   <div class="flex items-center gap-3">
@@ -655,21 +636,17 @@ get_header();
               </span>
             </div>
             <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02);">
-              <span class="text-[13px]" style="color: rgba(196,183,255,0.8);">Response time</span>
-              <span class="text-white font-bold text-[14px]">Within 4 hours</span>
-            </div>
-            <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
               <span class="text-[13px]" style="color: rgba(196,183,255,0.8);">Clinical check-ins</span>
               <span class="font-bold text-[14px] flex items-center gap-1.5" style="color:#6ee7b7;">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                 Included
               </span>
             </div>
-            <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02);">
+            <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
               <span class="text-[13px]" style="color: rgba(196,183,255,0.8);">Delivery</span>
               <span class="text-white font-bold text-[14px]">Tracked &amp; discreet</span>
             </div>
-            <div class="flex items-center justify-between px-6 py-4">
+            <div class="flex items-center justify-between px-6 py-4" style="background: rgba(255,255,255,0.02);">
               <span class="text-[13px]" style="color: rgba(196,183,255,0.8);">Cancel anytime</span>
               <span class="font-bold text-[14px] flex items-center gap-1.5" style="color:#6ee7b7;">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
@@ -705,18 +682,14 @@ get_header();
               <span class="text-red-400 font-semibold text-[13px]">&pound;29&ndash;&pound;49</span>
             </div>
             <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid #f7f5ff; background:#faf9ff;">
-              <span class="text-gray-500 text-[13px]">Response time</span>
-              <span class="text-gray-400 font-semibold text-[13px]">24&ndash;72 hours</span>
-            </div>
-            <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid #f7f5ff;">
               <span class="text-gray-500 text-[13px]">Clinical check-ins</span>
               <span class="text-red-400 font-semibold text-[13px]">Extra cost</span>
             </div>
-            <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid #f7f5ff; background:#faf9ff;">
+            <div class="flex items-center justify-between px-6 py-4" style="border-bottom: 1px solid #f7f5ff;">
               <span class="text-gray-500 text-[13px]">Delivery</span>
               <span class="text-gray-400 font-semibold text-[13px]">Varies</span>
             </div>
-            <div class="flex items-center justify-between px-6 py-4">
+            <div class="flex items-center justify-between px-6 py-4" style="background:#faf9ff;">
               <span class="text-gray-500 text-[13px]">Cancel anytime</span>
               <span class="text-gray-400 font-semibold text-[13px]">Varies</span>
             </div>
