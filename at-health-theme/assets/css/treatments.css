@@ -54,7 +54,11 @@
 
 /* Comparison tables: split by administration route (tablets / injections).
    Three columns each stays readable on a phone; the wrapper scrolls rather
-   than letting the page body scroll sideways. */
+   than letting the page body scroll sideways. The wrapper also carries
+   Tailwind's overflow-hidden, which loads later and was winning — so the
+   table was clipped, not scrollable, and the second medicine column was cut
+   off on phones. The doubled selector outranks it. */
+.tr-table-scroll.overflow-hidden,
 .tr-table-scroll {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -62,6 +66,27 @@
 
 .tr-table-scroll .tr-comparison-table {
     min-width: 520px;
+}
+
+/* On phones, fit all three columns on screen rather than relying on a
+   sideways scroll the patient may not notice. */
+@media (max-width: 639px) {
+    .tr-table-scroll .tr-comparison-table {
+        min-width: 0;
+        table-layout: fixed;
+    }
+
+    .tr-comparison-table th,
+    .tr-comparison-table td {
+        padding: 12px 10px;
+        font-size: 14px;
+        overflow-wrap: break-word;
+        hyphens: auto;
+    }
+
+    .tr-comparison-table th {
+        font-size: 11px;
+    }
 }
 
 /* ── Eligibility check card (hero, right column) ──

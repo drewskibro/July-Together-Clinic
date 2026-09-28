@@ -20,7 +20,7 @@ $default_faqs = array(
     ),
     array(
         'question' => 'How much does treatment cost?',
-        'answer'   => 'Treatment plans start from £149/month depending on your prescribed medication and dose. This includes the medication itself, clinical consultations, ongoing monitoring, and tracked delivery. There are no hidden fees, and you can cancel anytime — no lock-in contracts.',
+        'answer'   => 'Treatment plans start from £99/month depending on your prescribed medication and dose. This includes the medication itself, clinical consultations, ongoing monitoring, and tracked delivery. There are no hidden fees, and you can cancel anytime — no lock-in contracts.',
     ),
     array(
         'question' => 'Can I cancel at any time?',
@@ -32,7 +32,7 @@ $default_faqs = array(
     ),
     array(
         'question' => 'Is this safe? Who prescribes my medication?',
-        'answer'   => 'All prescriptions are reviewed and approved by UK-registered prescribers (General Medical Council (GMC) / GPhC qualified). We\'re a pharmacy registered with the General Pharmaceutical Council (GPhC). Every medication we dispense is genuine, UK-sourced, and fully traceable. Your safety is our absolute priority.',
+        'answer'   => 'All prescriptions are reviewed and approved by UK-registered prescribers (GPhC qualified). We\'re a pharmacy registered with the General Pharmaceutical Council (GPhC). Every medication we dispense is genuine, UK-sourced, and fully traceable. Your safety is our absolute priority.',
     ),
 );
 

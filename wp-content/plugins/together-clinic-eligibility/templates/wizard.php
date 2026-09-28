@@ -644,7 +644,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				</button>
 				<button type="button" class="treatment-card" id="foundayo-card" data-action="select-treatment" data-value="foundayo" aria-pressed="false">
 					<span class="treatment-selected-pill" aria-hidden="true"><svg class="tsp-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg>Selected</span>
-					<div class="treatment-image"><img src="<?php echo esc_url( $foundayo_img ); ?>" alt="Foundayo tablets pack" onerror="this.style.display='none'" /></div>
+					<div class="treatment-image"><img src="<?php echo esc_url( $foundayo_img ); ?>" alt="Illustration of once-daily tablets" onerror="this.style.display='none'" /></div>
 					<div class="treatment-body">
 						<div class="treatment-body-head">
 							<div class="treatment-head-text">

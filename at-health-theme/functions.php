@@ -120,7 +120,7 @@ function ah_email() {
 }
 
 function ah_business_hours() {
-    return ah_option( 'business_hours', '9am - 5pm, Monday to Friday' );
+    return ah_option( 'business_hours', '9am - 6pm, Monday to Friday' );
 }
 
 function ah_no_phone_notice() {
@@ -169,27 +169,29 @@ function ah_booking_url() {
 }
 
 /**
- * Default Terms & Conditions content (client-supplied, July 2025).
+ * Default Terms & Conditions content (client-supplied July 2025; revised September 2026 — see inc/content-fixes.php).
  * Used as the default_value for the tm_content ACF field so the Terms
  * page renders out of the box and remains editable in WP Admin.
  * Headings/paragraphs/lists are styled by .tm-content in terms.css.
  */
 function ah_terms_default_content() {
     return <<<'TERMS_HTML'
-<p><strong>Last updated: July 2025</strong></p>
+<p><strong>Last updated: September 2026</strong></p>
 
 <h2>1. Introduction</h2>
-<p>Welcome to Together Clinic. By accessing and using our website at www.togetherclinic.co.uk, you agree to comply with and be bound by the following Terms &amp; Conditions. These terms, together with our Privacy Policy, govern At Health Ltd's relationship with you in relation to this website and any services provided through it.</p>
+<p>Welcome to Together Clinic. By accessing and using our website at www.togetherclinic.co.uk, you agree to comply with and be bound by the following Terms &amp; Conditions. These terms, together with our Privacy Policy, govern AT Health Ltd's relationship with you in relation to this website and any services provided through it.</p>
 <p>Please read these Terms &amp; Conditions carefully before using our website. If you do not agree with any part of these terms, you must not use our website or services.</p>
 
 <h2>2. Company Details</h2>
-<p><strong>Company Name:</strong> At Health Ltd (trading as Together Clinic)<br>
+<p><strong>Company Name:</strong> AT Health Ltd (trading as Together Clinic)<br>
+<strong>Company number:</strong> 14519140 (registered in England and Wales)<br>
 <strong>Website:</strong> www.togetherclinic.co.uk<br>
 <strong>Email:</strong> info@togetherclinic.co.uk<br>
 <strong>Superintendent Pharmacist:</strong> Ahmed Nizar Al-Liabi (GPhC No.: 2208502)<br>
 <strong>GPhC Registration Status:</strong> Registered | Expiry: 31 July 2027<br>
 <strong>GPhC Annotations:</strong> Independent Prescriber, Superintendent<br>
-<strong>GPhC Register Link:</strong> <a href="https://www.pharmacyregulation.org/registers/pharmacist/2208502" target="_blank" rel="noopener noreferrer">https://www.pharmacyregulation.org/registers/pharmacist/2208502</a></p>
+<strong>GPhC Register Link:</strong> <a href="https://www.pharmacyregulation.org/registers/pharmacist/2208502" target="_blank" rel="noopener noreferrer">https://www.pharmacyregulation.org/registers/pharmacist/2208502</a><br>
+<strong>Supplying pharmacy:</strong> Wilmslow Pharmacy, Unit 2 Summerfields Village Centre, Dean Row Road, Wilmslow SK9 2TA (GPhC premises no. 1029878)</p>
 
 <h2>3. Use of the Website</h2>
 <p><strong>Content:</strong> The content of this website is for your general information and use only. It is subject to change without notice.</p>
@@ -215,18 +217,18 @@ function ah_terms_default_content() {
 <p><strong>Prescription Medicines:</strong> Please note that, in accordance with GPhC guidance, once a prescription-only medicine has been dispensed and dispatched, we are unable to accept returns for reasons of patient safety. This does not affect your statutory rights where goods are faulty or not as described.</p>
 
 <h2>7. Intellectual Property</h2>
-<p><strong>Ownership:</strong> This website contains material which is owned by or licensed to At Health Ltd. This material includes, but is not limited to, the design, layout, look, appearance, graphics, and written content. Reproduction is prohibited other than in accordance with the copyright notice, which forms part of these Terms &amp; Conditions.</p>
-<p><strong>Third-Party Rights:</strong> All trademarks reproduced in this website that are not the property of, or licensed to, At Health Ltd are acknowledged on the website.</p>
+<p><strong>Ownership:</strong> This website contains material which is owned by or licensed to AT Health Ltd. This material includes, but is not limited to, the design, layout, look, appearance, graphics, and written content. Reproduction is prohibited other than in accordance with the copyright notice, which forms part of these Terms &amp; Conditions.</p>
+<p><strong>Third-Party Rights:</strong> All trademarks reproduced in this website that are not the property of, or licensed to, AT Health Ltd are acknowledged on the website.</p>
 <p><strong>Permitted Use:</strong> You may print or download extracts from this website for your own personal, non-commercial use only. You must not modify, copy, reproduce, republish, upload, post, transmit, or distribute any content from this website for any commercial purpose without our prior written consent.</p>
 
 <h2>8. Limitation of Liability</h2>
-<p><strong>Exclusion:</strong> To the extent permitted by law, At Health Ltd (trading as Together Clinic) shall not be liable for any indirect or consequential loss or damage, including any loss of profit, business, revenue, goodwill, or anticipated savings, incurred by any user in connection with our website or in connection with the use, inability to use, or results of the use of our website, its content, or any websites linked to it.</p>
+<p><strong>Exclusion:</strong> To the extent permitted by law, AT Health Ltd (trading as Together Clinic) shall not be liable for any indirect or consequential loss or damage, including any loss of profit, business, revenue, goodwill, or anticipated savings, incurred by any user in connection with our website or in connection with the use, inability to use, or results of the use of our website, its content, or any websites linked to it.</p>
 <p><strong>Force Majeure:</strong> Together Clinic will not be held responsible for any delay or failure to comply with our obligations under these terms if the delay or failure arises from any cause which is beyond our reasonable control.</p>
 <p><strong>Website Availability:</strong> We do not guarantee that our website will be secure or free from bugs or viruses. We will not be liable for any loss or damage caused by a virus, distributed denial-of-service attack, or other technologically harmful material that may infect your computer equipment, computer programs, data, or other proprietary material due to your use of our website.</p>
 <p>Nothing in these Terms &amp; Conditions shall exclude or limit our liability for death or personal injury caused by our negligence, fraud or fraudulent misrepresentation, or any other liability that cannot be excluded or limited by applicable law.</p>
 
 <h2>9. Data Protection &amp; Privacy</h2>
-<p>At Health Ltd is committed to protecting your personal data. Our Privacy Policy sets out how we collect, use, and store your personal information in compliance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018. By using our website and services, you acknowledge that you have read and understood our Privacy Policy.</p>
+<p>AT Health Ltd is committed to protecting your personal data. Our Privacy Policy sets out how we collect, use, and store your personal information in compliance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018. By using our website and services, you acknowledge that you have read and understood our Privacy Policy.</p>
 <p>As a healthcare provider, we process special category health data. This processing is carried out under Article 9(2)(h) UK GDPR (healthcare purposes) and in accordance with the applicable codes of conduct of the General Pharmaceutical Council.</p>
 
 <h2>10. Third-Party Links</h2>
@@ -236,7 +238,7 @@ function ah_terms_default_content() {
 <p>These Terms &amp; Conditions are governed by and construed in accordance with the laws of England and Wales. You agree, as do we, to submit to the exclusive jurisdiction of the courts of England and Wales in relation to any dispute or claim arising in connection with these terms or your use of our website or services.</p>
 
 <h2>12. Changes to These Terms &amp; Conditions</h2>
-<p>At Health Ltd reserves the right to amend these Terms &amp; Conditions at any time. Any changes will be posted on this page with an updated revision date. Your continued use of our website following any changes shall constitute your acceptance of those changes. We encourage you to review this page periodically.</p>
+<p>AT Health Ltd reserves the right to amend these Terms &amp; Conditions at any time. Any changes will be posted on this page with an updated revision date. Your continued use of our website following any changes shall constitute your acceptance of those changes. We encourage you to review this page periodically.</p>
 
 <h2>13. Complaints</h2>
 <p>If you have a complaint about any aspect of our service, please contact us in the first instance at info@togetherclinic.co.uk. We aim to acknowledge all complaints within two working days and to resolve them within 14 working days.</p>
@@ -244,25 +246,25 @@ function ah_terms_default_content() {
 
 <h2>14. Contact Information</h2>
 <p>If you have any questions about these Terms &amp; Conditions, please contact us:</p>
-<p><strong>Company:</strong> At Health Ltd (t/a Together Clinic)<br>
+<p><strong>Company:</strong> AT Health Ltd (t/a Together Clinic)<br>
 <strong>Website:</strong> www.togetherclinic.co.uk<br>
 <strong>Email:</strong> info@togetherclinic.co.uk</p>
 
-<p>&copy; At Health Ltd. All rights reserved. Together Clinic is a trading name of At Health Ltd.</p>
+<p>&copy; AT Health Ltd. All rights reserved. Together Clinic is a trading name of AT Health Ltd.</p>
 TERMS_HTML;
 }
 
 /**
- * Default Refund & Cancellation Policy content (client-supplied, July 2025).
+ * Default Refund & Cancellation Policy content (client-supplied July 2025; revised September 2026 — see inc/content-fixes.php).
  * Used as the default_value for the rp_content ACF field.
  * Base typography styled by .tm-content; callouts by .rp-notice / .rp-stages
  * (both in terms.css, shared by the Terms and Refund Policy pages).
  */
 function ah_refund_policy_default_content() {
     return <<<'REFUND_HTML'
-<p><strong>Last updated: July 2025</strong></p>
+<p><strong>Last updated: September 2026</strong></p>
 
-<p>Together Clinic is operated by At Health Ltd, a GPhC-registered online pharmacy and independent prescribing service. All consultations, prescriptions, and medication orders are subject to clinical review and are governed by applicable UK pharmacy law, MHRA regulations, and GPhC standards of practice.</p>
+<p>Together Clinic is operated by AT Health Ltd, a GPhC-registered online pharmacy and independent prescribing service. All consultations, prescriptions, and medication orders are subject to clinical review and are governed by applicable UK pharmacy law, MHRA regulations, and GPhC standards of practice.</p>
 <p>Please read this policy carefully before booking a consultation or placing an order. By proceeding, you confirm that you have read and understood the terms below.</p>
 
 <div class="rp-notice">
@@ -280,7 +282,6 @@ function ah_refund_policy_default_content() {
 <li>You may cancel or reschedule a consultation at any time before your appointment, free of charge, by contacting us at info@togetherclinic.co.uk.</li>
 <li>If you cancel a paid consultation before it takes place, a full refund will be issued to your original payment method within 2–5 working days.</li>
 <li>If you fail to attend a booked consultation without prior notice (a "no-show"), no refund will be issued. You will need to rebook and pay for a new appointment if you wish to proceed.</li>
-<li>If you cancel a consultation at short notice (less than 24 hours before the scheduled time), we reserve the right to apply a cancellation fee of up to the full consultation cost. Any applicable fee will be communicated to you at the time of booking.</li>
 </ul>
 
 <h3>1.2 Cancellation by Together Clinic</h3>
@@ -418,21 +419,23 @@ function ah_refund_policy_default_content() {
 
 <h2>9. Contact Us</h2>
 <p>To request a cancellation or refund, or if you have any questions about this policy, please contact our team:</p>
-<p><strong>Company:</strong> At Health Ltd (t/a Together Clinic)<br>
+<p><strong>Company:</strong> AT Health Ltd (t/a Together Clinic)<br>
+<strong>Company number:</strong> 14519140 (registered in England and Wales)<br>
 <strong>Website:</strong> www.togetherclinic.co.uk<br>
-<strong>Email:</strong> info@togetherclinic.co.uk</p>
+<strong>Email:</strong> info@togetherclinic.co.uk<br>
+<strong>Supplying pharmacy:</strong> Wilmslow Pharmacy, Unit 2 Summerfields Village Centre, Dean Row Road, Wilmslow SK9 2TA (GPhC premises no. 1029878)</p>
 <p>Early contact gives us the best chance of resolving your request before a prescription has been issued.</p>
 
 <h2>10. Regulatory Information</h2>
-<p>Together Clinic is operated by At Health Ltd, a pharmacy registered with the General Pharmaceutical Council (GPhC). Our Superintendent Pharmacist is Ahmed Nizar Al-Liabi (GPhC No.: 2208502, Independent Prescriber).</p>
+<p>Together Clinic is operated by AT Health Ltd, a pharmacy registered with the General Pharmaceutical Council (GPhC). Our Superintendent Pharmacist is Ahmed Nizar Al-Liabi (GPhC No.: 2208502, Independent Prescriber).</p>
 <p><strong>GPhC Register:</strong> <a href="https://www.pharmacyregulation.org/registers/pharmacist/2208502" target="_blank" rel="noopener noreferrer">https://www.pharmacyregulation.org/registers/pharmacist/2208502</a></p>
 
-<p>&copy; At Health Ltd. All rights reserved. Together Clinic is a trading name of At Health Ltd.</p>
+<p>&copy; AT Health Ltd. All rights reserved. Together Clinic is a trading name of AT Health Ltd.</p>
 REFUND_HTML;
 }
 
 /**
- * Default Privacy Policy content (client-supplied, July 2025).
+ * Default Privacy Policy content (client-supplied July 2025; revised September 2026 — see inc/content-fixes.php).
  * Used as the default_value for the pp_content ACF field.
  * Base typography styled by .tm-content; blue info box by .rp-stages;
  * processors table by .tm-table-wrap / .tm-content table (all in terms.css).
@@ -445,20 +448,22 @@ REFUND_HTML;
  */
 function ah_privacy_policy_default_content() {
     return <<<'PRIVACY_HTML'
-<p><strong>Last updated: July 2025</strong></p>
+<p><strong>Last updated: September 2026</strong></p>
 
 <h2>1. Introduction</h2>
-<p>Together Clinic is operated by At Health Ltd, a GPhC-registered online pharmacy and independent prescribing service. We are committed to protecting your privacy and handling your personal information responsibly, securely and transparently.</p>
+<p>Together Clinic is operated by AT Health Ltd, a GPhC-registered online pharmacy and independent prescribing service. We are committed to protecting your privacy and handling your personal information responsibly, securely and transparently.</p>
 <p>This Privacy Policy explains how we collect, use, store, share and protect your personal information when you visit our website at www.togetherclinic.co.uk, book a consultation, request a prescription, purchase medication or otherwise interact with us online.</p>
 <p>Because Together Clinic provides prescription medication and clinical healthcare services — including weight management treatments — some of the personal information we process is classified as special category health data under UK data protection law. We take our obligations in respect of this data extremely seriously.</p>
 <p>By using our website and services, you acknowledge that you have read and understood this Privacy Policy. Please read it carefully before submitting any personal information to us.</p>
 
 <h2>2. Who We Are — Data Controller</h2>
-<p>At Health Ltd (trading as Together Clinic) is the Data Controller responsible for your personal information. As Data Controller, we determine how and why your personal data is processed, and we are responsible for ensuring that processing is carried out in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
-<p><strong>Company:</strong> At Health Ltd (t/a Together Clinic)<br>
+<p>AT Health Ltd (trading as Together Clinic) is the Data Controller responsible for your personal information. As Data Controller, we determine how and why your personal data is processed, and we are responsible for ensuring that processing is carried out in accordance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
+<p><strong>Company:</strong> AT Health Ltd (t/a Together Clinic)<br>
+<strong>Company number:</strong> 14519140 (registered in England and Wales)<br>
 <strong>Website:</strong> www.togetherclinic.co.uk<br>
 <strong>Email:</strong> info@togetherclinic.co.uk<br>
-<strong>Superintendent Pharmacist:</strong> Ahmed Nizar Al-Liabi (GPhC No.: 2208502, Independent Prescriber)</p>
+<strong>Superintendent Pharmacist:</strong> Ahmed Nizar Al-Liabi (GPhC No.: 2208502, Independent Prescriber)<br>
+<strong>Supplying pharmacy:</strong> Wilmslow Pharmacy, Unit 2 Summerfields Village Centre, Dean Row Road, Wilmslow SK9 2TA (GPhC premises no. 1029878)</p>
 <p>If you have any questions about how we handle your personal data, or wish to exercise your data protection rights, please contact us at info@togetherclinic.co.uk.</p>
 
 <h2>3. Information We Collect</h2>
@@ -544,7 +549,6 @@ function ah_privacy_policy_default_content() {
     <tr><td>Gildhart (PharmoDigital Ltd)</td><td>Digital marketing, website design and management</td><td><a href="https://gildhart.com" target="_blank" rel="noopener noreferrer">gildhart.com</a></td></tr>
     <tr><td>Google Analytics</td><td>Website traffic and usage analytics</td><td><a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">policies.google.com/privacy</a></td></tr>
     <tr><td>Kinsta</td><td>Website hosting and infrastructure</td><td><a href="https://kinsta.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">kinsta.com/legal/privacy-policy</a></td></tr>
-    <tr><td>Booking system</td><td>Appointment scheduling</td><td>To be confirmed</td></tr>
   </tbody>
 </table>
 </div>
@@ -573,7 +577,7 @@ function ah_privacy_policy_default_content() {
 </ul>
 
 <h3>7.3 Managing Cookies</h3>
-<p>When you first visit our website, you will be presented with a cookie consent banner allowing you to accept or decline non-essential cookies. You can update your preferences at any time via the cookie settings link in our website footer.</p>
+<p>Where we use non-essential cookies, such as analytics or marketing cookies, we will ask for your consent before setting them.</p>
 <p>You can also manage or delete cookies through your browser settings. Note that disabling certain cookies may affect the functionality of our website. For more information, visit www.allaboutcookies.org.</p>
 
 <h2>8. Data Security</h2>
@@ -628,14 +632,14 @@ function ah_privacy_policy_default_content() {
 
 <h2>15. Contact Us</h2>
 <p>If you have any questions about this Privacy Policy, wish to exercise your data protection rights, or have a concern about how we handle your personal information, please contact us:</p>
-<p><strong>Company:</strong> At Health Ltd (t/a Together Clinic)<br>
+<p><strong>Company:</strong> AT Health Ltd (t/a Together Clinic)<br>
 <strong>Website:</strong> www.togetherclinic.co.uk<br>
 <strong>Email:</strong> info@togetherclinic.co.uk</p>
 <p>You also have the right to raise a concern directly with the Information Commissioner's Office (ICO):</p>
 <p><strong>ICO website:</strong> www.ico.org.uk<br>
 <strong>ICO helpline:</strong> 0303 123 1113</p>
 
-<p>&copy; At Health Ltd. All rights reserved. Together Clinic is a trading name of At Health Ltd.</p>
+<p>&copy; AT Health Ltd. All rights reserved. Together Clinic is a trading name of AT Health Ltd.</p>
 PRIVACY_HTML;
 }
 
@@ -756,6 +760,9 @@ require_once get_theme_file_path( 'inc/acf-fields.php' );
 
 // Single-post EEAT box + auto Table of Contents
 require_once get_theme_file_path( 'inc/post-clinical-content.php' );
+
+// One-off corrections to saved content (owner's site check, September 2026)
+require_once get_theme_file_path( 'inc/content-fixes.php' );
 
 // WooCommerce product setup (admin tool)
 if ( class_exists( 'WooCommerce' ) ) {

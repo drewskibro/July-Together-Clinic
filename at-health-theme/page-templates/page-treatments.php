@@ -241,11 +241,12 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
           <?php $tr_p = (string) ah_field( 'tr_orlistat_price', '' ); if ( $tr_p !== '' && stripos( $tr_p, 'XX' ) === false ) : ?>
           <p class="tr-price"><?php echo esc_html( $tr_p ); ?></p>
           <?php endif; ?>
+          <?php /* Orlistat has no product page, and the online assessment does not
+                   offer it, so "Start Journey" would lead nowhere useful. Until it
+                   is added to the assessment, patients enquire through the team. */
+                $or_contact = get_page_by_path( 'contact-us' ) ?: get_page_by_path( 'contact' ); ?>
           <div class="flex gap-3">
-            <!-- AWAITING PRODUCT PAGE BUILD -->
-            <a href="#" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
-            <!-- AWAITING PRODUCT PAGE BUILD -->
-            <a href="#" class="flex-1 text-center border-2 border-gray-200 hover:border-purple-300 text-gray-700 font-semibold py-3 rounded-xl transition-all">Learn More</a>
+            <a href="<?php echo esc_url( $or_contact ? get_permalink( $or_contact ) : home_url( '/contact-us/' ) ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Enquire about Orlistat</a>
           </div>
         </div>
       </div>

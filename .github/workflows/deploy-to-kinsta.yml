@@ -67,4 +67,15 @@ jobs:
             grep -m1 'Version:' ~/public/wp-content/plugins/together-clinic-eligibility/together-clinic-eligibility.php
             grep -m1 'Version:' ~/public/wp-content/plugins/together-clinic-reorder/together-clinic-reorder.php
             echo ""
+            # WP-CLI boots WordPress, so this first call also runs any pending
+            # one-off content migration, then prints what it changed.
+            echo "Content fixes migration (ah_content_fixes_2026_09):"
+            wp --path="$HOME/public" option get ah_content_fixes_2026_09 2>/dev/null || echo "(not recorded yet)"
+            echo ""
+            # Page cache and CDN are separate from the files: without this, the
+            # old HTML keeps being served after a deploy. Non-fatal on purpose —
+            # if it fails, clear it by hand in MyKinsta -> Tools -> Clear cache.
+            echo "Purging page cache + CDN:"
+            wp --path="$HOME/public" kinsta cache purge --all 2>&1 || echo "Cache purge failed - clear it in MyKinsta -> Tools -> Clear cache."
+            echo ""
             echo "=== Deployment Complete ==="

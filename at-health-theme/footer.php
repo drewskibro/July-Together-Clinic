@@ -12,7 +12,10 @@
     $ft_super_no   = trim( (string) ah_option( 'superintendent_gphc_number', '' ) );
     $ft_company_no = trim( (string) ah_option( 'company_number', '' ) );
     $ft_address    = trim( (string) ah_option( 'registered_address', '' ) );
-    $ft_has_reg    = ( $ft_reg_name || $ft_premises || $ft_super || $ft_address || $ft_company_no );
+    // The supplying pharmacy is a separate premises from the owning company.
+    $ft_pharmacy      = trim( (string) ah_option( 'supplying_pharmacy_name', '' ) );
+    $ft_pharmacy_addr = trim( (string) ah_option( 'supplying_pharmacy_address', '' ) );
+    $ft_has_reg    = ( $ft_reg_name || $ft_premises || $ft_super || $ft_address || $ft_company_no || $ft_pharmacy );
 
     $ft_legal_links = array(
         array( 'label' => 'Terms',         'url' => get_page_by_path( 'terms' ) ? get_permalink( get_page_by_path( 'terms' ) ) : '' ),
@@ -49,12 +52,12 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-10 lg:gap-8 mb-14">
                 <div>
                     <h3 class="ah-footer-label">Treatments</h3>
+                    <?php /* Service wording, not medicine names — mirrors the header menu
+                             (compliance review: no medicine names in site-wide navigation).
+                             The medicine pages are reached from the treatments page. */ ?>
                     <ul class="space-y-3.5">
-                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'mounjaro' ) ) ); ?>" class="ah-footer-link">Mounjaro</a></li>
-                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy' ) ) ); ?>" class="ah-footer-link">Wegovy</a></li>
-                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy-tablets' ) ) ); ?>" class="ah-footer-link">Wegovy Tablets</a></li>
-                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'foundayo' ) ) ); ?>" class="ah-footer-link">Foundayo</a></li>
-                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) ); ?>" class="ah-footer-link">All Treatments</a></li>
+                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) ); ?>" class="ah-footer-link">Weight management</a></li>
+                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) . '#our-treatments' ); ?>" class="ah-footer-link">Our treatments</a></li>
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'weight-loss-eligibility' ) ?: get_page_by_path( 'eligibility' ) ) ); ?>" class="ah-footer-link">Check Eligibility</a></li>
                     </ul>
                 </div>
@@ -100,10 +103,11 @@
                             </div>
                             <div>
                                 <p class="text-white text-sm font-medium group-hover:text-purple-300 transition-colors"><?php echo esc_html( ah_email() ); ?></p>
-                                <p class="text-[13px] text-gray-400"><?php echo esc_html( ah_option( 'email_response_time', 'Reply within 4 hours' ) ); ?></p>
                             </div>
                         </a>
-                        <p class="text-[13px] text-gray-400 leading-relaxed max-w-sm"><?php echo esc_html( ah_no_phone_notice() ); ?></p>
+                        <?php /* No response-time promise and no telephone notice here, on the
+                                 owner's instruction. Removed from the markup rather than the
+                                 defaults, so a saved ACF value cannot bring them back. */ ?>
                     </div>
                 </div>
             </div>
@@ -139,7 +143,9 @@
                     <?php elseif ( $ft_company_no ) : ?>
                         Company no. <span class="text-gray-300"><?php echo esc_html( $ft_company_no ); ?></span>.
                     <?php endif; ?>
-                    <?php if ( $ft_premises ) : ?>
+                    <?php if ( $ft_pharmacy ) : ?>
+                        Medicines are supplied by <span class="text-gray-300"><?php echo esc_html( $ft_pharmacy ); ?></span><?php echo $ft_pharmacy_addr ? ', ' . esc_html( $ft_pharmacy_addr ) : ''; ?>, a pharmacy registered with the <a href="https://www.pharmacyregulation.org/registers" class="text-gray-300 underline decoration-white/20 underline-offset-4 hover:text-white hover:decoration-purple-400 transition-colors" target="_blank" rel="noopener noreferrer">General Pharmaceutical Council</a><?php echo $ft_premises ? ' (premises no. <span class="text-gray-300">' . esc_html( $ft_premises ) . '</span>)' : ''; ?>.
+                    <?php elseif ( $ft_premises ) : ?>
                         Registered pharmacy with the <a href="https://www.pharmacyregulation.org/registers" class="text-gray-300 underline decoration-white/20 underline-offset-4 hover:text-white hover:decoration-purple-400 transition-colors" target="_blank" rel="noopener noreferrer">General Pharmaceutical Council</a>, premises no. <span class="text-gray-300"><?php echo esc_html( $ft_premises ); ?></span>.
                     <?php endif; ?>
                     <?php if ( $ft_super ) : ?>
@@ -158,7 +164,7 @@
             <div class="ah-container-wide py-6">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                     <p class="text-gray-400 text-[13px]">
-                        &copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php echo esc_html( ah_option( 'company_legal_name', 'Together Clinic Ltd' ) ); ?>. All rights reserved. <?php echo esc_html( ah_option( 'company_registration', 'Company registered in England & Wales.' ) ); ?>
+                        &copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php echo esc_html( ah_option( 'company_legal_name', 'AT Health Ltd' ) ); ?>. All rights reserved. <?php echo esc_html( ah_option( 'company_registration', 'Company registered in England & Wales.' ) ); ?>
                     </p>
                     <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[13px]">
                         <?php foreach ( $ft_legal_links as $ft_link ) :
