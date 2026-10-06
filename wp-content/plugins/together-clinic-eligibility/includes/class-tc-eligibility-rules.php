@@ -20,9 +20,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  *    thresholds that sit above the licence).
  *  - BMI is always recalculated here from weight and height. The browser's
  *    BMI is never trusted.
- *  - Patients already on a GLP-1 are assessed on their BMI when they first
- *    started (documentary proof checked by the prescriber) and a current BMI
- *    floor of 20.
+ *  - Patients already on a GLP-1 (last dose within 3 months) are assessed
+ *    on their BMI when they first started (documentary proof checked by the
+ *    prescriber) and must have a current BMI above 25. More than 3 months
+ *    off treatment: assessed as starting treatment.
  *  - Possible medicine exclusions are FLAGGED for the prescriber from the
  *    free-text medicines list, never shown to the patient (GPhC review of
  *    weight management services, April 2026).
@@ -98,6 +99,7 @@ class TC_Eligibility_Rules {
 		'foundayo_avoid'  => [ 'words' => [ 'ritonavir', 'paxlovid', 'telaprevir', 'carbamazepine', 'tegretol', 'rifampicin', 'rifampin', 'phenytoin', "st john", 'st. john' ], 'products' => [ 'foundayo' ], 'note' => 'FOUNDAYO: strong CYP3A4 inducer or CYP3A4+OATP1B inhibitor mentioned. SmPC: avoid. Choose another product or do not treat.' ],
 		'foundayo_cap'    => [ 'words' => [ 'ketoconazole', 'clarithromycin', 'itraconazole', 'ciclosporin', 'cyclosporine' ], 'products' => [ 'foundayo' ], 'note' => 'FOUNDAYO: strong CYP3A4 or OATP1B inhibitor mentioned. SmPC: maximum 9 mg daily.' ],
 		'foundayo_other'  => [ 'words' => [ 'bosentan', 'efavirenz', 'simvastatin', 'rosuvastatin', 'topotecan' ], 'products' => [ 'foundayo' ], 'note' => 'FOUNDAYO interaction (SmPC 4.5): moderate inducer monitor/adjust; halve simvastatin; rosuvastatin above 20 mg caution; oral topotecan monitor.' ],
+		'foundayo_bp'     => [ 'words' => [ 'amlodipine', 'felodipine', 'nifedipine', 'lercanidipine', 'ramipril', 'lisinopril', 'perindopril', 'enalapril', 'losartan', 'candesartan', 'irbesartan', 'valsartan', 'olmesartan', 'telmisartan', 'bisoprolol', 'atenolol', 'propranolol', 'metoprolol', 'nebivolol', 'indapamide', 'bendroflumethiazide', 'furosemide', 'doxazosin', 'spironolactone' ], 'products' => [ 'foundayo' ], 'note' => 'FOUNDAYO: blood pressure medicine mentioned. SmPC 4.4: hypotension more frequent with antihypertensives; warn and monitor.' ],
 	];
 
 	public static function evaluate( array $payload ) {
@@ -132,6 +134,11 @@ class TC_Eligibility_Rules {
 
 		$is_female = ( $payload['sex'] ?? '' ) === 'female';
 		if ( $is_female ) {
+			foreach ( [ 'pregnant', 'breastfeeding', 'conceive', 'couldConceive' ] as $tc_q ) {
+				if ( ! in_array( $payload[ $tc_q ] ?? '', [ 'yes', 'no' ], true ) ) {
+					return self::ineligible( $base, 'Please answer all the pregnancy and contraception questions.' );
+				}
+			}
 			if ( ( $payload['pregnant'] ?? '' ) === 'yes'
 				|| ( $payload['breastfeeding'] ?? '' ) === 'yes'
 				|| ( $payload['conceive'] ?? '' ) === 'yes' ) {
@@ -140,7 +147,8 @@ class TC_Eligibility_Rules {
 		}
 
 		// BMI is always recalculated from weight and height.
-		$bmi = self::bmi( $payload['weightKg'] ?? 0, $payload['heightCm'] ?? 0 );
+		$bmi     = self::bmi( $payload['weightKg'] ?? 0, $payload['heightCm'] ?? 0 );
+		$bmi_raw = self::bmi_raw( $payload['weightKg'] ?? 0, $payload['heightCm'] ?? 0 );
 		if ( $bmi === null ) {
 			return self::ineligible( $base, 'We could not work out your BMI. Please check the weight and height you entered.' );
 		}
@@ -220,10 +228,11 @@ class TC_Eligibility_Rules {
 		}
 
 		if ( $base['pathway'] === 'new' ) {
-			if ( $bmi < 27 ) {
+			// Thresholds use the unrounded BMI so 26.96 never passes as 27.0.
+			if ( $bmi_raw < 27 ) {
 				return self::ineligible( $base, $not_licensed );
 			}
-			if ( $bmi < 30 ) {
+			if ( $bmi_raw < 30 ) {
 				if ( ! $comorbidity['a'] && ! $comorbidity['b'] ) {
 					return self::ineligible( $base, $not_licensed );
 				}
@@ -235,16 +244,17 @@ class TC_Eligibility_Rules {
 			// Transfer / restart within 3 months / change of product. Current
 			// BMI must be above 25 (AT Health policy, as the Deltera PGDs);
 			// the 20 to 25 bands apply only to continuing AT Health patients.
-			if ( $bmi <= 25 ) {
+			if ( $bmi_raw <= 25 ) {
 				return self::ineligible( $base, $not_licensed );
 			}
 
-			$start_bmi = self::bmi( $payload['startWeightKg'] ?? 0, $payload['heightCm'] ?? 0 );
+			$start_bmi     = self::bmi( $payload['startWeightKg'] ?? 0, $payload['heightCm'] ?? 0 );
+			$start_bmi_raw = self::bmi_raw( $payload['startWeightKg'] ?? 0, $payload['heightCm'] ?? 0 );
 			if ( $start_bmi === null ) {
 				return self::ineligible( $base, 'Please tell us your weight when you first started weight loss medication.' );
 			}
 			$base['start_bmi'] = $start_bmi;
-			if ( $start_bmi < 27 || ( $start_bmi < 30 && ! $comorbidity['a'] && ! $comorbidity['b'] ) ) {
+			if ( $start_bmi_raw < 27 || ( $start_bmi_raw < 30 && ! $comorbidity['a'] && ! $comorbidity['b'] ) ) {
 				return self::ineligible( $base, $not_licensed );
 			}
 			$flags['proof_required'] = sprintf( 'Transfer: declared starting BMI %.1f. Before prescribing, see evidence from a UK-registered prescriber or pharmacy of: BMI when first starting a GLP-1, product, current dose and date of last supply. If dose or last-dose date cannot be evidenced, start at the first step. Unregulated sources (research peptides, unlicensed or overseas products) are not accepted: assess as a new patient.', $start_bmi );
@@ -263,12 +273,18 @@ class TC_Eligibility_Rules {
 	}
 
 	public static function bmi( $weight_kg, $height_cm ) {
+		$raw = self::bmi_raw( $weight_kg, $height_cm );
+		return ( $raw === null ) ? null : round( $raw, 1 );
+	}
+
+	/** Unrounded BMI, used for threshold comparisons. */
+	public static function bmi_raw( $weight_kg, $height_cm ) {
 		$w = (float) $weight_kg;
 		$h = (float) $height_cm;
 		if ( $w < 30 || $w > 350 || $h < 120 || $h > 230 ) {
 			return null;
 		}
-		return round( $w / pow( $h / 100, 2 ), 1 );
+		return $w / pow( $h / 100, 2 );
 	}
 
 	/**
@@ -305,10 +321,10 @@ class TC_Eligibility_Rules {
 		if ( trim( $text ) === '' ) {
 			return $out;
 		}
+		// Product-specific groups are always scanned: the prescriber may
+		// choose a different product at consultation. The note names the
+		// product it applies to.
 		foreach ( self::MEDICINE_FLAGS as $key => $group ) {
-			if ( $group['products'] && ! in_array( $treatment, $group['products'], true ) ) {
-				continue;
-			}
 			foreach ( $group['words'] as $word ) {
 				if ( preg_match( '/(?<![a-z])' . preg_quote( $word, '/' ) . '(?![a-z])/', $text ) ) {
 					$out[ $key ] = $group['note'];

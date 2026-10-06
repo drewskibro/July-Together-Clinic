@@ -150,6 +150,9 @@ class TC_Ajax {
 		if ( ! empty( $eligibility['flags'] ) ) {
 			$review_flags = array_merge( $eligibility['flags'], $review_flags );
 		}
+		if ( ( $existing['status'] ?? '' ) === 'ineligible' || ! empty( $existing['ineligible_reason'] ) ) {
+			$review_flags['answers_changed_after_block'] = 'Patient was screened out earlier in this assessment ("' . sanitize_text_field( (string) ( $existing['ineligible_reason'] ?? '' ) ) . '") and changed answers to continue. Review carefully (GPhC 4.2 h).';
+		}
 		$payload['clinicalFlags'] = $review_flags;
 
 		TC_DB::update_complete( $assessment_id, $payload, $eligibility );

@@ -188,13 +188,6 @@ class TC_Dose_Ladder {
 	}
 
 	/**
-	 * The switching-dose conversion matrix (BUILD-BRIEF-v3 §3). Ranges mean
-	 * the system supplies the conservative (lower) end and the prescriber
-	 * confirms or adjusts before the patient pays.
-	 *
-	 * @return array { dose: string, range: string|null, rule: string }
-	 */
-	/**
 	 * Starting dose for a patient already on a GLP-1 (IP-FRM-01 3A.3, rules
 	 * WM-2026-10-v1). Replaces the old cross-molecule conversion matrix, which
 	 * put Mounjaro patients straight onto Wegovy 0.5/1.7 mg and Wegovy
@@ -206,8 +199,10 @@ class TC_Dose_Ladder {
 	 *                 8-28 / >28; Foundayo 3 / 4-7 / >7.
 	 * Other product:  first step of the new product, at least 7 days after
 	 *                 the last dose. Licensed exceptions (SmPC 4.2): Wegovy
-	 *                 2.4 mg injection -> Wegovy tablets 25 mg; Wegovy
-	 *                 tablets 25 mg -> Wegovy 2.4 mg injection.
+	 *                 2.4 mg injection -> Wegovy tablets 25 mg (applied if the
+	 *                 last injection was within 14 days, AT Health policy);
+	 *                 Wegovy tablets 25 mg -> Wegovy 2.4 mg injection (last
+	 *                 tablet within 7 days).
 	 *
 	 * Propose and flag, never block: the prescriber confirms every dose.
 	 *

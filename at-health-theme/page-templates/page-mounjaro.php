@@ -33,14 +33,14 @@ get_header();
         <h1 class="text-5xl lg:text-6xl font-serif text-gray-900 mb-5 leading-[1.02] tracking-[-0.02em]"><?php echo esc_html( ah_field( 'mj_title', 'Mounjaro' ) ); ?></h1>
 
         <p class="text-base md:text-lg text-gray-600 leading-relaxed mb-8 max-w-lg">
-          <?php echo esc_html( ah_field( 'mj_description', 'Mounjaro (tirzepatide) is a once-weekly injection that helps you lose weight by reducing appetite and slowing digestion. Clinical trials show patients lose up to 22.5% of their body weight. Food and Drug Administration (FDA) and Medicines and Healthcare products Regulatory Agency (MHRA) approved for weight management.' ) ); ?>
+          <?php echo esc_html( ah_field( 'mj_description', 'Mounjaro (tirzepatide) is a once-weekly injection that helps you lose weight by reducing appetite and slowing digestion. Licensed by the Medicines and Healthcare products Regulatory Agency (MHRA) for weight management.' ) ); ?>
         </p>
 
         <!-- Key Benefits -->
         <div class="space-y-3 mb-8">
           <?php
           $benefits = array(
-              '<strong>Up to 22.5% body weight loss</strong> in clinical trials',
+              '<strong>Licensed in the UK</strong> for weight management',
               '<strong>Once-weekly injection</strong> — convenient dosing',
               '<strong>Dual-action formula</strong> — Glucagon-Like Peptide-1 (GLP-1) and Glucose-dependent Insulinotropic Polypeptide (GIP) receptor agonist',
               '<strong>Tracked, discreet delivery</strong> with ongoing support',
@@ -168,7 +168,7 @@ get_header();
       $default_faqs = array(
           array( 'question' => 'How does Mounjaro work?', 'answer' => 'Mounjaro (tirzepatide) works by activating both GLP-1 and GIP receptors, which reduces appetite, slows digestion, and helps regulate blood sugar. This dual-action mechanism makes it one of the most effective weight loss treatments available.' ),
           array( 'question' => 'What are the common side effects?', 'answer' => 'The most common side effects are mild nausea, reduced appetite, and occasional digestive discomfort. Your prescriber will explain what to expect and how to manage them. Starting at a low dose and gradually increasing helps minimise side effects.' ),
-          array( 'question' => 'What results can I expect?', 'answer' => 'Results vary from person to person, and your prescriber will review your progress each time you reorder. Clinical trials show average losses of 22.5% body weight over 72 weeks.' ),
+          array( 'question' => 'What results can I expect?', 'answer' => 'Results vary from person to person, and your prescriber will review your progress each time you reorder.' ),
           array( 'question' => 'Can I take Mounjaro with other medications?', 'answer' => 'Your prescriber will review your full medical history and current medications before approving treatment. Mounjaro can interact with some medications, so it\'s important to disclose everything during your assessment.' ),
       );
       $faqs = ah_field( 'mj_faqs', '' );

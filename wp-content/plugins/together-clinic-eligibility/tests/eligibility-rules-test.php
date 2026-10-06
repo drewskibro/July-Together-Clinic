@@ -55,7 +55,7 @@ check('Medicine flags: sulfonylurea and DPP-4',isset($r['flags']['med_sulfonylur
 $r=$R::evaluate(base(['currentMedsList'=>'clarithromycin','selectedTreatment'=>'foundayo']));
 check('Foundayo cap flag',isset($r['flags']['med_foundayo_cap']));
 $r=$R::evaluate(base(['currentMedsList'=>'clarithromycin','selectedTreatment'=>'mounjaro']));
-check('Foundayo flag not raised for Mounjaro',!isset($r['flags']['med_foundayo_cap']));
+check('Foundayo cap flag raised whatever product is preferred',isset($r['flags']['med_foundayo_cap']));
 $r=$R::evaluate(base(['currentMedsList'=>'Allium supplement']));
 check('No false "alli" match inside another word',!isset($r['flags']['med_other_weightloss']));
 // Switchers
@@ -96,4 +96,10 @@ $x=$D::propose_start_dose('wegovy-tablets','9mg','wegovy-tablets',10); check('We
 $x=$D::propose_start_dose('mounjaro','7.5mg','mounjaro',15); check('Mounjaro same, 15 days: step down 5', $x['dose']==='5mg');
 $x=$D::propose_start_dose('other','','foundayo',10); check('Other source -> Foundayo 0.8', $x['dose']==='0.8mg');
 $x=$D::propose_start_dose('mounjaro','7.5mg','mounjaro',null); check('Unknown last dose -> starter', $x['dose']==='2.5mg');
+$r=$R::evaluate(base(['weightKg'=>87.32,'heightCm'=>180])); // 26.95 raw
+check('BMI 26.95 does not round up into eligibility',!$r['eligible'], json_encode($r));
+$r=$R::evaluate(base(['sex'=>'female','weightKg'=>100,'heightCm'=>170]));
+check('Female with pregnancy answers missing -> not eligible',!$r['eligible']);
+$r=$R::evaluate(base(['currentMedsList'=>'amlodipine 5mg','selectedTreatment'=>'mounjaro']));
+check('Foundayo BP flag raised even if Mounjaro preferred',isset($r['flags']['med_foundayo_bp']));
 echo "\n$pass passed, $fail failed\n"; exit($fail?1:0);

@@ -32,13 +32,13 @@ get_header();
         <h1 class="text-5xl lg:text-6xl font-serif text-gray-900 mb-5 leading-[1.02] tracking-[-0.02em]"><?php echo esc_html( ah_field( 'wg_title', 'Wegovy' ) ); ?></h1>
 
         <p class="text-base md:text-lg text-gray-600 leading-relaxed mb-8 max-w-lg">
-          <?php echo esc_html( ah_field( 'wg_description', 'Wegovy (semaglutide) is a once-weekly injection specifically approved for weight management. Clinical trials show patients lose up to 20.7% of their body weight. Food and Drug Administration (FDA) and Medicines and Healthcare products Regulatory Agency (MHRA) approved with proven cardiovascular benefits.' ) ); ?>
+          <?php echo esc_html( ah_field( 'wg_description', 'Wegovy (semaglutide) is a once-weekly injection specifically approved for weight management. Licensed by the Medicines and Healthcare products Regulatory Agency (MHRA) with proven cardiovascular benefits.' ) ); ?>
         </p>
 
         <div class="space-y-3 mb-8">
           <?php
           $benefits = array(
-              '<strong>Up to 20.7% body weight loss</strong> in clinical trials',
+              '<strong>Licensed in the UK</strong> for weight management',
               '<strong>Once-weekly injection</strong> — simple and convenient',
               '<strong>Reduces cardiovascular risk by 20%</strong> in clinical studies',
               '<strong>Tracked, discreet delivery</strong> with ongoing support',

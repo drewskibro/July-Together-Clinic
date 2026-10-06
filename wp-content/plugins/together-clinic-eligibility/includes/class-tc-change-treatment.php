@@ -137,7 +137,15 @@ class TC_Change_Treatment {
 		// even where the WC session is not loaded (admin-post.php).
 		TC_Cookie_Store::save_to_session( $payload );
 
-		$flags = [
+		// Carry the original order's prescriber flags across (red flags,
+		// proof-of-prescription, medicine flags) so nothing is lost on the
+		// replacement order.
+		$prior_flags = $order->get_meta( TC_Review_Status::FLAGS_META );
+		$prior_flags = is_array( $prior_flags ) ? $prior_flags : [];
+		if ( empty( $payload['rulesVersion'] ) ) {
+			$prior_flags['legacy_assessment'] = 'Assessment completed before rules WM-2026-10-v1: re-screen all criteria at the video consultation.';
+		}
+		$flags = $prior_flags + [
 			'treatment_changed' => sprintf(
 				'Patient changed treatment on the pay page from %s to %s before paying. Started at the default %s dose (%s) — confirm or adjust before approval.',
 				$old_label,
