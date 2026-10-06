@@ -7,17 +7,17 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Together Health's Prescribing & Consultation Platform hand-off (CD-16
  * item 4). This site pushes; the platform never polls it.
  *
- * Outbound: on `tc_review_order_created` (TC_Review_Order), POST the
- * patient then POST their pre-consultation intake. A failure retries via
- * WP-Cron (three attempts total, backoff) and leaves a manual "Send to
- * prescribing platform" order action for anything that still hasn't synced.
+ * Outbound: POST the patient (with the platform's `order` block) then POST
+ * their pre-consultation intake. A first order is pushed when its card is
+ * authorised (`wc_gateway_stripe_process_response`), never before: an
+ * abandoned, unpaid first order never reaches the platform (Ahmed, 18 Sep
+ * 2026). A reorder (TC_Reorder_Checkout) is pushed at creation, on
+ * `tc_review_order_created`, with `previousExternalReference` naming the
+ * order it follows. A failure retries via WP-Cron (three attempts total,
+ * backoff) and leaves a manual "Send to prescribing platform" order action
+ * for anything that still hasn't synced.
  *
- * Reorders (TC_Reorder_Checkout) fire the same action and are pushed the
- * same way. The patient push carries the platform's `order` block (every
- * reorder; a first order once its card is held, re-pushed at authorisation)
- * so the platform holds a website order the payment message can find.
- *
- * Payment: once the money for an already-synced order is actually
+ * Payment: once the money for an order is actually
  * captured (never on a mere card authorisation), POST
  * `/v1/website-orders/payment` so the platform knows the order is paid.
  * Same sender, settings, retry and fail-closed rules as the patient push;
@@ -301,6 +301,17 @@ class TC_Platform_Sync {
 			return;
 		}
 
+		// Ahmed, 18 Sep 2026: an abandoned, unpaid first order never reaches
+		// the platform. A first order is first pushed when its card is
+		// authorised (on_stripe_response), never at creation, never by a
+		// retry or the manual action before then. A reorder is pushed at
+		// creation: the platform takes in every reorder, and it is paid
+		// later by link.
+		if ( ! self::is_reorder( $order ) && null === self::order_block( $order ) ) {
+			TC_Log::debug( 'platform_push_waiting_for_card_hold', [ 'order_id' => $order->get_id() ] );
+			return;
+		}
+
 		// A dob that fails to parse is a data problem, not a transient one:
 		// fail fast with an order note and schedule no retry (Opus review,
 		// minor 6). "Send to prescribing platform" is the only way back,
@@ -551,11 +562,32 @@ class TC_Platform_Sync {
 			return null;
 		}
 
+		// A first order is taken in as AUTHORISED even when the money has
+		// already been captured: the capture reaches the platform as the
+		// payment message straight after, which moves the platform's order to
+		// CAPTURED. A first push saying CAPTURED would be logged there as
+		// "captured before decision", which is not what happened when the
+		// authorisation was simply missed here.
+		if ( 'FIRST_ORDER' === $lane ) {
+			$hold = 'AUTHORISED';
+		}
+
 		$block = [
 			'lane'                => $lane,
 			'holdState'           => $hold,
 			'externalOrderNumber' => (string) $order->get_order_number(),
 		];
+
+		// The order this reorder follows (the first order, or the previous
+		// reorder), so the platform can put the reorder on that order's
+		// patient (it checks date of birth and surname, else creates a new
+		// patient and flags it). Only ever on a REORDER.
+		if ( 'REORDER' === $lane ) {
+			$previous = (int) $order->get_meta( self::META_REORDER_PREVIOUS );
+			if ( $previous > 0 ) {
+				$block['previousExternalReference'] = 'tc-order-' . $previous;
+			}
+		}
 		$status = (string) $order->get_status();
 		if ( 1 === preg_match( '/^[a-z0-9-]{1,32}$/', $status ) ) {
 			$block['websiteStatus'] = $status;
@@ -717,9 +749,38 @@ class TC_Platform_Sync {
 		}
 		// Held, not captured: a capture takes the order in through the
 		// payment message instead (send_payment), so it is pushed once.
-		if ( 'AUTHORISED' === self::hold_state( $order ) && self::order_push_due( $order ) ) {
+		if ( 'AUTHORISED' !== self::hold_state( $order ) ) {
+			return;
+		}
+		if ( ! $order->get_meta( self::META_SYNCED_AT ) ) {
+			// The first push of a first order: patient with its order
+			// block, then the pre-consultation.
+			self::push( $order, self::raw_payload( $order ) );
+		} elseif ( self::order_push_due( $order ) ) {
+			// Synced by an earlier version before its card was held.
 			self::push_order_block( $order );
 		}
+	}
+
+	/**
+	 * Before a payment message: make sure the platform has the patient and
+	 * the order, pushing them now if the authorisation was never seen here
+	 * (an older gateway, sync switched on after the card was held, or the
+	 * authorisation push's retries ran out).
+	 *
+	 * @return bool Whether the platform now holds the order.
+	 */
+	private static function ensure_on_platform( WC_Order $order ) {
+		if ( ! $order->get_meta( self::META_SYNCED_AT ) ) {
+			self::push( $order, self::raw_payload( $order ) );
+			if ( ! $order->get_meta( self::META_SYNCED_AT ) ) {
+				return false;
+			}
+		}
+		if ( self::order_push_due( $order ) ) {
+			return self::push_order_block( $order, false );
+		}
+		return (bool) $order->get_meta( self::META_ORDER_PUSHED_AT );
 	}
 
 	/** Coerces a payload sub-array to the platform's `answers` shape (string|boolean|number values only). */
@@ -867,6 +928,10 @@ class TC_Platform_Sync {
 		if ( $order->get_meta( self::META_SYNCED_AT ) && ! self::order_push_due( $order ) ) {
 			return $actions;
 		}
+		// An unpaid first order is never sent (no card held yet).
+		if ( ! self::is_reorder( $order ) && null === self::order_block( $order ) ) {
+			return $actions;
+		}
 
 		$actions['tc_platform_manual_sync'] = 'Send to prescribing platform';
 		return $actions;
@@ -982,9 +1047,8 @@ class TC_Platform_Sync {
 		if ( ! TC_Review_Status::is_treatment_order( $order ) ) {
 			return 'not_review_order';
 		}
-		if ( '' === (string) $order->get_meta( self::META_PATIENT_ID ) ) {
-			return 'not_synced';
-		}
+		// Not yet on the platform is no reason to skip: send_payment() puts
+		// the patient and order there first (ensure_on_platform()).
 		if ( ! TC_Review_Payment::is_captured( $order ) ) {
 			return 'not_captured';
 		}
@@ -1105,11 +1169,12 @@ class TC_Platform_Sync {
 
 		self::record_payment_snapshot( $order );
 
-		// The payment is recorded against the platform's website order. A
-		// first order whose hold was never seen (an older gateway, or synced
-		// before this version) is taken in first; if that fails, the payment
-		// waits for the next retry rather than being refused with a 404.
-		if ( self::order_push_due( $order ) && ! self::push_order_block( $order, false ) ) {
+		// The payment is recorded against the platform's website order. An
+		// order the platform does not hold yet (authorisation never seen here)
+		// is pushed first, as AUTHORISED, so this message is what records the
+		// capture. If that fails, the payment waits for its next retry rather
+		// than being refused with a 404.
+		if ( ! self::ensure_on_platform( $order ) ) {
 			self::record_payment_retryable_failure( $order, 'order not yet taken in by the platform' );
 			return;
 		}

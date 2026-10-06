@@ -379,10 +379,11 @@ with its own database and hosting (`athealthcode/Prescribing-Consultation-
 Platform`). This site pushes to it; the platform never polls this site
 (owner decision CD-16 item 4).
 
-**Flow.** `TC_Review_Order::create_from_assessment` fires
-`tc_review_order_created` once an awaiting-review order exists.
-`TC_Platform_Sync` (`includes/class-tc-platform-sync.php`) catches that
-action and, in order: `POST /v1/patients` (upserted on the order id as
+**Flow.** A first order (`TC_Review_Order::create_from_assessment`) is
+pushed when its card is authorised, never at creation (see *When a first
+order is pushed* below); a reorder is pushed at creation, on
+`tc_review_order_created`. `TC_Platform_Sync`
+(`includes/class-tc-platform-sync.php`) then, in order: `POST /v1/patients` (upserted on the order id as
 `externalReference`, so a retry is safe), then
 `POST /v1/patients/{id}/pre-consultation` with the assessment answers,
 consents, GP details and reported height/weight. Both calls carry an
@@ -441,10 +442,13 @@ API key and enabled switch as the patient push.
   never calls the platform back from inside the platform's own delivery.
 - *The order must be on the platform first.* The payment route finds the
   platform's `website_order` row by `tc-order-<id>`, and that row only
-  exists when `POST /v1/patients` carried an `order` block (see below). A
-  synced first order whose card hold was never seen is pushed with its
-  order block (`FIRST_ORDER` / `CAPTURED`) just before its payment; if that
-  fails the payment waits for its next retry instead of drawing a 404.
+  exists when `POST /v1/patients` carried an `order` block (see below). An
+  order the platform does not hold yet when its money is captured (the
+  authorisation was never seen here: an older gateway, sync switched on
+  later, or the authorisation push's retries ran out) is pushed first,
+  patient, intake and order, as `AUTHORISED`; the payment message then
+  records the capture. If that push fails, the payment waits for its next
+  retry instead of drawing a 404.
 
 **The order block.** `POST /v1/patients` carries `order: {lane, holdState,
 websiteStatus, externalOrderNumber, submittedAt, product}` (the platform's
@@ -454,13 +458,22 @@ platform then stores its `website_order` row with the patient. Its rules: a
 (`CAPTURED`); anything else is answered 202 and *nothing* is stored, not even
 the patient. Every `REORDER` is taken in.
 
-- A first order is still pushed at creation as the bare patient push (no
-  order block), exactly as before. When its card is authorised
+- *When a first order is pushed.* Never before its card is held (Ahmed,
+  18 Sep 2026: an abandoned, unpaid first order never reaches the
+  platform). Nothing is sent at creation, by a retry, or by the manual
+  action until then. When the card is authorised
   (`wc_gateway_stripe_process_response`, or `woocommerce_payment_complete`
-  on gateway versions that call it for an authorisation) the patient is
-  pushed again with the order block, under the same `tc-order-<id>`
-  reference and a new Idempotency-Key, so the platform takes the order in
-  against the same patient. No second pre-consultation is sent.
+  on gateway versions that call it for an authorisation) the first push
+  goes: patient with order block `FIRST_ORDER` / `AUTHORISED`, then the
+  pre-consultation. A first order synced by an earlier version (bare push)
+  gets just its order block at that point.
+- *First orders always go in as `AUTHORISED`*, even when the money is
+  already captured: the capture reaches the platform as the payment
+  message straight after. A first push saying `CAPTURED` is logged by the
+  platform as "captured before decision", which would be false when the
+  authorisation was merely missed here. The platform accepts this order:
+  its intake takes a held first order, and its payment command records
+  the capture whatever the previous hold state.
 - `_tc_platform_order_pushed_at` and `_tc_platform_website_order_id` record
   that the platform took the order in. `NOT_TAKEN_IN` (website order intake
   switched off on the platform) leaves an order note and keeps "Send to
@@ -470,7 +483,16 @@ the patient. Every `REORDER` is taken in.
 `tc_review_order_created` action, so a reorder is pushed exactly like a first
 order: `POST /v1/patients` (with an order block, lane `REORDER`, hold `NONE`)
 then `POST /v1/patients/{id}/pre-consultation`, with the same retry, manual
-action and fail-closed rules. Retries read `_rrqr_raw`.
+action and fail-closed rules. Retries read `_rrqr_raw`. Reorders are pushed
+at creation, before payment: the platform takes in every reorder, and the
+patient pays later by link.
+
+- *Linked to the existing patient.* Every reorder's order block carries
+  `previousExternalReference: "tc-order-<id>"` for the order it directly
+  follows (`_rrqr_previous_order_id`: the first order, or the previous
+  reorder). The platform puts the reorder on that order's patient when date
+  of birth and surname match, else creates a new patient and flags it. Left
+  out when no previous order is recorded; never sent on a first order.
 
 - *Patient.* The check-in asks only name, email and date of birth. Sex at
   birth, UK nation and phone come from the first eligibility assessment the
@@ -481,18 +503,11 @@ action and fail-closed rules. Retries read `_rrqr_raw`.
 - *Pre-consultation.* The check-in's own answers; `consents` is `service`
   only, from `termsAgreed`, which `reorder.js` now sends when the patient has
   ticked the Terms & Conditions box. `gpShare` and `scrAccess` are left out,
-  not sent as false: the check-in asks neither, and an explicit false would
-  record a GP-sharing decline over the consent given at the first order.
+  not sent as false: the check-in asks neither, the reorder lands on the
+  existing patient, and the consents given at the first order stand. An
+  explicit false would record a GP-sharing decline over them.
   `gp` is empty (practice on file kept); `measurements.weightKg` is the
   reported current weight.
-- *Known platform gap.* The push contract has one reference for both the
-  patient and the order, so each reorder (`tc-order-<reorder id>`) creates a
-  new patient record on the platform. The API offers no customer-level or
-  previous-order field to tie it to the first order's patient, so none is
-  sent. The platform would need, for example, `order.previousExternalReference`
-  (`tc-order-<previous order id>`, resolved to that website order's patient)
-  or a customer-level `order.externalCustomerId` (already a column on its
-  WooCommerce-read intake, not on the push).
 - The legacy cart route (`TC_Reorder_Ajax::add_to_cart`) is no longer called
   by `reorder.js` and creates ordinary checkout orders, not review orders; it
   is not wired to the platform.

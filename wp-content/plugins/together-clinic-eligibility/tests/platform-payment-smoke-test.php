@@ -13,8 +13,11 @@
  *
  *  - the payload shape and Idempotency-Key match the contract;
  *  - a captured charge sends; a mere authorisation never does;
- *  - an order never sent to the platform (no patient id), or not a review
- *    order at all, is skipped with a debug log and no request;
+ *  - a captured order the platform does not hold yet is pushed there first
+ *    (as AUTHORISED), then paid; one that is not a review order at all is
+ *    skipped with a debug log and no request;
+ *  - a first order is never pushed before its card is held (Ahmed, 18 Sep);
+ *    a reorder is pushed at creation with previousExternalReference;
  *  - once acknowledged, a re-capture or manual resend sends nothing;
  *  - 2xx / 4xx / 5xx / no-response are classified per the contract, with
  *    retries on the same three-attempt WP-Cron schedule as the patient push;
@@ -246,8 +249,8 @@ check( 'authorised only (_stripe_charge_captured = no): not_captured',
 	TC_Platform_Sync::payment_skip_reason( make_order( 2, 'no' ) ) === 'not_captured' );
 check( 'no Stripe flag at all: not_captured (fail closed)',
 	TC_Platform_Sync::payment_skip_reason( make_order( 3, '' ) ) === 'not_captured' );
-check( 'never sent to the platform (no patient id): not_synced',
-	TC_Platform_Sync::payment_skip_reason( make_order( 4, 'yes', false ) ) === 'not_synced' );
+check( 'captured but not yet on the platform: still due (pushed there first)',
+	TC_Platform_Sync::payment_skip_reason( make_order( 4, 'yes', false ) ) === null );
 check( 'not a review order at all: not_review_order',
 	TC_Platform_Sync::payment_skip_reason( make_order( 5, 'yes', true, false ) ) === 'not_review_order' );
 $acked = make_order( 6 );
@@ -317,15 +320,26 @@ check( 'the manual resend says so in a note',
 check( 'the manual action is no longer offered',
 	! isset( TC_Platform_Sync::add_manual_payment_action( [], wc_get_order( 22 ) )['tc_platform_manual_payment'] ) );
 
-echo "\n== never sent to the platform: skipped silently with a debug log ==\n";
+echo "\n== not a review order: skipped silently with a debug log ==\n";
 reset_world();
-make_order( 23, 'yes', false );
+make_order( 23, 'yes', false, false );
 TC_Platform_Sync::on_payment_complete( 23 );
 check( 'no request', count( requests() ) === 0 );
 check( 'no order note', count( wc_get_order( 23 )->notes ) === 0 );
 $skips = logs_named( 'platform_payment_skipped' );
-check( 'one debug-level skip log with the reason', count( $skips ) === 1 && $skips[0][0] === 'debug' && $skips[0][2]['reason'] === 'not_synced' );
+check( 'debug-level skip log with the reason', count( $skips ) >= 1 && $skips[0][0] === 'debug' && $skips[0][2]['reason'] === 'not_review_order' );
 check( 'the manual action is not offered', TC_Platform_Sync::add_manual_payment_action( [], wc_get_order( 23 ) ) === [] );
+
+echo "\n== captured, authorisation never seen: patient, intake and order pushed, then payment ==\n";
+reset_world();
+make_order( 24, 'yes', false );
+TC_Platform_Sync::on_payment_complete( 24 );
+$r = requests();
+check( 'three requests: /v1/patients, pre-consultation, payment',
+	count( $r ) === 3 && preg_match( '#/v1/patients$#', $r[0]['url'] ) && false !== strpos( $r[1]['url'], '/pre-consultation' )
+	&& false !== strpos( $r[2]['url'], '/v1/website-orders/payment' ) );
+check( 'the order goes in as FIRST_ORDER / AUTHORISED, never CAPTURED (no false "captured before decision")',
+	json_decode( $r[0]['args']['body'], true )['order']['holdState'] === 'AUTHORISED' );
 
 echo "\n== fail closed when disabled or unconfigured ==\n";
 reset_world( false );
@@ -400,7 +414,8 @@ check( 'nothing sent', count( requests() ) === 0 );
 check( 'permanent-failure note and warning', count( logs_named( 'platform_payment_failed_permanent' ) ) === 1 );
 
 echo "\n== no health information in logs ==\n";
-$allowed = [ 'order_id', 'reason', 'status', 'attempt' ];
+// patient_id is the platform's own record id, which PR #68's platform_sync_ok already logs.
+$allowed = [ 'order_id', 'reason', 'status', 'attempt', 'patient_id', 'result' ];
 reset_world();
 make_order( 50 );
 make_order( 51, 'yes', false );
@@ -413,7 +428,7 @@ $extra = [];
 foreach ( $GLOBALS['tc_test']['logs'] as $l ) {
 	$extra = array_merge( $extra, array_diff( array_keys( $l[2] ), $allowed ) );
 }
-check( 'every payment log line carries only order_id / reason / status / attempt', $extra === [] );
+check( 'every log line carries only ids, codes and counts (no order content)', $extra === [] );
 
 // ===========================================================================
 // Reorders reach the platform exactly like a first order, and the order
@@ -476,6 +491,8 @@ check( 'order block: product with variation, line item, sku, quantity and pence 
 	$pb['order']['product'] === [ 'variationId' => '3312', 'lineItemId' => '9001', 'name' => 'Treatment pen',
 		'quantity' => 1, 'unitPriceMinor' => 17900, 'currency' => 'GBP', 'sku' => 'TC-PEN-1' ] );
 check( 'Idempotency-Key names the lane and hold', $r[0]['args']['headers']['Idempotency-Key'] === 'tc-order-61-patient-reorder-none' );
+check( 'previousExternalReference is the order the reorder follows', $pb['order']['previousExternalReference'] === 'tc-order-60' );
+check( 'pushed at creation, before any payment (the platform takes in every reorder)', $pb['order']['holdState'] === 'NONE' );
 check( 'patient: sex and UK nation come from the first assessment the reorder descends from',
 	$pb['sexAtBirth'] === 'female' && $pb['country'] === 'SCOTLAND' );
 check( 'patient: date of birth and email from this check-in', $pb['dateOfBirth'] === '1980-02-03' && $pb['email'] === 'patient@example.test' );
@@ -529,6 +546,13 @@ check( 'walks _rrqr_previous_order_id back to the eligibility assessment',
 	$id['sex'] === 'female' && $id['country'] === 'Scotland' && $id['dob'] === '1980-02-03' );
 check( 'this check-in\'s own email wins', $id['email'] === 'new@example.test' );
 check( 'only identity keys are taken from the old assessment', array_diff( array_keys( $id ), [ 'firstName', 'lastName', 'email', 'dob', 'sex', 'country', 'phone' ] ) === [] );
+check( 'previousExternalReference names the order it directly follows (the previous reorder)',
+	TC_Platform_Sync::order_block( $ro2 )['previousExternalReference'] === 'tc-order-71' );
+$orphan = make_reorder( 73, $reorder_payload, 0 );
+check( 'no previous order recorded: the field is left out, never invented',
+	! array_key_exists( 'previousExternalReference', TC_Platform_Sync::order_block( $orphan ) ) );
+check( 'never on a first order',
+	! array_key_exists( 'previousExternalReference', (array) TC_Platform_Sync::order_block( make_order( 74 ) ) ) );
 
 echo "\n== reorder retry reads the reorder payload ==\n";
 reset_world();
@@ -542,46 +566,47 @@ $r = requests();
 check( 'the retry pushes the reorder again from _rrqr_raw, with its order block',
 	count( $r ) === 3 && json_decode( $r[1]['args']['body'], true )['order']['lane'] === 'REORDER' );
 
-echo "\n== first order: unchanged bare push before the card is held ==\n";
+echo "\n== first order: nothing reaches the platform before the card is held ==\n";
 reset_world();
 $fo = make_first_order_raw( 80, $first_raw );
 TC_Platform_Sync::on_order_created( $fo, $first_raw );
-$r  = requests();
-$pb = json_decode( $r[0]['args']['body'], true );
-check( 'no order block (the platform would skip the whole push, patient included)', ! isset( $pb['order'] ) );
-check( 'PR #68\'s Idempotency-Key, unchanged', $r[0]['args']['headers']['Idempotency-Key'] === 'tc-order-80-patient' );
-$ib = json_decode( $r[1]['args']['body'], true );
-check( 'first-order consents unchanged (service, gpShare, scrAccess)', $ib['consents'] === [ 'service' => true, 'gpShare' => true, 'scrAccess' => true ] );
-check( 'not yet taken in as an order', ! $fo->get_meta( TC_Platform_Sync::META_ORDER_PUSHED_AT ) );
+check( 'no request at creation (abandoned, unpaid first orders never reach the platform)', count( requests() ) === 0 );
+check( 'no retry queued, nothing recorded as a failure', count( scheduled() ) === 0 && ! $fo->get_meta( TC_Platform_Sync::META_SYNC_ATTEMPTS ) );
+TC_Platform_Sync::run_retry( 80 );
+check( 'a stray retry sends nothing either', count( requests() ) === 0 );
+check( '"Send to prescribing platform" is not offered for an unpaid first order', TC_Platform_Sync::add_manual_sync_action( [], $fo ) === [] );
+TC_Platform_Sync::on_payment_complete( 80 );
+check( 'a payment_complete with no card held sends nothing', count( requests() ) === 0 );
 
-echo "\n== first order: card held, so the platform takes the order in ==\n";
-$GLOBALS['tc_test']['requests'] = [];
+echo "\n== first order: card authorised, first push (patient, order, pre-consultation) ==\n";
 $fo->meta['_stripe_charge_captured'] = 'no';
 $fo->transaction_id = 'ch_3Held';
 TC_Platform_Sync::on_stripe_response( (object) [ 'id' => 'ch_3Held', 'captured' => false ], $fo );
 $r = requests();
-check( 'one /v1/patients push, no second pre-consultation', count( $r ) === 1 && preg_match( '#/v1/patients$#', $r[0]['url'] ) );
+check( 'two requests: /v1/patients then pre-consultation',
+	count( $r ) === 2 && preg_match( '#/v1/patients$#', $r[0]['url'] ) && $r[1]['url'] === 'https://prescribing-api.example.test/v1/patients/pat_new/pre-consultation' );
 $pb = json_decode( $r[0]['args']['body'], true );
-check( 'same patient reference, order block FIRST_ORDER / AUTHORISED',
+check( 'order block FIRST_ORDER / AUTHORISED on tc-order-<id>',
 	$pb['externalReference'] === 'tc-order-80' && $pb['order']['lane'] === 'FIRST_ORDER' && $pb['order']['holdState'] === 'AUTHORISED' );
-check( 'a new Idempotency-Key, so the platform cannot replay the bare push\'s cached answer',
-	$r[0]['args']['headers']['Idempotency-Key'] === 'tc-order-80-patient-first_order-authorised' );
-check( 'recorded as taken in', (bool) $fo->get_meta( TC_Platform_Sync::META_ORDER_PUSHED_AT ) );
+check( 'Idempotency-Key names lane and hold', $r[0]['args']['headers']['Idempotency-Key'] === 'tc-order-80-patient-first_order-authorised' );
+$ib = json_decode( $r[1]['args']['body'], true );
+check( 'first-order consents as PR #68 sends them (service, gpShare, scrAccess)', $ib['consents'] === [ 'service' => true, 'gpShare' => true, 'scrAccess' => true ] );
+check( 'synced and recorded as taken in', $fo->get_meta( TC_Platform_Sync::META_SYNCED_AT ) && $fo->get_meta( TC_Platform_Sync::META_ORDER_PUSHED_AT ) );
 TC_Platform_Sync::on_stripe_response( (object) [], $fo );
-check( 'a second gateway response sends nothing more', count( requests() ) === 1 );
+check( 'a second gateway response sends nothing more', count( requests() ) === 2 );
 $GLOBALS['tc_test']['requests'] = [];
 $fo->meta['_stripe_charge_captured'] = 'yes';
 TC_Platform_Sync::on_stripe_manual_capture( $fo, (object) [ 'id' => 'ch_3Held', 'amount_captured' => 19999 ] );
 check( 'the capture then sends only the payment message',
 	count( requests() ) === 1 && false !== strpos( requests()[0]['url'], '/v1/website-orders/payment' ) );
 
-echo "\n== first order whose hold was never seen: taken in before the payment ==\n";
+echo "\n== first order synced by an earlier version, hold never seen: order before payment ==\n";
 reset_world();
 make_order( 90, 'yes', true, true, false );
 TC_Platform_Sync::on_payment_complete( 90 );
 $r = requests();
-check( 'order pushed first (FIRST_ORDER / CAPTURED), then the payment',
-	count( $r ) === 2 && json_decode( $r[0]['args']['body'], true )['order']['holdState'] === 'CAPTURED'
+check( 'order pushed first as FIRST_ORDER / AUTHORISED, then the payment records the capture',
+	count( $r ) === 2 && json_decode( $r[0]['args']['body'], true )['order']['holdState'] === 'AUTHORISED'
 	&& false !== strpos( $r[1]['url'], '/v1/website-orders/payment' ) );
 reset_world();
 make_order( 91, 'yes', true, true, false );
