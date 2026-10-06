@@ -470,8 +470,9 @@ class TC_Eligibility_Rules {
 			return null;
 		}
 		$n = (float) $v;
-		// Keep one decimal place so 29.5 to 29.9 stays below 30 (exclusion E11).
-		return ( $n >= 1 && $n <= 200 ) ? round( $n, 1 ) : null;
+		// No rounding, so any result below 30 (e.g. 29.6 or 29.95) stays below
+		// 30 for exclusion E11.
+		return ( $n >= 1 && $n <= 200 ) ? $n : null;
 	}
 
 	/** eGFR test month as YYYY-MM, not in the future, or '' when invalid. */

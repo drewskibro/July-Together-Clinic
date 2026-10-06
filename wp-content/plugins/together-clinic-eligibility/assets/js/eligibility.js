@@ -1018,9 +1018,11 @@
 		var resultRaw = (($('s1a-egfr-result') || {}).value || '').trim();
 		var egfr = '';
 		if (resultRaw) {
-			var n = parseInt(resultRaw, 10);
-			if (isNaN(n) || n < 1 || n > 200 || String(n) !== resultRaw.replace(/^0+/, '')) {
-				err.textContent = 'Please enter your eGFR result as a number, or leave it blank';
+			// Accept one decimal place (e.g. 29.6) so a result just under 30
+			// is never typed as 30 and passed (exclusion E11).
+			var n = parseFloat(resultRaw);
+			if (!/^\d{1,3}(\.\d)?$/.test(resultRaw) || isNaN(n) || n < 1 || n > 200) {
+				err.textContent = 'Please enter your eGFR result as a number (for example 45 or 29.6), or leave it blank';
 				err.style.display = 'block';
 				return;
 			}
@@ -1039,7 +1041,7 @@
 
 		// Exclusion E11 (severe kidney impairment). Nothing else on this
 		// screen screens anyone out: the prescriber decides.
-		if (egfr && parseInt(egfr, 10) < 30) {
+		if (egfr && parseFloat(egfr) < 30) {
 			showIneligible('Based on the medical history you provided, weight loss medication is not clinically appropriate. Please speak with your GP about alternative options.');
 			return;
 		}

@@ -144,6 +144,7 @@ $r=$R::evaluate(base(s1a(['dob'=>$d75,'s1aFalls'=>'yes']))); check('S1A: fall on
 $r=$R::evaluate(base(s1a(['dob'=>$d75,'s1aEgfrResult'=>'29','s1aEgfrDate'=>'2026-05']))); check('S1A: eGFR 29 -> not eligible (E11 hard exclusion)',!$r['eligible']);
 $r=$R::evaluate(base(s1a(['dob'=>$d75,'s1aEgfrResult'=>'30','s1aEgfrDate'=>'2026-05']))); check('S1A: eGFR 30 -> may proceed, result in flag',$r['eligible'] && strpos($r['flags']['s1a_egfr'],'eGFR 30')!==false,json_encode($r['flags']['s1a_egfr']??''));
 $r=$R::evaluate(base(s1a(['dob'=>$d75,'s1aEgfrResult'=>'29.6','s1aEgfrDate'=>'2026-05']))); check('S1A: eGFR 29.6 -> not eligible (no rounding up to 30)',!$r['eligible']);
+$r=$R::evaluate(base(s1a(['dob'=>$d75,'s1aEgfrResult'=>'29.95','s1aEgfrDate'=>'2026-05']))); check('S1A: eGFR 29.95 -> not eligible',!$r['eligible']);
 $r=$R::evaluate(base(s1a(['dob'=>$d75,'s1aEgfrResult'=>'abc']))); check('S1A: non-numeric eGFR ignored, may proceed',$r['eligible']);
 $r=$R::evaluate(base(['dob'=>dob_years_ago(60),'s1aEgfrResult'=>'20'])); check('Under 75: S1A fields ignored',$r['eligible'] && !isset($r['flags']['s1a']));
 $rows=$R::s1a_summary(s1a(['sex'=>'male','s1aPrismaScore'=>1])); check('S1A summary lists answers and score', isset($rows['Falls in the last 12 months'],$rows['eGFR result'],$rows['PRISMA-7 Q7: Regularly uses a stick, walker or wheelchair']) && $rows['PRISMA-7 Q2: male']==='Yes' && isset($rows['PRISMA-7 score (yes answers; 3 or more: face-to-face)']), json_encode($rows));
