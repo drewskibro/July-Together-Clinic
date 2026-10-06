@@ -7,6 +7,13 @@ class TC_Log {
 
 	const PREFIX = '[tc-eligibility]';
 
+	/** Only written when WP_DEBUG is on: routine skips that would otherwise flood the log. */
+	public static function debug( $msg, $context = [] ) {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			self::channel( self::PREFIX, 'debug', $msg, $context );
+		}
+	}
+
 	public static function info( $msg, $context = [] ) {
 		self::channel( self::PREFIX, 'info', $msg, $context );
 	}

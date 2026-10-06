@@ -12,6 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * WP-Cron (three attempts total, backoff) and leaves a manual "Send to
  * prescribing platform" order action for anything that still hasn't synced.
  *
+ * Payment: once the money for an already-synced order is actually
+ * captured (never on a mere card authorisation), POST
+ * `/v1/website-orders/payment` so the platform knows the order is paid.
+ * Same sender, settings, retry and fail-closed rules as the patient push;
+ * idempotent on `_tc_platform_paid_sent_at`. See the "Payment message"
+ * section below for which hooks fire it and why.
+ *
  * Inbound: `POST /wp-json/tc/v1/platform-webhook`, HMAC-signed exactly as
  * `packages/contracts/src/signature.ts` computes it — verified before the
  * body is ever parsed. `prescription.issued` approves the order;
@@ -34,12 +41,31 @@ class TC_Platform_Sync {
 	const META_SYNC_ATTEMPTS  = '_tc_platform_sync_attempts';
 	const META_SYNC_LAST_ERROR = '_tc_platform_sync_last_error';
 
+	/** Payment message (`POST /v1/website-orders/payment`). */
+	const META_PAID_SENT_AT      = '_tc_platform_paid_sent_at';
+	const META_PAID_ATTEMPTS     = '_tc_platform_paid_attempts';
+	const META_PAID_LAST_ERROR   = '_tc_platform_paid_last_error';
+	const META_PAID_AT           = '_tc_platform_paid_at';
+	const META_PAID_AMOUNT_PENCE = '_tc_platform_paid_amount_pence';
+	const META_PAID_REFERENCE    = '_tc_platform_paid_reference';
+
+	/** Set by the Woo Stripe extension on PaymentIntent orders. */
+	const STRIPE_INTENT_META = '_stripe_intent_id';
+
 	/** `packages/contracts/src/signature.ts`: WEBHOOK_SIGNATURE_HEADER / TOLERANCE_SECONDS. */
 	const SIGNATURE_HEADER    = 'X-Together-Signature';
 	const SIGNATURE_TOLERANCE = 300;
 
 	const RETRY_HOOK  = 'tc_platform_sync_retry';
 	const MAX_ATTEMPTS = 3;
+
+	const PAYMENT_HOOK = 'tc_platform_payment_send';
+
+	/** Order ids whose capture has already been handled in this request (several hooks see one capture). */
+	private static $payment_handled = [];
+
+	/** True while handle_webhook() is acting on a platform decision — see on_payment_captured(). */
+	private static $in_platform_webhook = false;
 
 	/** Bounded (last 500) list of processed webhook event ids, one site option — never per-order meta. */
 	const OPTION_PROCESSED_EVENTS = 'tc_platform_processed_event_ids';
@@ -58,6 +84,15 @@ class TC_Platform_Sync {
 		add_filter( 'woocommerce_order_actions', [ __CLASS__, 'add_manual_sync_action' ], 10, 2 );
 		add_action( 'woocommerce_order_action_tc_platform_manual_sync', [ __CLASS__, 'manual_sync' ] );
 		add_action( 'rest_api_init', [ __CLASS__, 'register_routes' ] );
+
+		// Payment message: see the "Payment message" section for why these.
+		add_action( 'woocommerce_stripe_process_manual_capture', [ __CLASS__, 'on_stripe_manual_capture' ], 10, 2 );
+		add_action( 'woocommerce_payment_complete', [ __CLASS__, 'on_payment_complete' ], 20 );
+		add_action( 'woocommerce_order_status_processing', [ __CLASS__, 'on_paid_status' ], 20 );
+		add_action( 'woocommerce_order_status_completed', [ __CLASS__, 'on_paid_status' ], 20 );
+		add_action( self::PAYMENT_HOOK, [ __CLASS__, 'run_payment_retry' ] );
+		add_filter( 'woocommerce_order_actions', [ __CLASS__, 'add_manual_payment_action' ], 10, 2 );
+		add_action( 'woocommerce_order_action_tc_platform_manual_payment', [ __CLASS__, 'manual_payment' ] );
 	}
 
 	// ======================================================================
@@ -490,6 +525,370 @@ class TC_Platform_Sync {
 	}
 
 	// ======================================================================
+	// Payment message: POST /v1/website-orders/payment
+	//
+	// Fires when money is actually CAPTURED, never on a card authorisation.
+	// All money movement is the WooCommerce Stripe extension's (this plugin
+	// has no gateway code), so "captured" means exactly what that extension
+	// records: `_stripe_charge_captured` === 'yes' (TC_Review_Payment::
+	// is_captured()). An authorisation records 'no' and parks the order
+	// on-hold; it never reaches this message. Order status and date_paid are
+	// deliberately NOT used: WooCommerce stamps date_paid on any move to
+	// processing, including an approval whose capture then fails.
+	//
+	// Three hooks, because the extension captures on three routes (checked
+	// against woocommerce-gateway-stripe 11.0.1):
+	//
+	//  1. `woocommerce_stripe_process_manual_capture` — the authorised card
+	//     captured when the order moves to processing (prescriber approval,
+	//     or staff processing an on-hold pay-link authorisation).
+	//     WC_Stripe_Order_Handler::capture_payment() fires it after storing
+	//     the captured flag, but ALSO when the capture failed, hence the
+	//     flag check in payment_skip_reason().
+	//  2. `woocommerce_payment_complete` — a charge captured outright at
+	//     payment (automatic capture), or a capture made in the Stripe
+	//     dashboard arriving by `charge.captured` webhook. The extension
+	//     records the flag before calling payment_complete().
+	//  3. `woocommerce_order_status_processing` / `_completed` at priority
+	//     20, after the extension's own capture at 10 — a safety net if a
+	//     gateway version renames hook 1. Same flag check.
+	//
+	// One capture can trip several of these in one request; $payment_handled
+	// and the `_tc_platform_paid_sent_at` flag mean it is sent once.
+	// ======================================================================
+
+	public static function on_stripe_manual_capture( $order, $result = null ) {
+		$order_id = $order instanceof WC_Order ? $order->get_id() : absint( $order );
+		$pence    = null;
+		if ( is_object( $result ) ) {
+			if ( isset( $result->amount_captured ) && is_numeric( $result->amount_captured ) ) {
+				$pence = (int) $result->amount_captured;
+			} elseif ( isset( $result->amount ) && is_numeric( $result->amount ) ) {
+				$pence = (int) $result->amount;
+			}
+		}
+		self::on_payment_captured( $order_id, $pence );
+	}
+
+	public static function on_payment_complete( $order_id ) {
+		self::on_payment_captured( absint( $order_id ) );
+	}
+
+	public static function on_paid_status( $order_id ) {
+		self::on_payment_captured( absint( $order_id ) );
+	}
+
+	/**
+	 * @param int      $order_id
+	 * @param int|null $captured_pence What Stripe says it captured, when the hook knows.
+	 */
+	private static function on_payment_captured( $order_id, $captured_pence = null ) {
+		if ( ! $order_id || isset( self::$payment_handled[ $order_id ] ) ) {
+			return;
+		}
+		// Fail closed, exactly like push(): the persistent admin notice
+		// already says nothing is being sent.
+		if ( ! self::is_enabled() ) {
+			return;
+		}
+		$order = wc_get_order( $order_id );
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+
+		$skip = self::payment_skip_reason( $order );
+		if ( null !== $skip ) {
+			// Not marked handled: an authorisation seen by one hook must not
+			// stop the capture a later hook sees in the same request.
+			TC_Log::debug( 'platform_payment_skipped', [
+				'order_id' => $order_id,
+				'reason'   => $skip,
+			] );
+			return;
+		}
+		self::$payment_handled[ $order_id ] = true;
+
+		self::record_payment_snapshot( $order, $captured_pence );
+
+		if ( self::$in_platform_webhook ) {
+			wp_schedule_single_event( time(), self::PAYMENT_HOOK, [ $order_id ] );
+			return;
+		}
+		self::send_payment( $order );
+	}
+
+	/**
+	 * Why the payment message must not be sent for this order, or null when
+	 * it should be. Pure over the order's meta, so the smoke test can drive
+	 * it with a stub order.
+	 *
+	 * @return string|null
+	 */
+	public static function payment_skip_reason( WC_Order $order ) {
+		if ( ! TC_Review_Status::is_treatment_order( $order ) ) {
+			return 'not_review_order';
+		}
+		if ( '' === (string) $order->get_meta( self::META_PATIENT_ID ) ) {
+			return 'not_synced';
+		}
+		if ( ! TC_Review_Payment::is_captured( $order ) ) {
+			return 'not_captured';
+		}
+		if ( $order->get_meta( self::META_PAID_SENT_AT ) ) {
+			return 'already_sent';
+		}
+		if ( '' === self::payment_reference( $order ) ) {
+			return 'no_payment_reference';
+		}
+		return null;
+	}
+
+	/** Stripe charge id (the order's transaction id once captured), else the PaymentIntent id. */
+	private static function payment_reference( WC_Order $order ) {
+		$stored = (string) $order->get_meta( self::META_PAID_REFERENCE );
+		if ( '' !== $stored ) {
+			return $stored;
+		}
+		$reference = trim( (string) $order->get_transaction_id() );
+		if ( '' === $reference ) {
+			$reference = trim( (string) $order->get_meta( self::STRIPE_INTENT_META ) );
+		}
+		return $reference;
+	}
+
+	/**
+	 * Freezes paidAt / amount / reference at the moment the capture is first
+	 * seen, so a retry or a manual resend days later sends the same facts
+	 * (and the same Idempotency-Key) rather than whatever the order says by
+	 * then (a later refund, an edited total).
+	 */
+	private static function record_payment_snapshot( WC_Order $order, $captured_pence = null ) {
+		if ( '' !== (string) $order->get_meta( self::META_PAID_AT ) ) {
+			return;
+		}
+		if ( null === $captured_pence ) {
+			// What WC_Stripe_Order_Handler::capture_payment() asks Stripe to
+			// capture: the order total less anything already refunded.
+			$captured_pence = self::to_pence( (float) $order->get_total() - (float) $order->get_total_refunded() );
+		}
+		$order->update_meta_data( self::META_PAID_AT, gmdate( 'Y-m-d\TH:i:s\Z', time() ) );
+		$order->update_meta_data( self::META_PAID_AMOUNT_PENCE, (int) $captured_pence );
+		$order->update_meta_data( self::META_PAID_REFERENCE, self::payment_reference( $order ) );
+		$order->save();
+	}
+
+	/** Pounds to integer pence, rounded rather than truncated (19.99 * 100 is 1998.9999…). */
+	public static function to_pence( $amount ) {
+		return (int) round( (float) $amount * 100 );
+	}
+
+	public static function payment_idempotency_key( $order_id, $payment_reference ) {
+		return 'tc-paid-' . (int) $order_id . '-' . $payment_reference;
+	}
+
+	/**
+	 * The contract body, exactly. Pure.
+	 *
+	 * @param int    $order_id
+	 * @param string $paid_at           ISO-8601 UTC.
+	 * @param int    $amount_pence
+	 * @param string $payment_reference Stripe charge or PaymentIntent id.
+	 */
+	public static function payment_request_body( $order_id, $paid_at, $amount_pence, $payment_reference ) {
+		return [
+			// Same namespacing as the patient push (Opus review, M1).
+			'externalReference' => 'tc-order-' . (int) $order_id,
+			'status'            => 'PAID',
+			'paidAt'            => (string) $paid_at,
+			'amountPence'       => (int) $amount_pence,
+			'currency'          => 'GBP',
+			'paymentReference'  => (string) $payment_reference,
+		];
+	}
+
+	/**
+	 * The contract's response rules. Pure.
+	 *   2xx            -> 'ok'        (recorded, or already recorded)
+	 *   404, 409, 4xx  -> 'permanent' (unknown order / cancelled or declined / anything else)
+	 *   5xx, no status -> 'retry'     (server error, timeout, connection failure)
+	 *
+	 * @param int|null $status HTTP status, or null when no response arrived.
+	 */
+	public static function classify_payment_status( $status ) {
+		if ( null === $status || '' === $status ) {
+			return 'retry';
+		}
+		$status = (int) $status;
+		if ( $status >= 200 && $status < 300 ) {
+			return 'ok';
+		}
+		if ( $status >= 400 && $status < 500 ) {
+			return 'permanent';
+		}
+		return 'retry';
+	}
+
+	public static function send_payment( WC_Order $order ) {
+		if ( ! self::is_enabled() ) {
+			return;
+		}
+		$order_id = $order->get_id();
+
+		$skip = self::payment_skip_reason( $order );
+		if ( null !== $skip ) {
+			TC_Log::debug( 'platform_payment_skipped', [
+				'order_id' => $order_id,
+				'reason'   => $skip,
+			] );
+			return;
+		}
+
+		// The contract is GBP only. Never relabel another currency's amount.
+		if ( 'GBP' !== strtoupper( (string) $order->get_currency() ) ) {
+			self::record_payment_permanent_failure( $order, 'order currency is not GBP' );
+			return;
+		}
+
+		self::record_payment_snapshot( $order );
+		$reference = (string) $order->get_meta( self::META_PAID_REFERENCE );
+		$body      = self::payment_request_body(
+			$order_id,
+			(string) $order->get_meta( self::META_PAID_AT ),
+			(int) $order->get_meta( self::META_PAID_AMOUNT_PENCE ),
+			$reference
+		);
+
+		$result = self::request(
+			'POST',
+			'/v1/website-orders/payment',
+			$body,
+			self::payment_idempotency_key( $order_id, $reference )
+		);
+
+		$status = 200;
+		if ( is_wp_error( $result ) ) {
+			$data   = $result->get_error_data();
+			$status = ( is_array( $data ) && isset( $data['status'] ) ) ? (int) $data['status'] : null;
+		}
+
+		switch ( self::classify_payment_status( $status ) ) {
+			case 'ok':
+				$order->update_meta_data( self::META_PAID_SENT_AT, time() );
+				$order->update_meta_data( self::META_PAID_ATTEMPTS, 0 );
+				$order->delete_meta_data( self::META_PAID_LAST_ERROR );
+				$order->save();
+				$order->add_order_note( sprintf(
+					'Payment recorded on the prescribing platform (%s, reference %s).',
+					self::format_pence( $body['amountPence'] ),
+					$reference
+				) );
+				TC_Log::info( 'platform_payment_ok', [ 'order_id' => $order_id ] );
+				return;
+
+			case 'permanent':
+				self::record_payment_permanent_failure( $order, 'HTTP ' . $status, $status );
+				return;
+
+			default:
+				self::record_payment_retryable_failure(
+					$order,
+					is_wp_error( $result ) ? $result->get_error_message() : 'unknown error'
+				);
+		}
+	}
+
+	private static function format_pence( $pence ) {
+		return '£' . number_format( ( (int) $pence ) / 100, 2 );
+	}
+
+	private static function record_payment_permanent_failure( WC_Order $order, $message, $status = null ) {
+		$order->update_meta_data( self::META_PAID_LAST_ERROR, sanitize_text_field( (string) $message ) );
+		$order->save();
+
+		if ( 404 === $status ) {
+			$note = 'Prescribing platform does not recognise this order (HTTP 404), so the payment was not recorded there. Check the order was sent to the platform, then use "Send payment to prescribing platform".';
+		} elseif ( 409 === $status ) {
+			$note = 'Prescribing platform refused the payment because the order is cancelled or declined there (HTTP 409). Money has been taken for an order the platform will not fulfil. Review urgently.';
+		} elseif ( null !== $status ) {
+			$note = sprintf( 'Prescribing platform rejected the payment message (HTTP %d). It will not be retried automatically; fix the cause, then use "Send payment to prescribing platform".', (int) $status );
+		} else {
+			$note = sprintf( 'Payment was not sent to the prescribing platform: %s. Use "Send payment to prescribing platform" once resolved.', sanitize_text_field( (string) $message ) );
+		}
+		$order->add_order_note( $note );
+
+		TC_Log::warn( 'platform_payment_failed_permanent', [
+			'order_id' => $order->get_id(),
+			'status'   => null === $status ? 'none' : (int) $status,
+		] );
+	}
+
+	private static function record_payment_retryable_failure( WC_Order $order, $message ) {
+		$attempts = (int) $order->get_meta( self::META_PAID_ATTEMPTS ) + 1;
+		$order->update_meta_data( self::META_PAID_ATTEMPTS, $attempts );
+		// Transport/HTTP error text only, never order content.
+		$order->update_meta_data( self::META_PAID_LAST_ERROR, sanitize_text_field( (string) $message ) );
+		$order->save();
+
+		if ( $attempts < self::MAX_ATTEMPTS ) {
+			$order->add_order_note( sprintf( 'Sending the payment to the prescribing platform failed (attempt %d of %d). It will retry automatically.', $attempts, self::MAX_ATTEMPTS ) );
+			TC_Log::warn( 'platform_payment_failed', [
+				'order_id' => $order->get_id(),
+				'attempt'  => $attempts,
+			] );
+			$delays = self::retry_delays();
+			$delay  = $delays[ $attempts - 1 ] ?? end( $delays );
+			wp_schedule_single_event( time() + $delay, self::PAYMENT_HOOK, [ $order->get_id() ] );
+			return;
+		}
+
+		$order->add_order_note( sprintf( 'Sending the payment to the prescribing platform failed %d times and has stopped retrying. Use "Send payment to prescribing platform" once the platform is reachable.', $attempts ) );
+		TC_Log::warn( 'platform_payment_failed_permanent', [
+			'order_id' => $order->get_id(),
+			'status'   => 'retries_exhausted',
+		] );
+	}
+
+	public static function run_payment_retry( $order_id ) {
+		$order = wc_get_order( $order_id );
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+		// A manual resend, or an earlier retry, may already have landed.
+		if ( $order->get_meta( self::META_PAID_SENT_AT ) ) {
+			return;
+		}
+		self::send_payment( $order );
+	}
+
+	public static function manual_payment( WC_Order $order ) {
+		if ( $order->get_meta( self::META_PAID_SENT_AT ) ) {
+			$order->add_order_note( 'Payment is already recorded on the prescribing platform; nothing was sent.' );
+			return;
+		}
+		// A deliberate resend starts a fresh set of three attempts.
+		$order->update_meta_data( self::META_PAID_ATTEMPTS, 0 );
+		$order->save();
+		self::send_payment( $order );
+	}
+
+	public static function add_manual_payment_action( $actions, $order = null ) {
+		if ( ! $order instanceof WC_Order ) {
+			global $theorder;
+			$order = $theorder;
+		}
+		if ( ! $order instanceof WC_Order || ! self::is_enabled() ) {
+			return $actions;
+		}
+		// Only when the message is genuinely due: a synced review order whose
+		// money has been captured and not yet acknowledged by the platform.
+		if ( null !== self::payment_skip_reason( $order ) ) {
+			return $actions;
+		}
+		$actions['tc_platform_manual_payment'] = 'Send payment to prescribing platform';
+		return $actions;
+	}
+
+	// ======================================================================
 	// Inbound webhook
 	// ======================================================================
 
@@ -576,6 +975,11 @@ class TC_Platform_Sync {
 		// review, minor 2): a crash between marking and acting would
 		// otherwise permanently swallow a legitimate delivery.
 		TC_Review_Actions::set_reviewer_override( 'Prescribing platform' );
+		// Approving captures the card hold, which would otherwise POST the
+		// payment message back to the platform from inside the platform's
+		// own webhook delivery. on_payment_captured() defers it to WP-Cron
+		// while this is set, so the two requests never wait on each other.
+		self::$in_platform_webhook = true;
 		try {
 			if ( 'prescription.issued' === $type ) {
 				TC_Review_Actions::approve( $order );
@@ -588,6 +992,7 @@ class TC_Platform_Sync {
 			// leak into an unrelated request that happens to reuse this
 			// worker process.
 			TC_Review_Actions::set_reviewer_override( null );
+			self::$in_platform_webhook = false;
 		}
 		self::mark_event_processed( $event_id );
 

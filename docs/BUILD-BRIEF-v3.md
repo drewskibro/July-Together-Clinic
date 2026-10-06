@@ -402,6 +402,47 @@ it (`TC_Review_Actions::reject`). Deliveries are verified against
 `packages/contracts/src/signature.ts`'s exact scheme before anything is
 parsed, and are idempotent on the event id.
 
+**Payment message.** When the money for an order is actually *captured*,
+the site tells the platform: `POST /v1/website-orders/payment` with
+`{externalReference: "tc-order-<id>", status: "PAID", paidAt (ISO-8601
+UTC), amountPence (integer, what was captured), currency: "GBP",
+paymentReference (Stripe charge id, else PaymentIntent id)}`, header
+`Idempotency-Key: tc-paid-<order id>-<paymentReference>`, same base URL,
+API key and enabled switch as the patient push.
+
+- *Captured, not authorised.* The only test is the Stripe extension's own
+  `_stripe_charge_captured === 'yes'` (`TC_Review_Payment::is_captured()`).
+  A card authorisation records `'no'` and never sends. Order status and
+  `date_paid` are not trusted: WooCommerce stamps `date_paid` on any move to
+  processing, even when the capture behind it then fails.
+- *Hooks.* `woocommerce_stripe_process_manual_capture` (the authorised card
+  captured on the move to processing: prescriber approval, or staff
+  processing an authorised pay-link order), `woocommerce_payment_complete`
+  (captured outright, or captured in the Stripe dashboard and reported by
+  the `charge.captured` webhook), and `woocommerce_order_status_processing`
+  / `_completed` at priority 20 as a safety net after the extension's own
+  capture at 10. One capture tripping several of these sends once.
+- *Only orders the platform knows.* No `_tc_platform_patient_id` (never
+  synced), or not a review order: skipped, `TC_Log::debug` only.
+- *Idempotent.* `paidAt`, amount and reference are frozen in order meta the
+  first time the capture is seen; `_tc_platform_paid_sent_at` is set once
+  the platform answers 2xx, after which nothing is ever sent again
+  (re-capture, webhook replay, stale retry, manual resend).
+- *Responses.* 2xx recorded. 404 (unknown order), 409 (order cancelled or
+  declined there: money taken for an order the platform will not fulfil,
+  flagged "Review urgently") and any other 4xx are permanent: order note,
+  warning log, no retry. 5xx or no response: WP-Cron retry, three attempts
+  in all on the patient push's 5 / 30 minute schedule, then an order note
+  and warning. Manual order action "Send payment to prescribing platform"
+  appears only while the message is due and unacknowledged.
+- *Inside the platform's webhook.* When `prescription.issued` approves an
+  order, that approval captures the card. The payment message is then
+  scheduled on WP-Cron immediately rather than sent inline, so the site
+  never calls the platform back from inside the platform's own delivery.
+- *Not yet covered.* Reorders (`TC_Reorder_Checkout::create_from_submission`)
+  do not fire `tc_review_order_created`, so they are never pushed to the
+  platform and their payments are skipped as "not synced" until they are.
+
 **Fail closed.** `tc_platform_sync_enabled` is unchecked, and
 `tc_platform_base_url` / `tc_platform_api_key` / `tc_platform_webhook_secret`
 are unset, until an administrator configures them under *WooCommerce →
