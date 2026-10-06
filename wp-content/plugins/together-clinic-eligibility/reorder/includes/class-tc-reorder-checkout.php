@@ -143,6 +143,14 @@ class TC_Reorder_Checkout {
 			'user_id'       => (int) $user_id,
 		] );
 
+		/**
+		 * The same action TC_Review_Order fires for a first order, so a
+		 * reorder reaches the prescribing platform exactly the same way
+		 * (TC_Platform_Sync: patient, order and pre-consultation). Never
+		 * blocks the order's own creation above.
+		 */
+		do_action( 'tc_review_order_created', $order, $payload );
+
 		return $order;
 	}
 

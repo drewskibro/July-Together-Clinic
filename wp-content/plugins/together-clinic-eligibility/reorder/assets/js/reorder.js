@@ -370,7 +370,14 @@
 		var btn = $('reorder-submit-btn');
 		if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
 
-		var payload = Object.assign({}, state.data, { assessment_id: state.assessmentId });
+		// termsAgreed: the patient ticked "You agree to our Terms & Conditions
+		// and Privacy Policy" on screen 1 (agreement index 3). Sent so the
+		// prescribing platform records the service consent the patient
+		// actually gave, rather than one inferred on the server.
+		var payload = Object.assign({}, state.data, {
+			assessment_id: state.assessmentId,
+			termsAgreed: state.agreementChecks[3] === true
+		});
 
 		ajax('tc_reorder_save', payload).then(function (data) {
 			if (data.ok === false) {

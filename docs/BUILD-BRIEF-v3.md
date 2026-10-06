@@ -439,9 +439,63 @@ API key and enabled switch as the patient push.
   order, that approval captures the card. The payment message is then
   scheduled on WP-Cron immediately rather than sent inline, so the site
   never calls the platform back from inside the platform's own delivery.
-- *Not yet covered.* Reorders (`TC_Reorder_Checkout::create_from_submission`)
-  do not fire `tc_review_order_created`, so they are never pushed to the
-  platform and their payments are skipped as "not synced" until they are.
+- *The order must be on the platform first.* The payment route finds the
+  platform's `website_order` row by `tc-order-<id>`, and that row only
+  exists when `POST /v1/patients` carried an `order` block (see below). A
+  synced first order whose card hold was never seen is pushed with its
+  order block (`FIRST_ORDER` / `CAPTURED`) just before its payment; if that
+  fails the payment waits for its next retry instead of drawing a 404.
+
+**The order block.** `POST /v1/patients` carries `order: {lane, holdState,
+websiteStatus, externalOrderNumber, submittedAt, product}` (the platform's
+`packages/contracts/src/patient-push.ts`), never any clinical content. The
+platform then stores its `website_order` row with the patient. Its rules: a
+`FIRST_ORDER` is taken in only with a card held (`AUTHORISED`) or money taken
+(`CAPTURED`); anything else is answered 202 and *nothing* is stored, not even
+the patient. Every `REORDER` is taken in.
+
+- A first order is still pushed at creation as the bare patient push (no
+  order block), exactly as before. When its card is authorised
+  (`wc_gateway_stripe_process_response`, or `woocommerce_payment_complete`
+  on gateway versions that call it for an authorisation) the patient is
+  pushed again with the order block, under the same `tc-order-<id>`
+  reference and a new Idempotency-Key, so the platform takes the order in
+  against the same patient. No second pre-consultation is sent.
+- `_tc_platform_order_pushed_at` and `_tc_platform_website_order_id` record
+  that the platform took the order in. `NOT_TAKEN_IN` (website order intake
+  switched off on the platform) leaves an order note and keeps "Send to
+  prescribing platform" on offer.
+
+**Reorders.** `TC_Reorder_Checkout::create_from_submission` fires the same
+`tc_review_order_created` action, so a reorder is pushed exactly like a first
+order: `POST /v1/patients` (with an order block, lane `REORDER`, hold `NONE`)
+then `POST /v1/patients/{id}/pre-consultation`, with the same retry, manual
+action and fail-closed rules. Retries read `_rrqr_raw`.
+
+- *Patient.* The check-in asks only name, email and date of birth. Sex at
+  birth, UK nation and phone come from the first eligibility assessment the
+  reorder descends from (walking `_rrqr_previous_order_id` back through any
+  earlier reorders to the order holding `_tc_eligibility_raw`); the address
+  is the reorder's own billing address. Only those identity keys are taken
+  from the old assessment, nothing clinical.
+- *Pre-consultation.* The check-in's own answers; `consents` is `service`
+  only, from `termsAgreed`, which `reorder.js` now sends when the patient has
+  ticked the Terms & Conditions box. `gpShare` and `scrAccess` are left out,
+  not sent as false: the check-in asks neither, and an explicit false would
+  record a GP-sharing decline over the consent given at the first order.
+  `gp` is empty (practice on file kept); `measurements.weightKg` is the
+  reported current weight.
+- *Known platform gap.* The push contract has one reference for both the
+  patient and the order, so each reorder (`tc-order-<reorder id>`) creates a
+  new patient record on the platform. The API offers no customer-level or
+  previous-order field to tie it to the first order's patient, so none is
+  sent. The platform would need, for example, `order.previousExternalReference`
+  (`tc-order-<previous order id>`, resolved to that website order's patient)
+  or a customer-level `order.externalCustomerId` (already a column on its
+  WooCommerce-read intake, not on the push).
+- The legacy cart route (`TC_Reorder_Ajax::add_to_cart`) is no longer called
+  by `reorder.js` and creates ordinary checkout orders, not review orders; it
+  is not wired to the platform.
 
 **Fail closed.** `tc_platform_sync_enabled` is unchecked, and
 `tc_platform_base_url` / `tc_platform_api_key` / `tc_platform_webhook_secret`

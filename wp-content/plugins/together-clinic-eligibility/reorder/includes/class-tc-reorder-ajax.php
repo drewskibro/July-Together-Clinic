@@ -276,6 +276,8 @@ class TC_Reorder_Ajax {
 		$p['newMedicationsList']  = sanitize_textarea_field( $p['newMedicationsList'] ?? '' );
 		$p['couldBePregnant']     = sanitize_text_field( $p['couldBePregnant'] ?? '' );
 		$p['wantsClinicalSupport'] = sanitize_text_field( $p['wantsClinicalSupport'] ?? '' );
+		// Strictly true only when the wizard sent true; anything else is false.
+		$p['termsAgreed']         = ( true === ( $p['termsAgreed'] ?? null ) || 'true' === ( $p['termsAgreed'] ?? null ) || '1' === ( $p['termsAgreed'] ?? null ) );
 
 		return $p;
 	}

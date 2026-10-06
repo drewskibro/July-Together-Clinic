@@ -12,6 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * WP-Cron (three attempts total, backoff) and leaves a manual "Send to
  * prescribing platform" order action for anything that still hasn't synced.
  *
+ * Reorders (TC_Reorder_Checkout) fire the same action and are pushed the
+ * same way. The patient push carries the platform's `order` block (every
+ * reorder; a first order once its card is held, re-pushed at authorisation)
+ * so the platform holds a website order the payment message can find.
+ *
  * Payment: once the money for an already-synced order is actually
  * captured (never on a mere card authorisation), POST
  * `/v1/website-orders/payment` so the platform knows the order is paid.
@@ -49,6 +54,16 @@ class TC_Platform_Sync {
 	const META_PAID_AMOUNT_PENCE = '_tc_platform_paid_amount_pence';
 	const META_PAID_REFERENCE    = '_tc_platform_paid_reference';
 
+	/** The website order on the platform (`order` block of POST /v1/patients). */
+	const META_ORDER_PUSHED_AT     = '_tc_platform_order_pushed_at';
+	const META_WEBSITE_ORDER_ID    = '_tc_platform_website_order_id';
+	const META_ORDER_PUSH_ATTEMPTS = '_tc_platform_order_push_attempts';
+
+	/** The two assessment payloads: a first order's, and a reorder's. */
+	const META_ELIGIBILITY_RAW = '_tc_eligibility_raw';
+	const META_REORDER_RAW     = '_rrqr_raw';
+	const META_REORDER_PREVIOUS = '_rrqr_previous_order_id';
+
 	/** Set by the Woo Stripe extension on PaymentIntent orders. */
 	const STRIPE_INTENT_META = '_stripe_intent_id';
 
@@ -64,7 +79,7 @@ class TC_Platform_Sync {
 	/** Order ids whose capture has already been handled in this request (several hooks see one capture). */
 	private static $payment_handled = [];
 
-	/** True while handle_webhook() is acting on a platform decision — see on_payment_captured(). */
+	/** True while handle_webhook() is acting on a platform decision. See on_payment_captured(). */
 	private static $in_platform_webhook = false;
 
 	/** Bounded (last 500) list of processed webhook event ids, one site option — never per-order meta. */
@@ -91,6 +106,8 @@ class TC_Platform_Sync {
 		add_action( 'woocommerce_order_status_processing', [ __CLASS__, 'on_paid_status' ], 20 );
 		add_action( 'woocommerce_order_status_completed', [ __CLASS__, 'on_paid_status' ], 20 );
 		add_action( self::PAYMENT_HOOK, [ __CLASS__, 'run_payment_retry' ] );
+		// A first order's card hold: the platform takes the order in now.
+		add_action( 'wc_gateway_stripe_process_response', [ __CLASS__, 'on_stripe_response' ], 20, 2 );
 		add_filter( 'woocommerce_order_actions', [ __CLASS__, 'add_manual_payment_action' ], 10, 2 );
 		add_action( 'woocommerce_order_action_tc_platform_manual_payment', [ __CLASS__, 'manual_payment' ] );
 	}
@@ -200,13 +217,83 @@ class TC_Platform_Sync {
 	}
 
 	public static function manual_sync( WC_Order $order ) {
+		// Already synced, but the platform has not taken the order in yet
+		// (the card was held after the first push): send just the order.
+		if ( $order->get_meta( self::META_SYNCED_AT ) ) {
+			$order->update_meta_data( self::META_ORDER_PUSH_ATTEMPTS, 0 );
+			$order->save();
+			self::push_order_block( $order );
+			return;
+		}
 		self::push( $order, self::raw_payload( $order ) );
 	}
 
+	/** The assessment payload this order was created from: a first order's, else a reorder's. */
 	private static function raw_payload( WC_Order $order ) {
-		$raw = $order->get_meta( TC_Checkout::ORDER_META_RAW );
-		$decoded = $raw ? json_decode( $raw, true ) : null;
-		return is_array( $decoded ) ? $decoded : [];
+		foreach ( [ self::META_ELIGIBILITY_RAW, self::META_REORDER_RAW ] as $key ) {
+			$raw     = $order->get_meta( $key );
+			$decoded = $raw ? json_decode( $raw, true ) : null;
+			if ( is_array( $decoded ) ) {
+				return $decoded;
+			}
+		}
+		return [];
+	}
+
+	/** A reorder check-in (TC_Reorder_Checkout), not a first eligibility assessment. */
+	public static function is_reorder( WC_Order $order ) {
+		if ( '' !== (string) $order->get_meta( self::META_ELIGIBILITY_RAW ) ) {
+			return false;
+		}
+		return '' !== (string) $order->get_meta( self::META_REORDER_RAW )
+			|| 'tc_reorder_submission' === $order->get_created_via();
+	}
+
+	/**
+	 * The identity half of a reorder's patient push.
+	 *
+	 * The reorder check-in asks only name, email and date of birth. The rest
+	 * of the patient record (sex at birth, UK nation, phone) is taken from
+	 * the first eligibility assessment this reorder descends from, found by
+	 * walking `_rrqr_previous_order_id` back (a reorder of a reorder) to the
+	 * order that carries `_tc_eligibility_raw`. Name, email and date of birth
+	 * the patient gave in this check-in win over the older copy. The address
+	 * is the order's own billing address, which the reorder copied from the
+	 * previous order. Nothing clinical from the old assessment is carried
+	 * over: only these identity keys.
+	 */
+	public static function reorder_identity_payload( WC_Order $order, array $payload ) {
+		$original = [];
+		$previous = (int) $order->get_meta( self::META_REORDER_PREVIOUS );
+		for ( $hops = 0; $previous && $hops < 10; $hops++ ) {
+			$prev = wc_get_order( $previous );
+			if ( ! $prev instanceof WC_Order ) {
+				break;
+			}
+			$raw     = $prev->get_meta( self::META_ELIGIBILITY_RAW );
+			$decoded = $raw ? json_decode( $raw, true ) : null;
+			if ( is_array( $decoded ) ) {
+				$original = $decoded;
+				break;
+			}
+			$previous = (int) $prev->get_meta( self::META_REORDER_PREVIOUS );
+		}
+
+		$identity = [];
+		foreach ( [ 'firstName', 'lastName', 'fullName', 'email', 'dob', 'sex', 'country', 'phone' ] as $key ) {
+			if ( isset( $original[ $key ] ) && is_scalar( $original[ $key ] ) && '' !== trim( (string) $original[ $key ] ) ) {
+				$identity[ $key ] = $original[ $key ];
+			}
+		}
+		foreach ( [ 'firstName', 'lastName', 'email', 'dob' ] as $key ) {
+			if ( isset( $payload[ $key ] ) && is_scalar( $payload[ $key ] ) && '' !== trim( (string) $payload[ $key ] ) ) {
+				$identity[ $key ] = $payload[ $key ];
+			}
+		}
+		if ( isset( $identity['firstName'] ) ) {
+			unset( $identity['fullName'] );
+		}
+		return $identity;
 	}
 
 	public static function push( WC_Order $order, array $payload ) {
@@ -218,7 +305,12 @@ class TC_Platform_Sync {
 		// fail fast with an order note and schedule no retry (Opus review,
 		// minor 6). "Send to prescribing platform" is the only way back,
 		// after the date is fixed on the order.
-		$raw_dob = trim( (string) ( $payload['dob'] ?? '' ) );
+		$is_reorder = self::is_reorder( $order );
+		// The patient record is built from identity only; the answers below
+		// are always this order's own payload, never an older assessment's.
+		$identity = $is_reorder ? self::reorder_identity_payload( $order, $payload ) : $payload;
+
+		$raw_dob = trim( (string) ( $identity['dob'] ?? '' ) );
 		if ( '' !== $raw_dob && '' === self::normalise_dob( $raw_dob ) ) {
 			$order->add_order_note( sprintf(
 				'Prescribing platform sync stopped: the date of birth on this assessment ("%s") could not be read. Correct it and use "Send to prescribing platform" to retry.',
@@ -234,26 +326,37 @@ class TC_Platform_Sync {
 		// order_id_from_external_reference()'s own comment.
 		$external_reference = 'tc-order-' . $order_id;
 
-		$patient_body = self::patient_request_body( $order, $payload, $external_reference );
-		$patient      = self::request(
+		$patient_body = self::patient_request_body( $order, $identity, $external_reference );
+		// The order block, when the platform will take the order in: always
+		// for a reorder, and for a first order once its card is held. A
+		// first order pushed before that goes as the bare patient push, and
+		// its order follows when the card is authorised (on_stripe_response).
+		$order_block = self::order_block( $order );
+		if ( null !== $order_block ) {
+			$patient_body['order'] = $order_block;
+		}
+		$patient = self::request(
 			'POST',
 			'/v1/patients',
 			$patient_body,
-			'tc-order-' . $order_id . '-patient'
+			self::patient_push_key( $order_id, $order_block )
 		);
 
 		if ( is_wp_error( $patient ) || empty( $patient['id'] ) ) {
 			self::record_failure(
 				$order,
-				is_wp_error( $patient ) ? $patient->get_error_message() : 'patient sync returned no id'
+				is_wp_error( $patient ) ? $patient->get_error_message() : self::no_patient_message( $patient )
 			);
 			return;
 		}
 
 		$order->update_meta_data( self::META_PATIENT_ID, $patient['id'] );
 		$order->save();
+		if ( null !== $order_block ) {
+			self::record_order_outcome( $order, $patient['order'] ?? null );
+		}
 
-		$intake_body = self::pre_consultation_body( $payload );
+		$intake_body = self::pre_consultation_body( $payload, $is_reorder );
 		$intake      = self::request(
 			'POST',
 			'/v1/patients/' . rawurlencode( (string) $patient['id'] ) . '/pre-consultation',
@@ -329,8 +432,14 @@ class TC_Platform_Sync {
 		return $body;
 	}
 
-	/** @param array $payload Raw eligibility assessment payload. */
-	private static function pre_consultation_body( array $payload ) {
+	/**
+	 * @param array $payload    Raw assessment payload (first order or reorder).
+	 * @param bool  $is_reorder A reorder check-in asks no GP questions.
+	 */
+	public static function pre_consultation_body( array $payload, $is_reorder = false ) {
+		if ( $is_reorder ) {
+			return self::reorder_pre_consultation_body( $payload );
+		}
 		$answers = $payload;
 		foreach ( self::IDENTITY_KEYS as $key ) {
 			unset( $answers[ $key ] );
@@ -375,6 +484,242 @@ class TC_Platform_Sync {
 			'gp'           => (object) $gp,
 			'measurements' => (object) $measurements,
 		];
+	}
+
+	/**
+	 * A reorder's intake. Only what the reorder check-in actually asks.
+	 *
+	 * Consents: only `service`, from `termsAgreed`, which reorder.js sends
+	 * when the patient has ticked "You agree to our Terms & Conditions and
+	 * Privacy Policy". `gpShare` and `scrAccess` are left OUT, never sent as
+	 * false: the check-in asks neither, and the platform writes a GP_SHARE
+	 * decline row for an explicit false, which would overwrite the consent the
+	 * patient gave at their first order. An absent key records nothing.
+	 * `gp` is empty for the same reason, so the practice on file is kept.
+	 * The reported weight (`currentWeight`) is the one measurement asked.
+	 */
+	private static function reorder_pre_consultation_body( array $payload ) {
+		$answers = $payload;
+		foreach ( self::IDENTITY_KEYS as $key ) {
+			unset( $answers[ $key ] );
+		}
+
+		$measurements = [];
+		if ( isset( $payload['currentWeight'] ) && is_numeric( $payload['currentWeight'] ) && (float) $payload['currentWeight'] > 0 ) {
+			$measurements['weightKg'] = (float) $payload['currentWeight'];
+		}
+
+		return [
+			'answers'      => (object) self::json_safe_answers( $answers ),
+			'consents'     => [
+				'service' => self::truthy( $payload['termsAgreed'] ?? false ),
+			],
+			'gp'           => (object) [],
+			'measurements' => (object) $measurements,
+		];
+	}
+
+	/**
+	 * The card as the platform's `holdState` reads it, from the Stripe
+	 * extension's own record: captured, held (authorised, uncaptured), a hold
+	 * released by cancelling, or none.
+	 */
+	public static function hold_state( WC_Order $order ) {
+		$flag = (string) $order->get_meta( TC_Review_Payment::STRIPE_CAPTURED_META );
+		if ( 'yes' === $flag ) {
+			return 'CAPTURED';
+		}
+		if ( 'no' === $flag && '' !== (string) $order->get_transaction_id() ) {
+			return 'cancelled' === $order->get_status() ? 'RELEASED' : 'AUTHORISED';
+		}
+		return 'NONE';
+	}
+
+	/**
+	 * The `order` block of `POST /v1/patients` (packages/contracts
+	 * patient-push.ts), or null when the platform would not take the order
+	 * in yet: a first order with no card held is answered 202 SKIPPED and
+	 * nothing at all is stored, not even the patient. Carries no clinical
+	 * content: the answers go to the pre-consultation route only.
+	 *
+	 * @return array|null
+	 */
+	public static function order_block( WC_Order $order ) {
+		$lane = self::is_reorder( $order ) ? 'REORDER' : 'FIRST_ORDER';
+		$hold = self::hold_state( $order );
+		if ( 'FIRST_ORDER' === $lane && ! in_array( $hold, [ 'AUTHORISED', 'CAPTURED' ], true ) ) {
+			return null;
+		}
+
+		$block = [
+			'lane'                => $lane,
+			'holdState'           => $hold,
+			'externalOrderNumber' => (string) $order->get_order_number(),
+		];
+		$status = (string) $order->get_status();
+		if ( 1 === preg_match( '/^[a-z0-9-]{1,32}$/', $status ) ) {
+			$block['websiteStatus'] = $status;
+		}
+		$created = $order->get_date_created();
+		if ( $created ) {
+			$block['submittedAt'] = gmdate( 'Y-m-d\TH:i:s\Z', $created->getTimestamp() );
+		}
+
+		foreach ( $order->get_items() as $item ) {
+			$quantity = max( 1, (int) $item->get_quantity() );
+			$product  = [
+				'variationId' => (string) ( $item->get_variation_id() ?: $item->get_product_id() ),
+				'lineItemId'  => (string) $item->get_id(),
+				'name'        => (string) $item->get_name(),
+				'quantity'    => $quantity,
+				'unitPriceMinor' => self::to_pence( (float) $item->get_total() / $quantity ),
+				'currency'    => strtoupper( (string) $order->get_currency() ),
+			];
+			$wc_product = $item->get_product();
+			if ( $wc_product && '' !== (string) $wc_product->get_sku() ) {
+				$product['sku'] = (string) $wc_product->get_sku();
+			}
+			$block['product'] = $product;
+			break; // One line item per review order.
+		}
+
+		return $block;
+	}
+
+	/**
+	 * A new Idempotency-Key whenever the order block changes what the push
+	 * means: the platform replays a cached answer for a key it has seen, so a
+	 * held first order re-pushed under the bare push's key would get back the
+	 * bare answer and never be taken in.
+	 */
+	public static function patient_push_key( $order_id, $order_block ) {
+		$key = 'tc-order-' . (int) $order_id . '-patient';
+		if ( is_array( $order_block ) ) {
+			$key .= '-' . strtolower( $order_block['lane'] . '-' . $order_block['holdState'] );
+		}
+		return $key;
+	}
+
+	private static function no_patient_message( $response ) {
+		$result = is_array( $response ) && isset( $response['order']['result'] ) ? (string) $response['order']['result'] : '';
+		if ( '' !== $result ) {
+			return sanitize_text_field( 'platform returned no patient (order ' . $result . ( isset( $response['order']['matchState'] ) ? ', ' . $response['order']['matchState'] : '' ) . ')' );
+		}
+		return 'patient sync returned no id';
+	}
+
+	/**
+	 * What the platform did with the order block. Taken in (CREATED, UPDATED,
+	 * UNCHANGED): remembered, so the payment message can find it. Not taken
+	 * in (website order intake switched off, or the route not there yet): an
+	 * order note, because the payment message will be refused until it is.
+	 */
+	private static function record_order_outcome( WC_Order $order, $outcome ) {
+		$result = is_array( $outcome ) ? (string) ( $outcome['result'] ?? '' ) : '';
+		if ( in_array( $result, [ 'CREATED', 'UPDATED', 'UNCHANGED' ], true ) ) {
+			$order->update_meta_data( self::META_ORDER_PUSHED_AT, time() );
+			$order->update_meta_data( self::META_ORDER_PUSH_ATTEMPTS, 0 );
+			if ( ! empty( $outcome['websiteOrderId'] ) ) {
+				$order->update_meta_data( self::META_WEBSITE_ORDER_ID, sanitize_text_field( (string) $outcome['websiteOrderId'] ) );
+			}
+			$order->save();
+			return true;
+		}
+		$reason = is_array( $outcome ) ? sanitize_text_field( (string) ( $outcome['reason'] ?? '' ) ) : '';
+		$order->add_order_note( sprintf(
+			'Prescribing platform received the patient but did not take in the order (%s). Its payment cannot be recorded there until it does. Use "Send to prescribing platform" once order intake is on.',
+			'' !== $result ? $result . ( '' !== $reason ? ', ' . $reason : '' ) : 'no order outcome'
+		) );
+		TC_Log::warn( 'platform_order_not_taken_in', [
+			'order_id' => $order->get_id(),
+			'result'   => '' !== $result ? $result : 'none',
+		] );
+		return false;
+	}
+
+	/**
+	 * Due: a synced first order whose card is now held, which the platform
+	 * has not yet taken in as an order. (A reorder's order goes with its very
+	 * first push, so it is never left due once synced.)
+	 */
+	public static function order_push_due( WC_Order $order ) {
+		return '' !== (string) $order->get_meta( self::META_PATIENT_ID )
+			&& ! $order->get_meta( self::META_ORDER_PUSHED_AT )
+			&& null !== self::order_block( $order );
+	}
+
+	/**
+	 * POST /v1/patients again, now with the order block, for a first order
+	 * already synced before its card was held. Same patient reference, so
+	 * the platform's find-or-create returns the same patient. No intake is
+	 * re-sent: that went with the first push.
+	 *
+	 * @param bool $schedule_retry False when the caller (the payment message)
+	 *                             runs its own retry, so only one is queued.
+	 * @return bool Whether the platform took the order in.
+	 */
+	public static function push_order_block( WC_Order $order, $schedule_retry = true ) {
+		if ( ! self::is_enabled() || ! self::order_push_due( $order ) ) {
+			return (bool) $order->get_meta( self::META_ORDER_PUSHED_AT );
+		}
+		$order_id = $order->get_id();
+		$payload  = self::raw_payload( $order );
+		$identity = self::is_reorder( $order ) ? self::reorder_identity_payload( $order, $payload ) : $payload;
+
+		$body          = self::patient_request_body( $order, $identity, 'tc-order-' . $order_id );
+		$block         = self::order_block( $order );
+		$body['order'] = $block;
+
+		$response = self::request( 'POST', '/v1/patients', $body, self::patient_push_key( $order_id, $block ) );
+		if ( ! is_wp_error( $response ) && ! empty( $response['id'] ) ) {
+			return self::record_order_outcome( $order, $response['order'] ?? null );
+		}
+
+		$attempts = (int) $order->get_meta( self::META_ORDER_PUSH_ATTEMPTS ) + 1;
+		$order->update_meta_data( self::META_ORDER_PUSH_ATTEMPTS, $attempts );
+		$order->update_meta_data(
+			self::META_SYNC_LAST_ERROR,
+			is_wp_error( $response ) ? sanitize_text_field( $response->get_error_message() ) : self::no_patient_message( $response )
+		);
+		$order->save();
+		$order->add_order_note( sprintf( 'Sending the order to the prescribing platform failed (attempt %d of %d).', $attempts, self::MAX_ATTEMPTS ) );
+		TC_Log::warn( 'platform_order_push_failed', [
+			'order_id' => $order_id,
+			'attempt'  => $attempts,
+		] );
+		if ( $schedule_retry && $attempts < self::MAX_ATTEMPTS ) {
+			$delays = self::retry_delays();
+			$delay  = $delays[ $attempts - 1 ] ?? end( $delays );
+			wp_schedule_single_event( time() + $delay, self::RETRY_HOOK, [ $order_id ] );
+		}
+		return false;
+	}
+
+	/**
+	 * `wc_gateway_stripe_process_response`: fired by the Stripe extension
+	 * after every charge response (abstract-wc-stripe-payment-gateway.php,
+	 * 11.0.1 line 733), an authorisation included. When a first order's card
+	 * has just been held, the platform takes the order in now.
+	 */
+	public static function on_stripe_response( $response, $order ) {
+		if ( $order instanceof WC_Order ) {
+			self::maybe_push_held_order( $order->get_id() );
+		}
+	}
+
+	private static function maybe_push_held_order( $order_id ) {
+		if ( ! $order_id || ! self::is_enabled() ) {
+			return;
+		}
+		$order = wc_get_order( $order_id );
+		if ( ! $order instanceof WC_Order || ! TC_Review_Status::is_treatment_order( $order ) ) {
+			return;
+		}
+		// Held, not captured: a capture takes the order in through the
+		// payment message instead (send_payment), so it is pushed once.
+		if ( 'AUTHORISED' === self::hold_state( $order ) && self::order_push_due( $order ) ) {
+			self::push_order_block( $order );
+		}
 	}
 
 	/** Coerces a payload sub-array to the platform's `answers` shape (string|boolean|number values only). */
@@ -500,6 +845,9 @@ class TC_Platform_Sync {
 		// A manual push, or a previous retry that this scheduled event lost
 		// the race to, may already have succeeded.
 		if ( $order->get_meta( self::META_SYNCED_AT ) ) {
+			if ( self::order_push_due( $order ) ) {
+				self::push_order_block( $order );
+			}
 			return;
 		}
 		self::push( $order, self::raw_payload( $order ) );
@@ -516,7 +864,7 @@ class TC_Platform_Sync {
 		if ( ! self::is_enabled() || ! TC_Review_Status::is_treatment_order( $order ) ) {
 			return $actions;
 		}
-		if ( $order->get_meta( self::META_SYNCED_AT ) ) {
+		if ( $order->get_meta( self::META_SYNCED_AT ) && ! self::order_push_due( $order ) ) {
 			return $actions;
 		}
 
@@ -539,18 +887,18 @@ class TC_Platform_Sync {
 	// Three hooks, because the extension captures on three routes (checked
 	// against woocommerce-gateway-stripe 11.0.1):
 	//
-	//  1. `woocommerce_stripe_process_manual_capture` — the authorised card
+	//  1. `woocommerce_stripe_process_manual_capture`: the authorised card
 	//     captured when the order moves to processing (prescriber approval,
 	//     or staff processing an on-hold pay-link authorisation).
 	//     WC_Stripe_Order_Handler::capture_payment() fires it after storing
 	//     the captured flag, but ALSO when the capture failed, hence the
 	//     flag check in payment_skip_reason().
-	//  2. `woocommerce_payment_complete` — a charge captured outright at
+	//  2. `woocommerce_payment_complete`: a charge captured outright at
 	//     payment (automatic capture), or a capture made in the Stripe
 	//     dashboard arriving by `charge.captured` webhook. The extension
 	//     records the flag before calling payment_complete().
 	//  3. `woocommerce_order_status_processing` / `_completed` at priority
-	//     20, after the extension's own capture at 10 — a safety net if a
+	//     20, after the extension's own capture at 10, as a safety net if a
 	//     gateway version renames hook 1. Same flag check.
 	//
 	// One capture can trip several of these in one request; $payment_handled
@@ -571,7 +919,13 @@ class TC_Platform_Sync {
 	}
 
 	public static function on_payment_complete( $order_id ) {
-		self::on_payment_captured( absint( $order_id ) );
+		$order_id = absint( $order_id );
+		// Older gateway versions call payment_complete() for an authorisation
+		// too: take the held order in, never inside the platform's webhook.
+		if ( ! self::$in_platform_webhook ) {
+			self::maybe_push_held_order( $order_id );
+		}
+		self::on_payment_captured( $order_id );
 	}
 
 	public static function on_paid_status( $order_id ) {
@@ -750,6 +1104,16 @@ class TC_Platform_Sync {
 		}
 
 		self::record_payment_snapshot( $order );
+
+		// The payment is recorded against the platform's website order. A
+		// first order whose hold was never seen (an older gateway, or synced
+		// before this version) is taken in first; if that fails, the payment
+		// waits for the next retry rather than being refused with a 404.
+		if ( self::order_push_due( $order ) && ! self::push_order_block( $order, false ) ) {
+			self::record_payment_retryable_failure( $order, 'order not yet taken in by the platform' );
+			return;
+		}
+
 		$reference = (string) $order->get_meta( self::META_PAID_REFERENCE );
 		$body      = self::payment_request_body(
 			$order_id,

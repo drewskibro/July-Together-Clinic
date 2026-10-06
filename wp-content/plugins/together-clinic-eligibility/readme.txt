@@ -60,6 +60,7 @@ In WP admin: Products &rarr; All Products &rarr; Edit Wegovy/Mounjaro &rarr; Var
 
 = 2.5.0 =
 * Prescribing platform payment message: once the money for an order already sent to the platform is actually captured (prescriber approval capturing the card hold, or a pay-link payment being captured), POST `/v1/website-orders/payment` with the amount, time and Stripe reference. Never sent for a card authorisation alone, nor for an order the platform never received. Same settings, fail-closed notice and three-attempt WP-Cron retry as the patient push; idempotent; manual "Send payment to prescribing platform" order action. New `tests/platform-payment-smoke-test.php`.
+* Reorders reach the prescribing platform exactly like a first order (patient, order and pre-consultation). The patient push now carries the platform's `order` block (every reorder; a first order once its card is held), which the payment message needs to find the order. Reorder consents are the service consent only, from the ticked terms box (`reorder.js` now sends `termsAgreed`); GP consents are never sent as false for a reorder.
 
 = 2.4.0 =
 * Prescribing platform hand-off (CD-16 item 4): pushes the patient and their eligibility intake to Together Health's Prescribing & Consultation Platform once an awaiting-review order exists, and accepts its signed `prescription.issued` / `consultation.declined` webhook back to approve or reject the order. Fail-closed while unconfigured — see WooCommerce &rarr; Eligibility &rarr; Prescribing platform.
