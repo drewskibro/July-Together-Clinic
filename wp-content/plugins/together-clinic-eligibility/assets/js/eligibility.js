@@ -83,7 +83,7 @@
 	function bmiFrom(kg, cm) {
 		kg = parseFloat(kg || '0'); cm = parseFloat(cm || '0');
 		if (!kg || !cm) return 0;
-		return Math.round(kg / Math.pow(cm / 100, 2) * 10) / 10;
+		return kg / Math.pow(cm / 100, 2);
 	}
 
 	var PREV_MEDS = ['Wegovy', 'Ozempic', 'Saxenda', 'Rybelsus', 'Mounjaro', 'Alli', 'Mysimba', 'Other', 'I have never taken medication to lose weight'];
@@ -565,6 +565,7 @@
 		var weight = parseFloat(state.userData.weight || '0');
 		var bmi = weight / Math.pow(cm / 100, 2);
 		state.userData.bmi = bmi.toFixed(1);
+		state.userData.bmiRaw = bmi;
 
 		updateBMIDisplay();
 		pushScreen('8b');
@@ -599,7 +600,8 @@
 	}
 
 	function checkBMIEligibility() {
-		var bmi = parseFloat(state.userData.bmi || '0');
+		// Unrounded, to match the server (26.96 must not pass as 27.0).
+		var bmi = state.userData.bmiRaw || parseFloat(state.userData.bmi || '0');
 		// Starting treatment: licence threshold for every adult (27 is the
 		// floor; 27 to 29.9 also needs a qualifying condition, checked after
 		// the condition questions). Transfer: current BMI above 25.
@@ -624,7 +626,7 @@
 	// already on treatment.
 	function licenceCheckPasses() {
 		var u = state.userData;
-		var bmi = parseFloat(u.bmi || '0');
+		var bmi = u.bmiRaw || parseFloat(u.bmi || '0');
 		if (isTransfer()) {
 			var start = bmiFrom(u.startWeight, u.height);
 			if (!start || start < 27) return false;

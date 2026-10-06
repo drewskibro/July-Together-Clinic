@@ -166,7 +166,7 @@ get_header();
     <div class="max-w-3xl mx-auto space-y-4 ah-faq-accordion" data-stagger>
       <?php
       $default_faqs = array(
-          array( 'question' => 'How does Mounjaro work?', 'answer' => 'Mounjaro (tirzepatide) works by activating both GLP-1 and GIP receptors, which reduces appetite, slows digestion, and helps regulate blood sugar. This dual-action mechanism makes it one of the most effective weight loss treatments available.' ),
+          array( 'question' => 'How does Mounjaro work?', 'answer' => 'Mounjaro (tirzepatide) works by activating both GLP-1 and GIP receptors, which reduces appetite, slows digestion, and helps regulate blood sugar. ' ),
           array( 'question' => 'What are the common side effects?', 'answer' => 'The most common side effects are mild nausea, reduced appetite, and occasional digestive discomfort. Your prescriber will explain what to expect and how to manage them. Starting at a low dose and gradually increasing helps minimise side effects.' ),
           array( 'question' => 'What results can I expect?', 'answer' => 'Results vary from person to person, and your prescriber will review your progress each time you reorder.' ),
           array( 'question' => 'Can I take Mounjaro with other medications?', 'answer' => 'Your prescriber will review your full medical history and current medications before approving treatment. Mounjaro can interact with some medications, so it\'s important to disclose everything during your assessment.' ),

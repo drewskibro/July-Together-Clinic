@@ -32,7 +32,7 @@ get_header();
         <h1 class="text-5xl lg:text-6xl font-serif text-gray-900 mb-5 leading-[1.02] tracking-[-0.02em]"><?php echo esc_html( ah_field( 'wg_title', 'Wegovy' ) ); ?></h1>
 
         <p class="text-base md:text-lg text-gray-600 leading-relaxed mb-8 max-w-lg">
-          <?php echo esc_html( ah_field( 'wg_description', 'Wegovy (semaglutide) is a once-weekly injection specifically approved for weight management. Licensed by the Medicines and Healthcare products Regulatory Agency (MHRA) with proven cardiovascular benefits.' ) ); ?>
+          <?php echo esc_html( ah_field( 'wg_description', 'Wegovy (semaglutide) is a once-weekly injection specifically approved for weight management. Licensed by the Medicines and Healthcare products Regulatory Agency (MHRA).' ) ); ?>
         </p>
 
         <div class="space-y-3 mb-8">
@@ -40,7 +40,7 @@ get_header();
           $benefits = array(
               '<strong>Licensed in the UK</strong> for weight management',
               '<strong>Once-weekly injection</strong> — simple and convenient',
-              '<strong>Reduces cardiovascular risk by 20%</strong> in clinical studies',
+              '<strong>Reviewed by a UK pharmacist prescriber</strong> before any supply',
               '<strong>Tracked, discreet delivery</strong> with ongoing support',
           );
           $acf_benefits = ah_field( 'wg_benefits', '' );
@@ -143,7 +143,6 @@ get_header();
       <?php
       $default_faqs = array(
           array( 'question' => 'How does Wegovy work?', 'answer' => 'Wegovy (semaglutide) mimics a naturally occurring hormone called Glucagon-Like Peptide-1 (GLP-1) that targets areas of the brain involved in appetite regulation. It reduces hunger, slows digestion, and helps you feel satisfied with less food.' ),
-          array( 'question' => 'What are the cardiovascular benefits?', 'answer' => 'Clinical studies show Wegovy reduces cardiovascular risk by 20%. It can lower blood pressure, improve cholesterol levels, and reduce inflammation — benefits that go beyond weight loss alone.' ),
           array( 'question' => 'What side effects should I expect?', 'answer' => 'Common side effects include mild nausea, reduced appetite, and occasional digestive discomfort. Your prescriber will explain what to expect and how to manage them. The gradual dosing schedule helps minimise side effects.' ),
           array( 'question' => 'How long do I need to take Wegovy?', 'answer' => 'Wegovy is designed as an ongoing treatment. Clinical evidence shows weight management is most effective with continued use. Your prescriber will work with you on a long-term plan.' ),
       );
