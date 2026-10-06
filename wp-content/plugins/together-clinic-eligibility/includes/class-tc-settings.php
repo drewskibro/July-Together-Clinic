@@ -39,8 +39,6 @@ class TC_Settings {
 			'tc_eligibility_calendly_new',
 			'tc_eligibility_calendly_switching',
 			'tc_eligibility_calendly_returning',
-			'tc_eligibility_min_bmi_default',
-			'tc_eligibility_min_bmi_south_asian',
 			'tc_eligibility_retention_days',
 			TC_Variation_Map::OPTION_KEY,
 		];
@@ -201,16 +199,7 @@ class TC_Settings {
 				</table>
 
 				<h2>Eligibility thresholds</h2>
-				<table class="form-table">
-					<tr>
-						<th><label for="tc_eligibility_min_bmi_default">Minimum BMI (default)</label></th>
-						<td><input type="number" step="0.1" name="tc_eligibility_min_bmi_default" id="tc_eligibility_min_bmi_default" value="<?php echo esc_attr( get_option( 'tc_eligibility_min_bmi_default', 27 ) ); ?>" /></td>
-					</tr>
-					<tr>
-						<th><label for="tc_eligibility_min_bmi_south_asian">Minimum BMI (South Asian)</label></th>
-						<td><input type="number" step="0.1" name="tc_eligibility_min_bmi_south_asian" id="tc_eligibility_min_bmi_south_asian" value="<?php echo esc_attr( get_option( 'tc_eligibility_min_bmi_south_asian', 23 ) ); ?>" /></td>
-					</tr>
-				</table>
+				<p>Thresholds are fixed in code by the clinical rules (<?php echo esc_html( TC_Eligibility_Rules::RULES_VERSION ); ?>, AT Health IP-FRM-01 section 3A) and are no longer editable here: starting BMI 30, or 27 to 29.9 with a weight-related condition, for every adult. Changes go through the Superintendent Pharmacist.</p>
 
 				<h2>Data retention</h2>
 				<table class="form-table">

@@ -177,6 +177,16 @@ class TC_Change_Treatment {
 		// submission would (no patient re-confirmation; they already have theirs).
 		if ( class_exists( 'TC_Eligibility_Rules' ) && class_exists( 'TC_Emails' ) ) {
 			$eligibility = TC_Eligibility_Rules::evaluate( $payload );
+			if ( empty( $payload['rulesVersion'] ) ) {
+				// Assessed before rules WM-2026-10-v1: it lacks the new consents,
+				// so a re-run would wrongly read as ineligible. Pass it through
+				// and tell the prescriber to re-screen at consultation.
+				$eligibility = [
+					'eligible' => true,
+					'reason'   => '',
+					'flags'    => [ 'legacy_assessment' => 'Assessment completed before rules WM-2026-10-v1: re-screen all criteria at the video consultation.' ],
+				];
+			}
 			TC_Emails::send_clinician_notification( $payload, $assessment_id, $eligibility, $new_order->get_id() );
 		}
 

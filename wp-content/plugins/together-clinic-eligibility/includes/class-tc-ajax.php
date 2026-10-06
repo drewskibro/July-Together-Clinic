@@ -103,18 +103,24 @@ class TC_Ajax {
 
 			$payload['selectedDose'] = $supplied;
 		}
-		if ( $payload['userType'] === 'switching' && $payload['selectedTreatment'] ) {
+		$switch_days = ( $payload['userType'] === 'switching' ) ? TC_Eligibility_Rules::days_since( $payload['lastDoseDate'] ) : null;
+		if ( $payload['userType'] === 'switching' && $switch_days !== null && $switch_days > 91 && $payload['selectedTreatment'] ) {
+			// Off treatment for more than 3 months: starts at the first step.
+			$payload['selectedDose'] = TC_Dose_Ladder::nearest_available( $payload['selectedTreatment'], TC_Dose_Ladder::starter( $payload['selectedTreatment'] ) ) ?: TC_Dose_Ladder::starter( $payload['selectedTreatment'] );
+		} elseif ( $payload['userType'] === 'switching' && $payload['selectedTreatment'] ) {
+			$days     = $switch_days;
 			$proposal = TC_Dose_Ladder::propose_start_dose(
 				$payload['currentMedication'],
 				$payload['currentDose'],
-				$payload['selectedTreatment']
+				$payload['selectedTreatment'],
+				$days
 			);
 
-			// Propose, never block: if the matrix dose has no purchasable
+			// Propose, never block: if the proposed dose has no purchasable
 			// product, degrade to the nearest available rung and flag it —
 			// the prescriber can adjust the line item before approval.
-			$supplied  = $proposal['dose'];
-			$available = TC_Dose_Ladder::nearest_available( $payload['selectedTreatment'], $supplied );
+			$supplied      = $proposal['dose'];
+			$available     = TC_Dose_Ladder::nearest_available( $payload['selectedTreatment'], $supplied );
 			$fallback_note = '';
 			if ( $available && $available !== $supplied ) {
 				$fallback_note = sprintf( ' Intended %s is not purchasable in the catalogue; supplied %s instead — adjust before approval.', $supplied, $available );
@@ -122,27 +128,29 @@ class TC_Ajax {
 			}
 			$payload['selectedDose'] = $supplied;
 
-			if ( $proposal['rule'] === 'same_drug_continue' ) {
-				$review_flags['switch_proposed'] = sprintf(
-					'Same-medication provider switch: continuing at declared %s %s.%s',
-					TC_Variation_Map::treatment_label( $payload['selectedTreatment'] ),
-					$proposal['dose'],
-					$fallback_note
-				);
-			} else {
-				$review_flags['switch_proposed'] = sprintf(
-					'Switching from %s %s: supplied %s %s%s. Confirm or adjust the dose before approval.%s',
-					( TC_Variation_Map::treatment_label( $payload['currentMedication'] ) ?: 'unknown medication' ),
-					$payload['currentDose'] ?: '(dose not recognised)',
-					TC_Variation_Map::treatment_label( $payload['selectedTreatment'] ),
-					$proposal['dose'],
-					$proposal['range'] ? ' (matrix range ' . $proposal['range'] . ')' : '',
-					$fallback_note
-				);
-			}
+			$review_flags['switch_proposed'] = sprintf(
+				'Previously on %s %s; proposed %s %s. %s%s',
+				( TC_Variation_Map::treatment_label( $payload['currentMedication'] ) ?: 'another medicine' ),
+				$payload['currentDose'] ?: '(dose not given)',
+				TC_Variation_Map::treatment_label( $payload['selectedTreatment'] ),
+				$proposal['dose'],
+				TC_Dose_Ladder::explain_rule( $proposal['rule'], $days ),
+				$fallback_note
+			);
 		}
 
 		$eligibility = TC_Eligibility_Rules::evaluate( $payload );
+
+		// The server-calculated BMI is the one recorded and shown to staff.
+		if ( ! empty( $eligibility['bmi'] ) ) {
+			$payload['bmi'] = $eligibility['bmi'];
+		}
+		$payload['startBmi']     = $eligibility['start_bmi'] ?? 0;
+		$payload['rulesVersion'] = $eligibility['rules_version'] ?? TC_Eligibility_Rules::RULES_VERSION;
+		if ( ! empty( $eligibility['flags'] ) ) {
+			$review_flags = array_merge( $eligibility['flags'], $review_flags );
+		}
+		$payload['clinicalFlags'] = $review_flags;
 
 		TC_DB::update_complete( $assessment_id, $payload, $eligibility );
 
@@ -400,6 +408,15 @@ class TC_Ajax {
 		$p['selectedTreatment']   = TC_Variation_Map::normalize_treatment( $p['selectedTreatment'] ?? '' );
 		$p['selectedDose']        = TC_Variation_Map::normalize_dose( $p['selectedDose'] ?? '' );
 		$p['termsAgreed']         = ! empty( $p['termsAgreed'] );
+		// Rules WM-2026-10-v1 fields.
+		$p['startWeightKg']        = (float) ( $p['startWeightKg'] ?? 0 );
+		$p['lastDoseDate']         = preg_match( '/^\d{4}-\d{2}-\d{2}$/', (string) ( $p['lastDoseDate'] ?? '' ) ) ? (string) $p['lastDoseDate'] : '';
+		$p['couldConceive']        = in_array( $p['couldConceive'] ?? '', [ 'yes', 'no' ], true ) ? $p['couldConceive'] : '';
+		$p['contraception']        = in_array( $p['contraception'] ?? '', [ 'pill', 'lng-iud', 'barrier', 'none', 'other' ], true ) ? $p['contraception'] : '';
+		$p['consentContraception'] = ! empty( $p['consentContraception'] );
+		$p['consentIdVideo']       = ! empty( $p['consentIdVideo'] );
+		$p['consentLifestyle']     = ! empty( $p['consentLifestyle'] );
+		$p['currentMeds']          = in_array( $p['currentMeds'] ?? '', [ 'yes', 'none' ], true ) ? $p['currentMeds'] : sanitize_text_field( $p['currentMeds'] ?? '' );
 
 		return $p;
 	}

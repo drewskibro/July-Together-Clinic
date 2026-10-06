@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $is_eligible = ! empty( $eligibility['eligible'] );
 $bmi         = (float) ( $payload['bmi'] ?? 0 );
 $bmi_warn    = $bmi > 0 && ( $bmi < 27 || $bmi > 50 );
+$tc_flags    = (array) ( $payload['clinicalFlags'] ?? ( $eligibility['flags'] ?? [] ) );
 ?>
 
 <div style="background: <?php echo $is_eligible ? '#dcfce7' : '#fee2e2'; ?>; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px;">
@@ -19,6 +20,21 @@ $bmi_warn    = $bmi > 0 && ( $bmi < 27 || $bmi > 50 );
 		<div style="margin-top: 4px; font-size: 13px;">Reason: <?php echo esc_html( $eligibility['reason'] ); ?></div>
 	<?php endif; ?>
 </div>
+
+<?php if ( $is_eligible ) : ?>
+	<p style="background:#eef2ff;padding:12px;border-left:4px solid #6366f1;font-size:13px;">
+		<strong>Triage only.</strong> The questionnaire does not decide treatment. Before prescribing: photo ID check, video consultation, NHS Summary Care Record check, and independently verified weight and height (IP-SOP-11 / IP-FRM-01 3A, rules <?php echo esc_html( $payload['rulesVersion'] ?? '' ); ?>).
+	</p>
+<?php endif; ?>
+
+<?php if ( $tc_flags ) : ?>
+	<h3>Prescriber flags</h3>
+	<ul style="font-size:13px;">
+		<?php foreach ( $tc_flags as $tc_flag ) : ?>
+			<li><?php echo esc_html( is_array( $tc_flag ) ? wp_json_encode( $tc_flag ) : (string) $tc_flag ); ?></li>
+		<?php endforeach; ?>
+	</ul>
+<?php endif; ?>
 
 <h3>Patient</h3>
 <table cellspacing="0" cellpadding="6" border="1" style="width: 100%; font-size: 13px; border-collapse: collapse;">
@@ -46,6 +62,8 @@ $bmi_warn    = $bmi > 0 && ( $bmi < 27 || $bmi > 50 );
 		<tr><th align="left">Previous provider</th><td><?php echo esc_html( ucwords( str_replace( '-', ' ', $payload['provider'] ?? '' ) ) ); ?></td></tr>
 		<tr><th align="left">Previous medication</th><td><?php echo esc_html( ucfirst( $payload['currentMedication'] ?? '' ) ); ?></td></tr>
 		<tr><th align="left">Previous dose</th><td><strong><?php echo esc_html( $payload['currentDose'] ?? '' ); ?></strong></td></tr>
+		<tr><th align="left">Date of last dose</th><td><?php echo esc_html( $payload['lastDoseDate'] ?? 'Not given' ); ?></td></tr>
+		<tr><th align="left">Weight when first started</th><td><?php echo esc_html( ! empty( $payload['startWeightKg'] ) ? number_format( (float) $payload['startWeightKg'], 1 ) . ' kg (BMI ' . number_format( (float) ( $payload['startBmi'] ?? 0 ), 1 ) . ', declared; proof required)' : 'Not given' ); ?></td></tr>
 	</table>
 <?php endif; ?>
 
@@ -70,6 +88,9 @@ $bmi_warn    = $bmi > 0 && ( $bmi < 27 || $bmi > 50 );
 		<tr><th align="left">Pregnant</th><td><?php echo esc_html( $payload['pregnant'] ?? 'Not asked' ); ?></td></tr>
 		<tr><th align="left">Breastfeeding</th><td><?php echo esc_html( $payload['breastfeeding'] ?? 'Not asked' ); ?></td></tr>
 		<tr><th align="left">Trying to conceive</th><td><?php echo esc_html( $payload['conceive'] ?? 'Not asked' ); ?></td></tr>
+		<tr><th align="left">Could become pregnant</th><td><?php echo esc_html( $payload['couldConceive'] ?? 'Not asked' ); ?></td></tr>
+		<tr><th align="left">Contraception</th><td><?php echo esc_html( $payload['contraception'] ?? 'Not asked' ); ?></td></tr>
+		<tr><th align="left">Agreed to use contraception</th><td><?php echo ! empty( $payload['consentContraception'] ) ? 'Yes' : 'No / not asked'; ?></td></tr>
 	</table>
 <?php endif; ?>
 
@@ -105,11 +126,19 @@ $bmi_warn    = $bmi > 0 && ( $bmi < 27 || $bmi > 50 );
 	<tr><th align="left">Allergies</th><td><?php echo nl2br( esc_html( $payload['allergiesList'] ?? ( $payload['allergies'] ?? 'None reported' ) ) ); ?></td></tr>
 </table>
 
+<h3 style="margin-top: 24px;">Consents</h3>
+<table cellspacing="0" cellpadding="6" border="1" style="width: 100%; font-size: 13px; border-collapse: collapse;">
+	<tr><th align="left">Photo ID and video consultation with weight and height check</th><td><?php echo ! empty( $payload['consentIdVideo'] ) ? 'Yes' : 'No'; ?></td></tr>
+	<tr><th align="left">Summary Care Record check</th><td><?php echo ! empty( $payload['gpConsentSCR'] ) ? 'Yes' : 'No'; ?></td></tr>
+	<tr style="<?php echo empty( $payload['gpConsentShare'] ) ? 'background:#fee2e2;' : ''; ?>"><th align="left">Share with GP</th><td><?php echo ! empty( $payload['gpConsentShare'] ) ? 'Yes' : 'NO (red flag)'; ?></td></tr>
+	<tr><th align="left">Diet and activity commitment</th><td><?php echo ! empty( $payload['consentLifestyle'] ) ? 'Yes' : 'No'; ?></td></tr>
+</table>
+
 <?php if ( ! empty( $order_id ) ) : ?>
 	<?php $tc_review_order = wc_get_order( $order_id ); ?>
 	<?php if ( $tc_review_order ) : ?>
 		<p style="margin-top: 24px; background:#fef3c7; padding:12px; border-left:4px solid #f59e0b;">
-			<strong>Awaiting your review:</strong> order #<?php echo esc_html( $tc_review_order->get_order_number() ); ?> has been created and is held pending prescriber sign-off. No payment has been taken.
+			<strong>Awaiting your review:</strong> order #<?php echo esc_html( $tc_review_order->get_order_number() ); ?> has been created and is held pending prescriber sign-off. No payment has been captured.
 			<br><a href="<?php echo esc_url( $tc_review_order->get_edit_order_url() ); ?>">Review this order &rarr;</a>
 		</p>
 	<?php endif; ?>

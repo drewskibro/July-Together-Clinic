@@ -256,8 +256,7 @@ class TC_Eligibility_Plugin {
 			'cookieMaxAge'    => TC_Cookie_Store::COOKIE_LIFETIME,
 			'checkoutUrl'     => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : home_url( '/checkout/' ),
 			'homeUrl'         => home_url( '/' ),
-			'minBmiDefault'   => (float) get_option( 'tc_eligibility_min_bmi_default', 27 ),
-			'minBmiAsian'     => (float) get_option( 'tc_eligibility_min_bmi_south_asian', 23 ),
+			'rulesVersion'    => TC_Eligibility_Rules::RULES_VERSION,
 			'doseLadders'     => TC_Dose_Ladder::ladders(),
 			'assets'          => [
 				'wegovy'         => TC_ELIGIBILITY_URL . 'assets/img/wegovy.jpg',

@@ -26,6 +26,17 @@ class TC_Reorder_Rules {
 			return self::block( 'under_18', 'You must be at least 18 years old to use this service.' );
 		}
 
+		// Rules WM-2026-10-v1 (IP-FRM-01 3A.7): stop below BMI 20. Uses the
+		// height from the patient's eligibility assessment and the weight
+		// they report now. The prescriber reviews 20 to 22.9 at approval.
+		if ( class_exists( 'TC_DB' ) && class_exists( 'TC_Eligibility_Rules' ) ) {
+			$height = TC_DB::latest_height_for_user( get_current_user_id() );
+			$bmi    = TC_Eligibility_Rules::bmi( $payload['currentWeight'] ?? 0, $height );
+			if ( $bmi !== null && $bmi < 20 ) {
+				return self::block( 'bmi_floor', 'Based on your current weight, a clinician consultation is needed before any further treatment.' );
+			}
+		}
+
 		return [ 'ok' => true, 'reason' => '' ];
 	}
 

@@ -7,7 +7,7 @@ class TC_DB {
 
 	const TABLE = 'tc_eligibility_submissions';
 	const SCHEMA_VERSION_OPTION = 'tc_eligibility_db_version';
-	const SCHEMA_VERSION = '1.0.0';
+	const SCHEMA_VERSION = '1.1.0';
 
 	public static function table_name() {
 		global $wpdb;
@@ -69,6 +69,16 @@ class TC_DB {
 			selected_dose VARCHAR(20) NOT NULL DEFAULT '',
 			ineligible_reason TEXT NULL,
 			terms_agreed TINYINT(1) NOT NULL DEFAULT 0,
+			rules_version VARCHAR(30) NOT NULL DEFAULT '',
+			start_weight_kg DECIMAL(6,2) NOT NULL DEFAULT 0,
+			start_bmi DECIMAL(5,2) NOT NULL DEFAULT 0,
+			last_dose_date VARCHAR(20) NOT NULL DEFAULT '',
+			could_conceive VARCHAR(10) NOT NULL DEFAULT '',
+			contraception VARCHAR(20) NOT NULL DEFAULT '',
+			consent_contraception TINYINT(1) NOT NULL DEFAULT 0,
+			consent_id_video TINYINT(1) NOT NULL DEFAULT 0,
+			consent_lifestyle TINYINT(1) NOT NULL DEFAULT 0,
+			clinical_flags LONGTEXT NULL,
 			raw_payload LONGTEXT NULL,
 			ip_address VARCHAR(45) NOT NULL DEFAULT '',
 			user_agent VARCHAR(255) NOT NULL DEFAULT '',
@@ -163,6 +173,16 @@ class TC_DB {
 			'selected_dose'         => sanitize_text_field( $payload['selectedDose'] ?? '' ),
 			'ineligible_reason'     => $eligibility['eligible'] ? null : sanitize_text_field( $eligibility['reason'] ),
 			'terms_agreed'          => ! empty( $payload['termsAgreed'] ) ? 1 : 0,
+			'rules_version'         => sanitize_text_field( $payload['rulesVersion'] ?? '' ),
+			'start_weight_kg'       => (float) ( $payload['startWeightKg'] ?? 0 ),
+			'start_bmi'             => (float) ( $payload['startBmi'] ?? 0 ),
+			'last_dose_date'        => sanitize_text_field( $payload['lastDoseDate'] ?? '' ),
+			'could_conceive'        => sanitize_text_field( $payload['couldConceive'] ?? '' ),
+			'contraception'         => sanitize_text_field( $payload['contraception'] ?? '' ),
+			'consent_contraception' => ! empty( $payload['consentContraception'] ) ? 1 : 0,
+			'consent_id_video'      => ! empty( $payload['consentIdVideo'] ) ? 1 : 0,
+			'consent_lifestyle'     => ! empty( $payload['consentLifestyle'] ) ? 1 : 0,
+			'clinical_flags'        => wp_json_encode( $payload['clinicalFlags'] ?? [] ),
 			'raw_payload'           => wp_json_encode( $payload ),
 		];
 
@@ -192,6 +212,24 @@ class TC_DB {
 		return $wpdb->get_row(
 			$wpdb->prepare( 'SELECT * FROM ' . self::table_name() . ' WHERE assessment_id = %s', $assessment_id ),
 			ARRAY_A
+		);
+	}
+
+	/**
+	 * Most recent recorded height for a patient, from their eligibility
+	 * assessments. Used by the reorder BMI floor (rules WM-2026-10-v1).
+	 */
+	public static function latest_height_for_user( $user_id ) {
+		global $wpdb;
+		$user_id = (int) $user_id;
+		if ( $user_id <= 0 ) {
+			return 0.0;
+		}
+		return (float) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT height_cm FROM ' . self::table_name() . ' WHERE user_id = %d AND height_cm > 0 ORDER BY created_at DESC LIMIT 1',
+				$user_id
+			)
 		);
 	}
 

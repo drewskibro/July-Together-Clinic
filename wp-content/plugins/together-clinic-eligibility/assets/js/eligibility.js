@@ -23,6 +23,8 @@
 		ineligibleReason: ''
 	};
 
+	// Rules WM-2026-10-v1 (AT Health IP-FRM-01 3A). Mirrors
+	// TC_Eligibility_Rules on the server, which always has the final say.
 	var SERIOUS_CONDITIONS = [
 		'I have chronic malabsorption syndrome',
 		'I have cholestasis',
@@ -30,37 +32,59 @@
 		'I have diabetic retinopathy',
 		'I have severe heart failure',
 		"I have a family history of thyroid cancer and/or I've had thyroid cancer",
-		'I have end-stage kidney disease',
+		'I have severe kidney disease or kidney failure',
+		'I have severe liver disease (for example cirrhosis)',
+		'I have severe stomach or bowel problems, including gastroparesis (very slow stomach emptying)',
 		'I have Multiple endocrine neoplasia type 2 (MEN2)',
 		'I have a history of pancreatitis',
 		'I have or have had an eating disorder',
 		'I have had surgery or an operation to my thyroid',
+		'My weight gain is caused by a hormone condition or by a medicine I take',
 		'I have had a bariatric operation',
 		'None of these apply'
 	];
 
-	var DISQUALIFYING_CONDITIONS = SERIOUS_CONDITIONS.slice(0, 11).filter(function (c) {
-		return c.indexOf('bariatric') === -1;
+	var DISQUALIFYING_CONDITIONS = SERIOUS_CONDITIONS.filter(function (c) {
+		return c.indexOf('bariatric') === -1 && c !== 'None of these apply';
 	});
 
 	var WEIGHT_CONDITIONS = [
-		'I have been diagnosed with a mental health condition such as depression or anxiety',
-		'My weight makes me anxious in social situations',
-		'I have joint pains and/or aches',
-		'I have osteoarthritis',
-		'I have GORD and/or indigestion',
-		'I have a heart/cardiovascular problem',
 		"I've been diagnosed with high blood pressure",
 		"I've been diagnosed with high cholesterol",
-		'I have fatty liver disease',
 		'I have sleep apnoea',
-		'I have asthma or COPD',
+		'I have a heart or circulation problem (for example heart disease, angina or a previous stroke)',
+		'I have osteoarthritis',
+		'I have polycystic ovary syndrome (PCOS)',
+		'I have fatty liver disease',
+		'I have COPD',
+		'I have asthma',
+		'I have been diagnosed with a mental health condition such as depression or anxiety',
+		'I have joint pains and/or aches',
+		'I have GORD and/or indigestion',
 		'I have erectile dysfunction',
 		'I have low testosterone',
 		'I have menopausal symptoms',
-		'I have polycystic ovary syndrome (PCOS)',
 		'None of these apply'
 	];
+
+	var COMORBIDITY_NEEDLES = ['high blood pressure', 'high cholesterol', 'sleep apnoea', 'heart or circulation', 'osteoarthritis', 'polycystic', 'fatty liver', 'copd'];
+	var DIABETES_QUALIFYING = ['type2-meds', 'type2-diet', 'pre'];
+	var NOT_LICENSED = 'Based on your answers, the weight loss medicines we offer are not licensed for you at the moment. Please speak with your GP, who can discuss other support.';
+
+	function hasQualifyingCondition() {
+		var u = state.userData;
+		if (DIABETES_QUALIFYING.indexOf(u.diabetes || '') !== -1) return true;
+		return (u.weightConditions || []).some(function (c) {
+			var l = c.toLowerCase();
+			return COMORBIDITY_NEEDLES.some(function (n) { return l.indexOf(n) !== -1; });
+		});
+	}
+
+	function bmiFrom(kg, cm) {
+		kg = parseFloat(kg || '0'); cm = parseFloat(cm || '0');
+		if (!kg || !cm) return 0;
+		return Math.round(kg / Math.pow(cm / 100, 2) * 10) / 10;
+	}
 
 	var PREV_MEDS = ['Wegovy', 'Ozempic', 'Saxenda', 'Rybelsus', 'Mounjaro', 'Alli', 'Mysimba', 'Other', 'I have never taken medication to lose weight'];
 
@@ -217,6 +241,13 @@
 			gpPostcode: (($('gp-postcode') || {}).value) || '',
 			gpConsentShare: $('gp-consent-1') && $('gp-consent-1').checked,
 			gpConsentSCR: $('gp-consent-2') && $('gp-consent-2').checked,
+			consentIdVideo: $('consent-id-video') && $('consent-id-video').checked,
+			consentLifestyle: $('consent-lifestyle') && $('consent-lifestyle').checked,
+			startWeightKg: parseFloat(u.startWeight || '0') || 0,
+			lastDoseDate: u.lastDoseDate || '',
+			couldConceive: u.couldConceive || '',
+			contraception: u.contraception || '',
+			consentContraception: !!u.consentContraception,
 			selectedTreatment: state.selectedTreatment,
 			selectedWegovyDose: state.selectedWegovyDose,
 			selectedMounjaroDose: state.selectedMounjaroDose,
@@ -352,6 +383,11 @@
 
 	function setCurrentMedication(med) {
 		state.userData.currentMedication = med;
+		if (med === 'other') {
+			state.userData.currentDose = '';
+			pushScreen('3c');
+			return;
+		}
 		populateDoseOptions();
 		pushScreen('3b');
 	}
@@ -384,6 +420,39 @@
 
 	function setCurrentDose(value) {
 		state.userData.currentDose = value;
+		pushScreen('3c');
+	}
+
+	function saveCurrentTreatment() {
+		var err = $('current-treatment-error');
+		var d = parseInt((($('last-dose-day') || {}).value || '').trim(), 10);
+		var m = parseInt((($('last-dose-month') || {}).value || '').trim(), 10);
+		var y = parseInt((($('last-dose-year') || {}).value || '').trim(), 10);
+		var iso = (y && m && d) ? (y + '-' + (m < 10 ? '0' + m : m) + '-' + (d < 10 ? '0' + d : d)) : '';
+		var dt = iso ? new Date(iso + 'T00:00:00') : null;
+		var today = new Date(); today.setHours(0, 0, 0, 0);
+		if (!dt || isNaN(dt.getTime()) || dt.getDate() !== d || (dt.getMonth() + 1) !== m || dt > today || (today - dt) / 86400000 > 1826) {
+			err.textContent = 'Please enter a valid date for your last dose';
+			err.style.display = 'block';
+			return;
+		}
+		var unit = (root().querySelector('input[name="start-weight-unit"]:checked') || {}).value || 'kg';
+		var kg = 0;
+		if (unit === 'kg') {
+			kg = parseFloat(($('start-weight-kg') || {}).value);
+		} else {
+			var st = parseInt(($('start-weight-stone') || {}).value, 10) || 0;
+			var lb = parseInt(($('start-weight-pounds') || {}).value, 10) || 0;
+			kg = (st * 14 + lb) * 0.453592;
+		}
+		if (!kg || isNaN(kg) || kg < 40 || kg > 300) {
+			err.textContent = 'Please enter your weight when you first started (40-300 kg)';
+			err.style.display = 'block';
+			return;
+		}
+		err.style.display = 'none';
+		state.userData.lastDoseDate = iso;
+		state.userData.startWeight = kg.toFixed(1);
 		pushScreen(4);
 	}
 
@@ -515,22 +584,27 @@
 
 		if ($('bmi-category')) $('bmi-category').textContent = category;
 
-		var isAsian = (state.userData.ethnicity || '').indexOf('asian') !== -1;
-		var min = isAsian ? (cfg.minBmiAsian || 23) : (cfg.minBmiDefault || 27);
 		var msg = $('bmi-message');
 		if (msg) {
-			msg.textContent = bmi >= min
-				? 'Great news — based on your BMI, you may be eligible for clinically-supported weight loss treatment.'
-				: 'Our clinical team will review your full profile to determine the most appropriate next steps for you.';
+			msg.textContent = 'This is based on the weight and height you entered. Your prescriber will check your weight and height on a video call before any treatment.';
 		}
+	}
+
+	// Transfer rules apply only when the last dose was within 3 months.
+	function isTransfer() {
+		var u = state.userData;
+		if (u.userType !== 'switching' || !u.lastDoseDate) return false;
+		var days = (new Date().setHours(0, 0, 0, 0) - new Date(u.lastDoseDate + 'T00:00:00')) / 86400000;
+		return days <= 91;
 	}
 
 	function checkBMIEligibility() {
 		var bmi = parseFloat(state.userData.bmi || '0');
-		var isAsian = (state.userData.ethnicity || '').indexOf('asian') !== -1;
-		var min = isAsian ? (cfg.minBmiAsian || 23) : (cfg.minBmiDefault || 27);
-		if (bmi < min) {
-			showIneligible('Based on your BMI of ' + state.userData.bmi + ', weight loss medication is not clinically appropriate at this time. A BMI of ' + min + ' or above is required' + (isAsian ? ' (adjusted for South Asian ethnicity)' : '') + '.');
+		// Starting treatment: licence threshold for every adult (27 is the
+		// floor; 27 to 29.9 also needs a qualifying condition, checked after
+		// the condition questions). Transfer: current BMI above 25.
+		if (!bmi || (isTransfer() ? bmi <= 25 : bmi < 27)) {
+			showIneligible(NOT_LICENSED);
 		} else {
 			pushScreen(9);
 		}
@@ -538,7 +612,25 @@
 
 	function setDiabetes(value) {
 		state.userData.diabetes = value;
+		if (value === 'type1') {
+			showIneligible('Based on your answers, our online weight loss service is not suitable for you. Please speak with your GP or diabetes team about the options available to you.');
+			return;
+		}
 		nextScreen();
+	}
+
+	// After the condition questions: apply the BMI 27 to 29.9 rule for
+	// patients starting treatment, and the starting-BMI rule for patients
+	// already on treatment.
+	function licenceCheckPasses() {
+		var u = state.userData;
+		var bmi = parseFloat(u.bmi || '0');
+		if (isTransfer()) {
+			var start = bmiFrom(u.startWeight, u.height);
+			if (!start || start < 27) return false;
+			return start >= 30 || hasQualifyingCondition();
+		}
+		return bmi >= 30 || (bmi >= 27 && hasQualifyingCondition());
 	}
 
 	function proceedConditions() {
@@ -611,6 +703,11 @@
 
 		var hasMentalHealth = values.some(function (v) { return v.toLowerCase().indexOf('mental health') !== -1; });
 
+		if (!licenceCheckPasses()) {
+			showIneligible(NOT_LICENSED);
+			return;
+		}
+
 		if (hasMentalHealth) {
 			pushScreen('11a');
 		} else {
@@ -677,14 +774,74 @@
 		showPrevWeightQuestion();
 	}
 
-	function setCurrentMeds(value) {
+	function setCurrentMedsChoice(value) {
 		state.userData.currentMeds = value;
-		nextScreen();
+		if (value === 'yes') {
+			pushScreen('14a');
+		} else {
+			var list = $('medication-list');
+			if (list) list.value = '';
+			pushScreen(15);
+		}
 	}
 
-	function setCurrentMedsOther() {
-		state.userData.currentMeds = 'other';
-		pushScreen('14a');
+	function saveMedicationList() {
+		var list = (($('medication-list') || {}).value || '').trim();
+		var err = $('medication-list-error');
+		if (list.length < 3) {
+			err.textContent = 'Please list your medicines, or go back and choose No';
+			err.style.display = 'block';
+			return;
+		}
+		err.style.display = 'none';
+		pushScreen(15);
+	}
+
+	function setCouldConceive(answer) {
+		state.userData.couldConceive = answer;
+		var section = $('contraception-section');
+		if (answer === 'yes') {
+			if (section) section.style.display = 'block';
+		} else {
+			if (section) section.style.display = 'none';
+			state.userData.contraception = '';
+			state.userData.consentContraception = false;
+			pushScreen(16);
+		}
+	}
+
+	function saveContraception() {
+		var choice = root().querySelector('input[name="contraception"]:checked');
+		var agreed = $('consent-contraception') && $('consent-contraception').checked;
+		var err = $('contraception-error');
+		if (!choice) {
+			err.textContent = 'Please tell us which contraception you use';
+			err.style.display = 'block';
+			return;
+		}
+		if (!agreed) {
+			err.textContent = 'These medicines can only be prescribed if you agree to use effective contraception during treatment';
+			err.style.display = 'block';
+			return;
+		}
+		err.style.display = 'none';
+		state.userData.contraception = choice.value;
+		state.userData.consentContraception = true;
+		pushScreen(16);
+	}
+
+	function saveConsents() {
+		var err = $('consent-error');
+		var ok = ['consent-id-video', 'gp-consent-2', 'consent-lifestyle'].every(function (id) {
+			return $(id) && $(id).checked;
+		});
+		if (!ok) {
+			err.textContent = 'Please tick the three required boxes. We cannot prescribe without them.';
+			err.style.display = 'block';
+			return;
+		}
+		err.style.display = 'none';
+		nextScreen();
 	}
 
 	function setAllergies(answer) {
@@ -704,15 +861,6 @@
 		if (state.userData.sex === 'female') {
 			pushScreen('15b');
 		} else {
-			pushScreen(16);
-		}
-	}
-
-	function setPregnancyGate(answer) {
-		if (answer === 'yes') {
-			showIneligible('For safety reasons, weight loss medications cannot be prescribed during pregnancy, when planning to become pregnant, or while breastfeeding.');
-		} else {
-			state.userData.pregnant = 'no';
 			pushScreen(16);
 		}
 	}
@@ -968,10 +1116,14 @@
 			case 'proceed-prev-meds': proceedPrevMeds(); break;
 			case 'skip-prev-weight': skipPrevWeight(); break;
 			case 'save-prev-weight': savePrevWeight(); break;
-			case 'set-current-meds-other': setCurrentMedsOther(); break;
+			case 'set-current-meds-choice': setCurrentMedsChoice(value); break;
+			case 'save-medication-list': saveMedicationList(); break;
+			case 'save-current-treatment': saveCurrentTreatment(); break;
+			case 'set-could-conceive': setCouldConceive(value); break;
+			case 'save-contraception': saveContraception(); break;
+			case 'save-consents': saveConsents(); break;
 			case 'set-allergies': setAllergies(value); break;
 			case 'continue-allergies': continueAllergies(); break;
-			case 'set-pregnancy-gate': setPregnancyGate(value); break;
 			case 'set-goal-weight-q': setGoalWeightQ(value); break;
 			case 'save-dob': saveDOB(); break;
 			case 'save-address': saveAddress(); break;
@@ -990,7 +1142,6 @@
 		else if (action === 'set-provider' && t.checked) setProvider(t.value);
 		else if (action === 'set-diabetes' && t.checked) setDiabetes(t.value);
 		else if (action === 'set-current-dose' && t.checked) setCurrentDose(t.value);
-		else if (action === 'set-current-meds' && t.checked) setCurrentMeds(t.value);
 
 		if (t.name === 'pregnant' || t.name === 'breastfeeding' || t.name === 'conceive') {
 			updateFemaleScreeningButton();
@@ -998,6 +1149,13 @@
 
 		if (t.name === 'weight-unit' || t.name === 'height-unit') {
 			toggleUnitInputs();
+		}
+
+		if (t.name === 'start-weight-unit') {
+			var kgIn = $('start-weight-kg');
+			var stIn = $('start-weight-st-inputs');
+			if (kgIn) kgIn.style.display = t.value === 'kg' ? 'block' : 'none';
+			if (stIn) stIn.style.display = t.value === 'st' ? 'flex' : 'none';
 		}
 	}
 
