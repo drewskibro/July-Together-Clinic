@@ -233,7 +233,11 @@ check( 'works with a PaymentIntent reference too',
 echo "\n== retry classification by status code ==\n";
 check( '200 is ok (recorded or already recorded)', TC_Platform_Sync::classify_payment_status( 200 ) === 'ok' );
 check( '201 is ok', TC_Platform_Sync::classify_payment_status( 201 ) === 'ok' );
-check( '404 (unknown order) is permanent', TC_Platform_Sync::classify_payment_status( 404 ) === 'permanent' );
+check( '404 WEBSITE_ORDER_NOT_FOUND (unknown order) is permanent',
+	TC_Platform_Sync::classify_payment_status( 404, 'WEBSITE_ORDER_NOT_FOUND' ) === 'permanent' );
+check( '404 NOT_FOUND (route not deployed on the platform yet) retries',
+	TC_Platform_Sync::classify_payment_status( 404, 'NOT_FOUND' ) === 'retry' );
+check( '404 with no problem-detail body at all retries', TC_Platform_Sync::classify_payment_status( 404 ) === 'retry' );
 check( '409 (cancelled/declined) is permanent', TC_Platform_Sync::classify_payment_status( 409 ) === 'permanent' );
 check( '400 is permanent', TC_Platform_Sync::classify_payment_status( 400 ) === 'permanent' );
 check( '401 is permanent', TC_Platform_Sync::classify_payment_status( 401 ) === 'permanent' );
@@ -395,7 +399,8 @@ echo "\n== 404 / 409 / other 4xx: permanent, no retry ==\n";
 foreach ( [ 404 => 'does not recognise this order', 409 => 'cancelled or declined', 422 => 'rejected the payment message (HTTP 422)' ] as $code => $phrase ) {
 	reset_world();
 	make_order( 30 + $code );
-	$GLOBALS['tc_test']['responses'] = [ $code ];
+	$type = 404 === $code ? 'WEBSITE_ORDER_NOT_FOUND' : ( 409 === $code ? 'ORDER_CANCELLED' : 'VALIDATION_ERROR' );
+	$GLOBALS['tc_test']['responses'] = [ [ $code, [ 'type' => $type, 'title' => 'Refused.', 'status' => $code ] ] ];
 	TC_Platform_Sync::on_payment_complete( 30 + $code );
 	$o = wc_get_order( 30 + $code );
 	check( "$code: one request, no retry scheduled", count( requests() ) === 1 && count( scheduled() ) === 0 );
@@ -405,6 +410,16 @@ foreach ( [ 404 => 'does not recognise this order', 409 => 'cancelled or decline
 	check( "$code: not acknowledged", ! $o->get_meta( TC_Platform_Sync::META_PAID_SENT_AT ) );
 }
 
+echo "\n== 404 from a platform without the route yet: retried, payment not stranded ==\n";
+reset_world();
+make_order( 45 );
+$GLOBALS['tc_test']['responses'] = [ [ 404, [ 'type' => 'NOT_FOUND', 'title' => 'Cannot POST /v1/website-orders/payment', 'status' => 404 ] ] ];
+TC_Platform_Sync::on_payment_complete( 45 );
+check( 'a route-missing 404 schedules the normal retry', count( scheduled() ) === 1 && scheduled()[0]['hook'] === TC_Platform_Sync::PAYMENT_HOOK && scheduled()[0]['delay'] === 300 );
+check( 'no permanent-failure log', count( logs_named( 'platform_payment_failed_permanent' ) ) === 0 );
+TC_Platform_Sync::run_payment_retry( 45 );
+check( 'once the platform deploys the route, the retry records the payment', (bool) wc_get_order( 45 )->get_meta( TC_Platform_Sync::META_PAID_SENT_AT ) );
+
 echo "\n== non-GBP order: never relabelled as GBP ==\n";
 reset_world();
 $eur = make_order( 40 );
@@ -412,6 +427,7 @@ $eur->currency = 'EUR';
 TC_Platform_Sync::on_payment_complete( 40 );
 check( 'nothing sent', count( requests() ) === 0 );
 check( 'permanent-failure note and warning', count( logs_named( 'platform_payment_failed_permanent' ) ) === 1 );
+
 
 echo "\n== no health information in logs ==\n";
 // patient_id is the platform's own record id, which PR #68's platform_sync_ok already logs.
@@ -638,6 +654,188 @@ TC_Platform_Sync::on_order_created( $ro, $reorder_payload );
 check( 'no pre-consultation sent without a patient', count( requests() ) === 1 );
 check( 'retry scheduled and the reason recorded without health data',
 	count( scheduled() ) === 1 && wc_get_order( 95 )->get_meta( TC_Platform_Sync::META_SYNC_LAST_ERROR ) === 'platform returned no patient (order UNCHANGED, PARKED)' );
+
+// ===========================================================================
+// Cancellation message: POST /v1/website-orders/cancellation
+// ===========================================================================
+
+/** Run every queued cancellation event once, as WP-Cron would. */
+function run_cancellation_queue() {
+	$queued = array_values( array_filter( scheduled(), function ( $e ) { return $e['hook'] === TC_Platform_Sync::CANCEL_HOOK; } ) );
+	$GLOBALS['tc_test']['scheduled'] = array_values( array_filter( scheduled(), function ( $e ) { return $e['hook'] !== TC_Platform_Sync::CANCEL_HOOK; } ) );
+	foreach ( $queued as $e ) {
+		TC_Platform_Sync::run_cancellation( $e['args'][0], $e['args'][1] );
+	}
+	return count( $queued );
+}
+function cancel_requests() {
+	return array_values( array_filter( requests(), function ( $r ) { return false !== strpos( $r['url'], '/v1/website-orders/cancellation' ); } ) );
+}
+
+echo "\n== cancellation: payload, key and reasons ==\n";
+$cb = TC_Platform_Sync::cancellation_request_body( 501, 'CANCELLED', '2026-10-06T10:00:00Z' );
+check( 'exactly the three contract keys', $cb === [ 'externalReference' => 'tc-order-501', 'reason' => 'CANCELLED', 'occurredAt' => '2026-10-06T10:00:00Z' ] );
+check( 'Idempotency-Key is tc-cancel-<id>-<reason>', TC_Platform_Sync::cancellation_idempotency_key( 501, 'REFUNDED' ) === 'tc-cancel-501-REFUNDED' );
+check( 'cancelled, refunded and failed map to their reasons; trash is a cancellation',
+	TC_Platform_Sync::cancellation_reason( 'cancelled' ) === 'CANCELLED' && TC_Platform_Sync::cancellation_reason( 'refunded' ) === 'REFUNDED'
+	&& TC_Platform_Sync::cancellation_reason( 'failed' ) === 'FAILED' && TC_Platform_Sync::cancellation_reason( 'trash' ) === 'CANCELLED' );
+check( 'any other status is not a cancellation',
+	null === TC_Platform_Sync::cancellation_reason( 'processing' ) && null === TC_Platform_Sync::cancellation_reason( 'pending' ) );
+
+echo "\n== cancellation: cancelled order on the platform is reported once ==\n";
+reset_world();
+$co = make_order( 100, 'no' );
+$co->status = 'cancelled';
+TC_Platform_Sync::on_status_changed( 100, 'awaiting-review', 'cancelled' );
+check( 'queued on WP-Cron, not sent inline', count( requests() ) === 0 && count( scheduled() ) === 1 && scheduled()[0]['args'] === [ 100, 'CANCELLED' ] );
+run_cancellation_queue();
+$r = cancel_requests();
+check( 'one POST to /v1/website-orders/cancellation', count( $r ) === 1 && $r[0]['url'] === 'https://prescribing-api.example.test/v1/website-orders/cancellation' );
+check( 'same Bearer API key', $r[0]['args']['headers']['Authorization'] === 'Bearer tk_test_harness_only' );
+check( 'Idempotency-Key tc-cancel-100-CANCELLED', $r[0]['args']['headers']['Idempotency-Key'] === 'tc-cancel-100-CANCELLED' );
+$cb = json_decode( $r[0]['args']['body'], true );
+check( 'body: tc-order-100, CANCELLED, ISO-8601 UTC occurredAt',
+	$cb['externalReference'] === 'tc-order-100' && $cb['reason'] === 'CANCELLED'
+	&& 1 === preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/', $cb['occurredAt'] ) && count( $cb ) === 3 );
+check( 'sent flag stored and an order note added',
+	(bool) $co->get_meta( TC_Platform_Sync::META_CANCEL_SENT_PREFIX . 'cancelled' ) && end( $co->notes ) === 'Prescribing platform told this order is cancelled.' );
+TC_Platform_Sync::on_status_changed( 100, 'pending', 'cancelled' );
+TC_Platform_Sync::on_trash_order( 100 );
+check( 'cancelled again, or trashed afterwards: nothing queued (once per reason)', count( scheduled() ) === 0 );
+
+echo "\n== cancellation: full refund, failed and trash ==\n";
+reset_world();
+$ref = make_order( 101 );
+$ref->status = 'refunded';
+TC_Platform_Sync::on_status_changed( 101, 'processing', 'refunded' );
+run_cancellation_queue();
+check( 'full refund (status refunded) sends REFUNDED', json_decode( cancel_requests()[0]['args']['body'], true )['reason'] === 'REFUNDED' );
+$ref->status = 'cancelled';
+TC_Platform_Sync::on_status_changed( 101, 'refunded', 'cancelled' );
+run_cancellation_queue();
+check( 'a different reason later is its own message', count( cancel_requests() ) === 2 && json_decode( cancel_requests()[1]['args']['body'], true )['reason'] === 'CANCELLED' );
+reset_world();
+$fa = make_order( 102, '' );
+$fa->status = 'failed';
+TC_Platform_Sync::on_status_changed( 102, 'pending', 'failed' );
+run_cancellation_queue();
+check( 'failed sends FAILED', json_decode( cancel_requests()[0]['args']['body'], true )['reason'] === 'FAILED' );
+reset_world();
+$tr = make_order( 103 );
+$tr->status = 'trash';
+TC_Platform_Sync::on_trash_order( 103 );
+run_cancellation_queue();
+check( 'trash sends CANCELLED', json_decode( cancel_requests()[0]['args']['body'], true )['reason'] === 'CANCELLED' );
+
+echo "\n== cancellation: partial refund sends nothing, adds a note ==\n";
+reset_world();
+$pr = make_order( 104 );
+$pr->status = 'processing';
+TC_Platform_Sync::on_partial_refund( 104 );
+check( 'nothing queued or sent', count( scheduled() ) === 0 && count( requests() ) === 0 );
+check( 'an order note says so', false !== strpos( end( $pr->notes ), 'Partial refund: nothing was sent to the prescribing platform' ) );
+
+echo "\n== cancellation: never for an order the platform never received ==\n";
+reset_world();
+$ns = make_first_order_raw( 105, $first_raw );
+$ns->status = 'cancelled';
+TC_Platform_Sync::on_status_changed( 105, 'awaiting-review', 'cancelled' );
+check( 'abandoned first order (never pushed): nothing queued', count( scheduled() ) === 0 && count( requests() ) === 0 );
+check( 'debug log only', logs_named( 'platform_cancellation_skipped' )[0][0] === 'debug' && logs_named( 'platform_cancellation_skipped' )[0][2]['reason'] === 'not_on_platform' );
+TC_Platform_Sync::on_partial_refund( 105 );
+check( 'no partial-refund note either', count( $ns->notes ) === 0 );
+reset_world();
+$nr = make_order( 106, 'yes', true, false );
+$nr->status = 'cancelled';
+TC_Platform_Sync::on_status_changed( 106, 'processing', 'cancelled' );
+check( 'not a review order: nothing queued', count( scheduled() ) === 0 );
+
+echo "\n== cancellation: the platform's own decline is never echoed back ==\n";
+reset_world();
+$dp = make_order( 107, 'no' );
+$dp->status = 'cancelled';
+$flag = new ReflectionProperty( 'TC_Platform_Sync', 'in_platform_webhook' );
+if ( PHP_VERSION_ID < 80100 ) { $flag->setAccessible( true ); }
+$flag->setValue( null, true );   // consultation.declined -> reject() -> cancelled, inside the webhook
+TC_Platform_Sync::on_status_changed( 107, 'awaiting-review', 'cancelled' );
+$flag->setValue( null, false );
+check( 'inside the platform webhook: nothing queued', count( scheduled() ) === 0 );
+$dp->meta['_tc_review_decision']   = 'rejected';
+$dp->meta['_tc_review_decided_by'] = 'Prescribing platform';
+TC_Platform_Sync::on_trash_order( 107 );
+TC_Platform_Sync::on_status_changed( 107, 'cancelled', 'cancelled' );
+check( 'later, the recorded platform rejection still stops it (e.g. the order is trashed)', count( scheduled() ) === 0 );
+reset_world();
+$wp = make_order( 108, 'no' );
+$wp->status = 'cancelled';
+$wp->meta['_tc_review_decision']   = 'rejected';
+$wp->meta['_tc_review_decided_by'] = 'Jane Pharmacist';
+TC_Platform_Sync::on_status_changed( 108, 'awaiting-review', 'cancelled' );
+run_cancellation_queue();
+check( 'a rejection by a WordPress prescriber IS reported', count( cancel_requests() ) === 1 );
+
+echo "\n== cancellation: a status that does not stick is not reported ==\n";
+reset_world();
+$gv = make_order( 109, 'no' );
+$gv->status = 'cancelled';
+TC_Platform_Sync::on_status_changed( 109, 'awaiting-review', 'cancelled' );
+$gv->status = 'awaiting-review';   // TC_Review_Status::guard_transition() reverts it
+run_cancellation_queue();
+check( 'guard-reverted cancel: nothing sent', count( cancel_requests() ) === 0 );
+$fc = make_order( 110, 'no' );
+$fc->status = 'failed';
+TC_Platform_Sync::on_status_changed( 110, 'processing', 'failed' );
+$fc->status = 'pending';           // approve(): failed capture falls back to the pay link
+run_cancellation_queue();
+check( 'failed capture that moved on to the pay link: nothing sent', count( cancel_requests() ) === 0 );
+$fc->status = 'failed';
+TC_Platform_Sync::on_status_changed( 110, 'pending', 'failed' );
+run_cancellation_queue();
+check( 'a later genuine failure is still reported', count( cancel_requests() ) === 1 );
+
+echo "\n== cancellation: responses ==\n";
+reset_world();
+$c404 = make_order( 111 );
+$c404->meta[ TC_Platform_Sync::META_ORDER_PUSHED_AT ] = '';
+$c404->status = 'cancelled';
+$GLOBALS['tc_test']['responses'] = [ [ 404, [ 'type' => 'WEBSITE_ORDER_NOT_FOUND', 'title' => 'No such order.', 'status' => 404 ] ] ];
+TC_Platform_Sync::on_status_changed( 111, 'awaiting-review', 'cancelled' );
+run_cancellation_queue();
+check( '404 unknown order: quiet (no note, no warning, no retry)',
+	count( $c404->notes ) === 0 && count( logs_named( 'platform_cancellation_failed_permanent' ) ) === 0 && count( scheduled() ) === 0 );
+check( '...and not tried again', $c404->get_meta( TC_Platform_Sync::META_CANCEL_SENT_PREFIX . 'cancelled' ) === 'not_on_platform' );
+
+reset_world();
+$c5 = make_order( 112 );
+$c5->status = 'cancelled';
+$GLOBALS['tc_test']['responses'] = [ 503, [ 404, [ 'type' => 'NOT_FOUND', 'title' => 'Cannot POST', 'status' => 404 ] ], 500 ];
+TC_Platform_Sync::on_status_changed( 112, 'processing', 'cancelled' );
+run_cancellation_queue();
+check( '503: retry in 5 minutes', count( scheduled() ) === 1 && scheduled()[0]['delay'] === 300 && scheduled()[0]['hook'] === TC_Platform_Sync::CANCEL_HOOK );
+run_cancellation_queue();
+check( 'route-missing 404: retry in 30 minutes', count( scheduled() ) === 1 && scheduled()[0]['delay'] === 1800 );
+run_cancellation_queue();
+check( '500 on the third attempt: stops, note and warning',
+	count( scheduled() ) === 0 && false !== strpos( end( $c5->notes ), 'failed 3 times and has stopped retrying' )
+	&& count( logs_named( 'platform_cancellation_failed_permanent' ) ) === 1 );
+check( 'all three with the same Idempotency-Key',
+	count( array_unique( array_map( function ( $r ) { return $r['args']['headers']['Idempotency-Key']; }, cancel_requests() ) ) ) === 1 );
+
+reset_world();
+$c4 = make_order( 113 );
+$c4->status = 'refunded';
+$GLOBALS['tc_test']['responses'] = [ [ 422, [ 'type' => 'VALIDATION_ERROR', 'title' => 'Invalid.', 'status' => 422 ] ] ];
+TC_Platform_Sync::on_status_changed( 113, 'processing', 'refunded' );
+run_cancellation_queue();
+check( 'other 4xx: permanent, note and warning, no retry',
+	count( scheduled() ) === 0 && false !== strpos( end( $c4->notes ), 'rejected the refunded message (HTTP 422)' )
+	&& logs_named( 'platform_cancellation_failed_permanent' )[0][2]['status'] === 422 );
+
+reset_world( false );
+$cd = make_order( 114 );
+$cd->status = 'cancelled';
+TC_Platform_Sync::on_status_changed( 114, 'processing', 'cancelled' );
+check( 'disabled or unconfigured: nothing queued', count( scheduled() ) === 0 );
 
 echo "\n========================================\n";
 echo "  $pass passed, $fail failed\n";

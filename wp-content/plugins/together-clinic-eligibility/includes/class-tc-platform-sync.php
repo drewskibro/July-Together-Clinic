@@ -75,6 +75,18 @@ class TC_Platform_Sync {
 	const MAX_ATTEMPTS = 3;
 
 	const PAYMENT_HOOK = 'tc_platform_payment_send';
+	const CANCEL_HOOK  = 'tc_platform_cancellation_send';
+
+	/** Cancellation message, per reason (`<reason>` lower-cased): sent flag, first-seen time, attempts. */
+	const META_CANCEL_SENT_PREFIX     = '_tc_platform_cancel_sent_';
+	const META_CANCEL_AT_PREFIX       = '_tc_platform_cancel_at_';
+	const META_CANCEL_ATTEMPTS_PREFIX = '_tc_platform_cancel_attempts_';
+	const META_CANCEL_STATUS_PREFIX   = '_tc_platform_cancel_status_';
+
+	/** TC_Review_Actions' own audit meta, read to recognise the platform's decline. */
+	const META_REVIEW_DECISION   = '_tc_review_decision';
+	const META_REVIEW_DECIDED_BY = '_tc_review_decided_by';
+	const PLATFORM_REVIEWER      = 'Prescribing platform';
 
 	/** Order ids whose capture has already been handled in this request (several hooks see one capture). */
 	private static $payment_handled = [];
@@ -106,6 +118,12 @@ class TC_Platform_Sync {
 		add_action( 'woocommerce_order_status_processing', [ __CLASS__, 'on_paid_status' ], 20 );
 		add_action( 'woocommerce_order_status_completed', [ __CLASS__, 'on_paid_status' ], 20 );
 		add_action( self::PAYMENT_HOOK, [ __CLASS__, 'run_payment_retry' ] );
+		// Cancellation message: see the "Cancellation message" section.
+		add_action( 'woocommerce_order_status_changed', [ __CLASS__, 'on_status_changed' ], 20, 3 );
+		add_action( 'woocommerce_trash_order', [ __CLASS__, 'on_trash_order' ] );
+		add_action( 'wp_trash_post', [ __CLASS__, 'on_trash_post' ] );
+		add_action( 'woocommerce_order_partially_refunded', [ __CLASS__, 'on_partial_refund' ] );
+		add_action( self::CANCEL_HOOK, [ __CLASS__, 'run_cancellation' ], 10, 2 );
 		// A first order's card hold: the platform takes the order in now.
 		add_action( 'wc_gateway_stripe_process_response', [ __CLASS__, 'on_stripe_response' ], 20, 2 );
 		add_filter( 'woocommerce_order_actions', [ __CLASS__, 'add_manual_payment_action' ], 10, 2 );
@@ -867,7 +885,11 @@ class TC_Platform_Sync {
 
 		if ( $code < 200 || $code >= 300 ) {
 			$detail = is_array( $decoded ) && ! empty( $decoded['title'] ) ? $decoded['title'] : ( 'HTTP ' . $code );
-			return new WP_Error( 'tc_platform_http_error', (string) $detail, [ 'status' => $code ] );
+			// `type` is the platform's stable problem-detail code (RFC 7807),
+			// e.g. WEBSITE_ORDER_NOT_FOUND; kept so a caller can tell an
+			// unknown order from a route this platform has not deployed yet.
+			$type = is_array( $decoded ) && isset( $decoded['type'] ) && is_string( $decoded['type'] ) ? $decoded['type'] : '';
+			return new WP_Error( 'tc_platform_http_error', (string) $detail, [ 'status' => $code, 'type' => $type ] );
 		}
 
 		return is_array( $decoded ) ? $decoded : [];
@@ -1125,14 +1147,28 @@ class TC_Platform_Sync {
 	}
 
 	/**
-	 * The contract's response rules. Pure.
-	 *   2xx            -> 'ok'        (recorded, or already recorded)
-	 *   404, 409, 4xx  -> 'permanent' (unknown order / cancelled or declined / anything else)
-	 *   5xx, no status -> 'retry'     (server error, timeout, connection failure)
-	 *
-	 * @param int|null $status HTTP status, or null when no response arrived.
+	 * The platform's problem-detail code for "no website order with that
+	 * reference" (cmd_api_record_website_order_payment, mapped to 404 by
+	 * apps/api's problem-detail.ts). Any OTHER 404 is a route the platform
+	 * has not deployed yet (Nest's own NOT_FOUND), not an unknown order.
 	 */
-	public static function classify_payment_status( $status ) {
+	const UNKNOWN_ORDER_TYPE = 'WEBSITE_ORDER_NOT_FOUND';
+
+	/**
+	 * The contract's response rules for the payment and cancellation
+	 * messages. Pure.
+	 *   2xx                          -> 'ok'        (recorded, or already recorded)
+	 *   404 WEBSITE_ORDER_NOT_FOUND  -> 'permanent' (unknown order)
+	 *   404 anything else            -> 'retry'     (route not deployed yet: the
+	 *                                              website released before the API
+	 *                                              must not strand a payment)
+	 *   409, other 4xx               -> 'permanent'
+	 *   5xx, no status               -> 'retry'     (server error, timeout, connection failure)
+	 *
+	 * @param int|null $status       HTTP status, or null when no response arrived.
+	 * @param string   $problem_type The response's problem-detail `type`, if any.
+	 */
+	public static function classify_payment_status( $status, $problem_type = '' ) {
 		if ( null === $status || '' === $status ) {
 			return 'retry';
 		}
@@ -1140,10 +1176,25 @@ class TC_Platform_Sync {
 		if ( $status >= 200 && $status < 300 ) {
 			return 'ok';
 		}
+		if ( 404 === $status && self::UNKNOWN_ORDER_TYPE !== (string) $problem_type ) {
+			return 'retry';
+		}
 		if ( $status >= 400 && $status < 500 ) {
 			return 'permanent';
 		}
 		return 'retry';
+	}
+
+	/** [ status|null, problem type ] from a request() result. */
+	private static function response_status( $result ) {
+		if ( ! is_wp_error( $result ) ) {
+			return [ 200, '' ];
+		}
+		$data = $result->get_error_data();
+		if ( ! is_array( $data ) || ! isset( $data['status'] ) ) {
+			return [ null, '' ];
+		}
+		return [ (int) $data['status'], (string) ( $data['type'] ?? '' ) ];
 	}
 
 	public static function send_payment( WC_Order $order ) {
@@ -1194,13 +1245,9 @@ class TC_Platform_Sync {
 			self::payment_idempotency_key( $order_id, $reference )
 		);
 
-		$status = 200;
-		if ( is_wp_error( $result ) ) {
-			$data   = $result->get_error_data();
-			$status = ( is_array( $data ) && isset( $data['status'] ) ) ? (int) $data['status'] : null;
-		}
+		list( $status, $problem_type ) = self::response_status( $result );
 
-		switch ( self::classify_payment_status( $status ) ) {
+		switch ( self::classify_payment_status( $status, $problem_type ) ) {
 			case 'ok':
 				$order->update_meta_data( self::META_PAID_SENT_AT, time() );
 				$order->update_meta_data( self::META_PAID_ATTEMPTS, 0 );
@@ -1318,6 +1365,237 @@ class TC_Platform_Sync {
 	}
 
 	// ======================================================================
+	// Cancellation message: POST /v1/website-orders/cancellation
+	//
+	// An order the platform holds that is cancelled, fully refunded, failed
+	// or trashed here is reported there, once per reason. Never for an order
+	// the platform never received, and never as an echo of the platform's
+	// own decline (consultation.declined -> TC_Review_Actions::reject()).
+	//
+	// The status hook only QUEUES the message (WP-Cron, immediately); the
+	// send re-reads the order and goes only if it is STILL in that status.
+	// Two things in this plugin move an order straight back out again in the
+	// same request, and neither may reach the platform as a cancellation:
+	// TC_Review_Status::guard_transition() reverts a blocked move off
+	// awaiting-review, and TC_Review_Actions::approve() moves a failed
+	// capture (the Stripe extension sets "failed") on to the pay link.
+	// ======================================================================
+
+	/** WooCommerce status (slug) to the contract's reason. Trash is a cancellation. */
+	public static function cancellation_reason( $status ) {
+		$map = [
+			'cancelled' => 'CANCELLED',
+			'refunded'  => 'REFUNDED',
+			'failed'    => 'FAILED',
+			'trash'     => 'CANCELLED',
+		];
+		return $map[ (string) $status ] ?? null;
+	}
+
+	public static function cancellation_idempotency_key( $order_id, $reason ) {
+		return 'tc-cancel-' . (int) $order_id . '-' . $reason;
+	}
+
+	/** The contract body, exactly. Pure. */
+	public static function cancellation_request_body( $order_id, $reason, $occurred_at ) {
+		return [
+			'externalReference' => 'tc-order-' . (int) $order_id,
+			'reason'            => (string) $reason,
+			'occurredAt'        => (string) $occurred_at,
+		];
+	}
+
+	/** Sent to the platform at all: a synced patient, or an order it took in. */
+	private static function on_platform( WC_Order $order ) {
+		return (bool) $order->get_meta( self::META_SYNCED_AT )
+			|| (bool) $order->get_meta( self::META_ORDER_PUSHED_AT );
+	}
+
+	/** Rejected by the platform's own consultation.declined webhook. */
+	private static function declined_by_platform( WC_Order $order ) {
+		return 'rejected' === (string) $order->get_meta( self::META_REVIEW_DECISION )
+			&& self::PLATFORM_REVIEWER === (string) $order->get_meta( self::META_REVIEW_DECIDED_BY );
+	}
+
+	/**
+	 * Why the cancellation message must not be sent, or null. Pure over the
+	 * order's meta and status.
+	 *
+	 * @return string|null
+	 */
+	public static function cancellation_skip_reason( WC_Order $order, $reason ) {
+		if ( ! TC_Review_Status::is_treatment_order( $order ) ) {
+			return 'not_review_order';
+		}
+		if ( ! self::on_platform( $order ) ) {
+			return 'not_on_platform';
+		}
+		if ( self::$in_platform_webhook || self::declined_by_platform( $order ) ) {
+			return 'declined_by_platform';
+		}
+		if ( $order->get_meta( self::META_CANCEL_SENT_PREFIX . strtolower( $reason ) ) ) {
+			return 'already_sent';
+		}
+		return null;
+	}
+
+	public static function on_status_changed( $order_id, $from, $to ) {
+		$reason = self::cancellation_reason( $to );
+		if ( null !== $reason ) {
+			self::queue_cancellation( absint( $order_id ), $reason, (string) $to );
+		}
+	}
+
+	/** HPOS: the order has just been moved to the trash. */
+	public static function on_trash_order( $order_id ) {
+		self::queue_cancellation( absint( $order_id ), 'CANCELLED', 'trash' );
+	}
+
+	/** Posts storage: fires before the post is trashed, so the expected status is checked at send time. */
+	public static function on_trash_post( $post_id ) {
+		if ( function_exists( 'get_post_type' ) && 'shop_order' === get_post_type( $post_id ) ) {
+			self::queue_cancellation( absint( $post_id ), 'CANCELLED', 'trash' );
+		}
+	}
+
+	/** A partial refund is not a cancellation: an order note, nothing sent. */
+	public static function on_partial_refund( $order_id ) {
+		if ( ! self::is_enabled() ) {
+			return;
+		}
+		$order = wc_get_order( absint( $order_id ) );
+		if ( ! $order instanceof WC_Order || ! TC_Review_Status::is_treatment_order( $order ) || ! self::on_platform( $order ) ) {
+			return;
+		}
+		$order->add_order_note( 'Partial refund: nothing was sent to the prescribing platform. Only a full refund, a cancellation or a failed order is reported there; tell the prescribing team directly if this changes the supply.' );
+	}
+
+	private static function queue_cancellation( $order_id, $reason, $expected_status ) {
+		if ( ! $order_id || ! self::is_enabled() ) {
+			return;
+		}
+		$order = wc_get_order( $order_id );
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+		$skip = self::cancellation_skip_reason( $order, $reason );
+		if ( null !== $skip ) {
+			TC_Log::debug( 'platform_cancellation_skipped', [
+				'order_id' => $order_id,
+				'reason'   => $skip,
+			] );
+			return;
+		}
+		$key = strtolower( $reason );
+		if ( '' === (string) $order->get_meta( self::META_CANCEL_AT_PREFIX . $key ) ) {
+			$order->update_meta_data( self::META_CANCEL_AT_PREFIX . $key, gmdate( 'Y-m-d\TH:i:s\Z', time() ) );
+		}
+		$order->update_meta_data( self::META_CANCEL_STATUS_PREFIX . $key, $expected_status );
+		$order->save();
+		wp_schedule_single_event( time(), self::CANCEL_HOOK, [ $order_id, $reason ] );
+	}
+
+	public static function run_cancellation( $order_id, $reason ) {
+		if ( ! self::is_enabled() ) {
+			return;
+		}
+		$order = wc_get_order( absint( $order_id ) );
+		if ( ! $order instanceof WC_Order || ! in_array( $reason, [ 'CANCELLED', 'REFUNDED', 'FAILED' ], true ) ) {
+			return;
+		}
+		$key      = strtolower( $reason );
+		$expected = (string) $order->get_meta( self::META_CANCEL_STATUS_PREFIX . $key );
+
+		$skip = self::cancellation_skip_reason( $order, $reason );
+		if ( null === $skip && '' !== $expected && $expected !== (string) $order->get_status() ) {
+			// Moved straight back out (guard revert, failed capture going to
+			// the pay link, order restored from the trash): not a cancellation.
+			$skip = 'status_moved_on';
+			$order->delete_meta_data( self::META_CANCEL_AT_PREFIX . $key );
+			$order->delete_meta_data( self::META_CANCEL_STATUS_PREFIX . $key );
+			$order->save();
+		}
+		if ( null !== $skip ) {
+			TC_Log::debug( 'platform_cancellation_skipped', [
+				'order_id' => $order->get_id(),
+				'reason'   => $skip,
+			] );
+			return;
+		}
+
+		$occurred_at = (string) $order->get_meta( self::META_CANCEL_AT_PREFIX . $key );
+		if ( '' === $occurred_at ) {
+			$occurred_at = gmdate( 'Y-m-d\TH:i:s\Z', time() );
+		}
+		$result = self::request(
+			'POST',
+			'/v1/website-orders/cancellation',
+			self::cancellation_request_body( $order->get_id(), $reason, $occurred_at ),
+			self::cancellation_idempotency_key( $order->get_id(), $reason )
+		);
+		list( $status, $problem_type ) = self::response_status( $result );
+
+		// The platform never took this order in as an order (a patient-only
+		// push from an earlier version): quietly nothing to cancel there.
+		if ( 404 === $status && self::UNKNOWN_ORDER_TYPE === $problem_type ) {
+			$order->update_meta_data( self::META_CANCEL_SENT_PREFIX . $key, 'not_on_platform' );
+			$order->save();
+			TC_Log::debug( 'platform_cancellation_unknown_order', [ 'order_id' => $order->get_id() ] );
+			return;
+		}
+
+		$attempts_key = self::META_CANCEL_ATTEMPTS_PREFIX . $key;
+		switch ( self::classify_payment_status( $status, $problem_type ) ) {
+			case 'ok':
+				$order->update_meta_data( self::META_CANCEL_SENT_PREFIX . $key, time() );
+				$order->update_meta_data( $attempts_key, 0 );
+				$order->save();
+				$order->add_order_note( sprintf( 'Prescribing platform told this order is %s.', strtolower( $reason ) ) );
+				TC_Log::info( 'platform_cancellation_ok', [
+					'order_id' => $order->get_id(),
+					'reason'   => $reason,
+				] );
+				return;
+
+			case 'permanent':
+				$order->add_order_note( sprintf(
+					'Prescribing platform rejected the %s message (HTTP %d). It will not be retried; tell the prescribing team directly.',
+					strtolower( $reason ),
+					(int) $status
+				) );
+				TC_Log::warn( 'platform_cancellation_failed_permanent', [
+					'order_id' => $order->get_id(),
+					'reason'   => $reason,
+					'status'   => (int) $status,
+				] );
+				return;
+
+			default:
+				$attempts = (int) $order->get_meta( $attempts_key ) + 1;
+				$order->update_meta_data( $attempts_key, $attempts );
+				$order->save();
+				if ( $attempts < self::MAX_ATTEMPTS ) {
+					$order->add_order_note( sprintf( 'Telling the prescribing platform this order is %s failed (attempt %d of %d). It will retry automatically.', strtolower( $reason ), $attempts, self::MAX_ATTEMPTS ) );
+					TC_Log::warn( 'platform_cancellation_failed', [
+						'order_id' => $order->get_id(),
+						'reason'   => $reason,
+						'attempt'  => $attempts,
+					] );
+					$delays = self::retry_delays();
+					$delay  = $delays[ $attempts - 1 ] ?? end( $delays );
+					wp_schedule_single_event( time() + $delay, self::CANCEL_HOOK, [ $order->get_id(), $reason ] );
+					return;
+				}
+				$order->add_order_note( sprintf( 'Telling the prescribing platform this order is %s failed %d times and has stopped retrying. Tell the prescribing team directly.', strtolower( $reason ), $attempts ) );
+				TC_Log::warn( 'platform_cancellation_failed_permanent', [
+					'order_id' => $order->get_id(),
+					'reason'   => $reason,
+					'status'   => 'retries_exhausted',
+				] );
+		}
+	}
+
+	// ======================================================================
 	// Inbound webhook
 	// ======================================================================
 
@@ -1403,7 +1681,7 @@ class TC_Platform_Sync {
 		// Marked processed only after the action below actually runs (Opus
 		// review, minor 2): a crash between marking and acting would
 		// otherwise permanently swallow a legitimate delivery.
-		TC_Review_Actions::set_reviewer_override( 'Prescribing platform' );
+		TC_Review_Actions::set_reviewer_override( self::PLATFORM_REVIEWER );
 		// Approving captures the card hold, which would otherwise POST the
 		// payment message back to the platform from inside the platform's
 		// own webhook delivery. on_payment_captured() defers it to WP-Cron

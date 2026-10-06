@@ -429,13 +429,17 @@ API key and enabled switch as the patient push.
   first time the capture is seen; `_tc_platform_paid_sent_at` is set once
   the platform answers 2xx, after which nothing is ever sent again
   (re-capture, webhook replay, stale retry, manual resend).
-- *Responses.* 2xx recorded. 404 (unknown order), 409 (order cancelled or
+- *Responses.* 2xx recorded. 404 with problem type
+  `WEBSITE_ORDER_NOT_FOUND` (unknown order), 409 (order cancelled or
   declined there: money taken for an order the platform will not fulfil,
   flagged "Review urgently") and any other 4xx are permanent: order note,
   warning log, no retry. 5xx or no response: WP-Cron retry, three attempts
   in all on the patient push's 5 / 30 minute schedule, then an order note
   and warning. Manual order action "Send payment to prescribing platform"
-  appears only while the message is due and unacknowledged.
+  appears only while the message is due and unacknowledged. Any other 404
+  (Nest's own `NOT_FOUND`, or no problem-detail body: the platform has not
+  deployed the route yet) retries on the normal schedule, so releasing the
+  website before the API does not strand a payment.
 - *Inside the platform's webhook.* When `prescription.issued` approves an
   order, that approval captures the card. The payment message is then
   scheduled on WP-Cron immediately rather than sent inline, so the site
@@ -449,6 +453,38 @@ API key and enabled switch as the patient push.
   patient, intake and order, as `AUTHORISED`; the payment message then
   records the capture. If that push fails, the payment waits for its next
   retry instead of drawing a 404.
+
+**Cancellation message.** An order the platform holds (synced patient, or
+an order it took in) that moves to cancelled, refunded (a full refund:
+WooCommerce's `refunded` status), failed or trash is reported:
+`POST /v1/website-orders/cancellation` with `{externalReference:
+"tc-order-<id>", reason: "CANCELLED" | "REFUNDED" | "FAILED", occurredAt}`
+(trash is `CANCELLED`), header `Idempotency-Key: tc-cancel-<id>-<reason>`,
+same base URL, API key, enabled switch and three-attempt retry as the
+payment message.
+
+- *Hooks.* `woocommerce_order_status_changed` (priority 20), and for trash
+  `woocommerce_trash_order` (HPOS) and `wp_trash_post` (posts storage). A
+  partial refund (`woocommerce_order_partially_refunded`) sends nothing and
+  adds an order note.
+- *Queued, then re-checked.* The hook only queues the message on WP-Cron,
+  with `occurredAt` frozen at that moment; the send goes only if the order
+  is STILL in that status. Two things move an order straight back in the
+  same request and must not reach the platform as a cancellation:
+  `TC_Review_Status::guard_transition()` reverting a blocked move off
+  awaiting-review, and `TC_Review_Actions::approve()` moving a failed
+  capture (the Stripe extension sets `failed`) on to the pay link.
+- *Once per reason* (`_tc_platform_cancel_sent_<reason>`); a different
+  reason later (refunded, then cancelled) is its own message.
+- *Never an echo of the platform's decline.* Skipped while
+  `consultation.declined` is being processed, and whenever the order's
+  recorded rejection was made by "Prescribing platform". A rejection by a
+  WordPress prescriber is reported.
+- *Never for an order the platform never received* (debug log only), e.g.
+  an abandoned first order. A 404 `WEBSITE_ORDER_NOT_FOUND` (patient synced,
+  order never taken in) is recorded quietly as nothing to cancel. Other 4xx:
+  order note and warning, no retry. 5xx, timeout or route-missing 404:
+  retry, then an order note and warning after the third attempt.
 
 **The order block.** `POST /v1/patients` carries `order: {lane, holdState,
 websiteStatus, externalOrderNumber, submittedAt, product}` (the platform's
