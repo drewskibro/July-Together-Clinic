@@ -463,7 +463,7 @@ class TC_Eligibility_Rules {
 		return $rows;
 	}
 
-	/** eGFR as an integer 1 to 200, or null when blank or invalid. */
+	/** eGFR as a number 1 to 200 (decimals kept), or null when blank or invalid. */
 	public static function egfr_value( $v ) {
 		$v = trim( (string) $v );
 		if ( $v === '' || ! is_numeric( $v ) ) {

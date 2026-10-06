@@ -1018,10 +1018,10 @@
 		var resultRaw = (($('s1a-egfr-result') || {}).value || '').trim();
 		var egfr = '';
 		if (resultRaw) {
-			// Accept one decimal place (e.g. 29.6) so a result just under 30
+			// Accept up to two decimal places (e.g. 29.6, 29.95) so a result just under 30
 			// is never typed as 30 and passed (exclusion E11).
 			var n = parseFloat(resultRaw);
-			if (!/^\d{1,3}(\.\d)?$/.test(resultRaw) || isNaN(n) || n < 1 || n > 200) {
+			if (!/^\d{1,3}(\.\d{1,2})?$/.test(resultRaw) || isNaN(n) || n < 1 || n > 200) {
 				err.textContent = 'Please enter your eGFR result as a number (for example 45 or 29.6), or leave it blank';
 				err.style.display = 'block';
 				return;

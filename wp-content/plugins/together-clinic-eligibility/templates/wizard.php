@@ -641,7 +641,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				<div class="dob-inputs">
 					<input type="text" id="s1a-egfr-month" class="form-input dob-input" inputmode="numeric" placeholder="MM" maxlength="2" aria-label="Month of kidney test" />
 					<input type="text" id="s1a-egfr-year" class="form-input dob-input" inputmode="numeric" placeholder="YYYY" maxlength="4" aria-label="Year of kidney test" />
-					<input type="text" id="s1a-egfr-result" class="form-input dob-input" inputmode="decimal" placeholder="eGFR" maxlength="5" aria-label="eGFR result" />
+					<input type="text" id="s1a-egfr-result" class="form-input dob-input" inputmode="decimal" placeholder="eGFR" maxlength="6" aria-label="eGFR result" />
 				</div>
 				<p style="font-size:13px;color:#6b7280;margin-top:8px;margin-bottom:0;">Leave these blank if you do not know. Your prescriber will check your records.</p>
 			</div>
