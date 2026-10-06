@@ -43,24 +43,24 @@ get_header();
     </div>
     <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto" data-stagger>
       <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm" data-reveal style="--stagger-index:0">
-        <h3 class="text-xl font-serif text-gray-900 mb-4">You're Likely Eligible</h3>
+        <h3 class="text-xl font-serif text-gray-900 mb-4">You May Be Suitable If</h3>
         <ul class="space-y-3">
-          <?php foreach ( array( 'Body Mass Index (BMI) 30+ (or 27+ with a qualifying condition)', 'Aged 18 or over', 'Tried diet and exercise without lasting results', 'Committed to lifestyle changes', 'No contraindications to Glucagon-Like Peptide-1 (GLP-1) medications' ) as $item ) : ?>
+          <?php foreach ( array( 'Body Mass Index (BMI) 30+ (or 27+ with a qualifying condition)', 'Aged 18 to 74', 'Tried diet and exercise without lasting results', 'Committed to lifestyle changes', 'No contraindications to Glucagon-Like Peptide-1 (GLP-1) medications' ) as $item ) : ?>
           <li class="flex items-start gap-3"><svg class="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-700 text-[15px]"><?php echo esc_html( $item ); ?></span></li>
           <?php endforeach; ?>
         </ul>
       </div>
       <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm" data-reveal style="--stagger-index:1">
-        <h3 class="text-xl font-serif text-gray-900 mb-4">Qualifying Conditions (BMI 27+)</h3>
+        <h3 class="text-xl font-serif text-gray-900 mb-4">Weight-Related Conditions (BMI 27 to 29.9)</h3>
         <ul class="space-y-3">
-          <?php foreach ( array( 'Type 2 diabetes or pre-diabetes', 'High blood pressure', 'High cholesterol', 'Sleep apnoea', 'Polycystic Ovary Syndrome (PCOS)', 'Joint problems or osteoarthritis' ) as $item ) : ?>
+          <?php foreach ( array( 'Type 2 diabetes or pre-diabetes', 'High blood pressure', 'High cholesterol', 'Sleep apnoea', 'Heart or circulation problems' ) as $item ) : ?>
           <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-gray-700 text-[15px]"><?php echo esc_html( $item ); ?></span></li>
           <?php endforeach; ?>
         </ul>
       </div>
     </div>
     <div class="text-center mt-10" data-reveal>
-      <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="ah-btn-purple">Check If You Qualify <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+      <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="ah-btn-purple">Start Your Assessment <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
     </div>
   </div>
 </section>

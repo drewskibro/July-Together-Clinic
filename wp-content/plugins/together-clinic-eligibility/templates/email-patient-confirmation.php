@@ -15,8 +15,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 <h3 style="margin-top: 24px;">What happens next</h3>
 <ol>
 	<li>One of our prescribers will review your assessment within 24 hours.</li>
-	<li>If your treatment is approved, we will email you a secure payment link. <strong>No payment is taken until then.</strong></li>
-	<li>Once you have paid, your medication will be dispatched with free tracked delivery.</li>
+	<li>A prescriber will contact you to book a video consultation. They will check your photo ID, your weight and height, and your NHS Summary Care Record before deciding whether treatment is right for you.</li>
+	<li>You are only charged if the prescriber issues a prescription. <strong>Any hold on your card is released if treatment is not prescribed.</strong></li>
+	<li>If treatment is prescribed, your medication will be dispatched with free tracked delivery.</li>
 </ol>
 
 <h3 style="margin-top: 24px;">Your assessment summary</h3>
