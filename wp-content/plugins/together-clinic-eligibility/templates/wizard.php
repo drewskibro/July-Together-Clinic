@@ -182,8 +182,8 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			<h2>How old are you?</h2>
 			<div class="radio-group">
 				<label class="radio-item"><input type="radio" name="age" value="under-18" data-action="set-age" /><span>Under 18</span></label>
-				<label class="radio-item"><input type="radio" name="age" value="18-74" data-action="set-age" /><span>18 to 74</span></label>
-				<label class="radio-item"><input type="radio" name="age" value="75-over" data-action="set-age" /><span>75 or over</span></label>
+				<label class="radio-item"><input type="radio" name="age" value="18-85" data-action="set-age" /><span>18 to 85</span></label>
+				<label class="radio-item"><input type="radio" name="age" value="86-over" data-action="set-age" /><span>86 or over</span></label>
 			</div>
 			<button class="button button-secondary" data-action="previous">Back</button>
 		</div>
@@ -581,6 +581,77 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			</div>
 		</div>
 
+		<!-- Screen 18a: Ages 75 to 85 (rules WM-2026-10-v2, rule S1A) -->
+		<div id="screen-18a" class="screen">
+			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">87%</div><div class="progress-bar"><div class="progress-fill" style="width: 87%"></div></div></div></div>
+			<h2>A few more questions for people aged 75 and over</h2>
+			<p>Your prescriber needs these answers to check whether treatment would be safe for you. Please answer as best you can.</p>
+			<?php
+			$tc_s1a_yes_no = [
+				's1a-falls'               => 'Have you had a fall in the last 12 months?',
+				's1a-fracture'            => 'Have you ever broken a bone from a minor fall or knock (for example a fall from standing height)?',
+				's1a-prisma-limit'        => 'In general, do you have any health problems that require you to limit your activities?',
+				's1a-prisma-help'         => 'Do you need someone to help you on a regular basis?',
+				's1a-prisma-home'         => 'In general, do you have any health problems that require you to stay at home?',
+				's1a-prisma-count'        => 'If you need help, can you count on someone close to you?',
+				's1a-prisma-aid'          => 'Do you regularly use a stick, walker or wheelchair to get about?',
+			];
+			foreach ( $tc_s1a_yes_no as $name => $question ) :
+				?>
+				<div class="screening-question">
+					<h3><?php echo esc_html( $question ); ?></h3>
+					<div class="radio-button-group">
+						<div class="radio-button">
+							<input type="radio" id="<?php echo esc_attr( $name ); ?>-yes" name="<?php echo esc_attr( $name ); ?>" value="yes" />
+							<label class="radio-button-label" for="<?php echo esc_attr( $name ); ?>-yes">Yes</label>
+						</div>
+						<div class="radio-button">
+							<input type="radio" id="<?php echo esc_attr( $name ); ?>-no" name="<?php echo esc_attr( $name ); ?>" value="no" />
+							<label class="radio-button-label" for="<?php echo esc_attr( $name ); ?>-no">No</label>
+						</div>
+					</div>
+				</div>
+			<?php endforeach; ?>
+			<div class="screening-question">
+				<h3>How many different medicines do you take regularly?</h3>
+				<div class="radio-group">
+					<?php foreach ( TC_Eligibility_Rules::S1A_MEDS_COUNT as $value => $label ) : ?>
+						<label class="radio-item"><input type="radio" name="s1a-meds-count" value="<?php echo esc_attr( $value ); ?>" /><span><?php echo esc_html( $label ); ?></span></label>
+					<?php endforeach; ?>
+				</div>
+			</div>
+			<div class="screening-question">
+				<h3>Do you take blood pressure tablets or water tablets (diuretics)?</h3>
+				<div class="radio-group">
+					<label class="radio-item"><input type="radio" name="s1a-bp-water" value="yes" /><span>Yes</span></label>
+					<label class="radio-item"><input type="radio" name="s1a-bp-water" value="no" /><span>No</span></label>
+					<label class="radio-item"><input type="radio" name="s1a-bp-water" value="unsure" /><span>Not sure</span></label>
+				</div>
+			</div>
+			<div class="screening-question">
+				<h3>When did you last have a kidney blood test (eGFR)?</h3>
+				<div class="radio-group">
+					<?php foreach ( TC_Eligibility_Rules::S1A_KIDNEY_TEST as $value => $label ) : ?>
+						<label class="radio-item"><input type="radio" name="s1a-kidney-test" value="<?php echo esc_attr( $value ); ?>" /><span><?php echo esc_html( $label ); ?></span></label>
+					<?php endforeach; ?>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="form-label">If you know them: month and year of that test, and the eGFR result</label>
+				<div class="dob-inputs">
+					<input type="text" id="s1a-egfr-month" class="form-input dob-input" inputmode="numeric" placeholder="MM" maxlength="2" aria-label="Month of kidney test" />
+					<input type="text" id="s1a-egfr-year" class="form-input dob-input" inputmode="numeric" placeholder="YYYY" maxlength="4" aria-label="Year of kidney test" />
+					<input type="text" id="s1a-egfr-result" class="form-input dob-input" inputmode="numeric" placeholder="eGFR" maxlength="3" aria-label="eGFR result" />
+				</div>
+				<p style="font-size:13px;color:#6b7280;margin-top:8px;margin-bottom:0;">Leave these blank if you do not know. Your prescriber will check your records.</p>
+			</div>
+			<div id="s1a-error" class="error-message" style="display:none;"></div>
+			<div class="button-group">
+				<button class="button button-secondary" data-action="previous">Back</button>
+				<button class="button button-primary" data-action="save-s1a">Next &rarr;</button>
+			</div>
+		</div>
+
 		<!-- Screen 19: Address -->
 		<div id="screen-19" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">90%</div><div class="progress-bar"><div class="progress-fill" style="width: 90%"></div></div></div></div>
@@ -608,7 +679,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			</div>
 		</div>
 
-		<!-- Screen 20: GP and consents (rules WM-2026-10-v1) -->
+		<!-- Screen 20: GP and consents (rules WM-2026-10-v2) -->
 		<div id="screen-20" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">95%</div><div class="progress-bar"><div class="progress-fill" style="width: 95%"></div></div></div></div>
 			<h2>Your GP and your consent</h2>
@@ -624,7 +695,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				<input type="checkbox" id="consent-lifestyle" /><span><strong>Required.</strong> I will follow a reduced-calorie diet and increase my physical activity alongside any treatment.</span>
 			</label>
 			<label class="checkbox-item" style="background:white;border:2px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:24px;">
-				<input type="checkbox" id="gp-consent-1" /><span>I agree to Together Clinic telling my GP about any treatment prescribed, including the medicine and dose. <strong>Strongly recommended:</strong> without this, the prescriber may not be able to treat you safely.</span>
+				<input type="checkbox" id="gp-consent-1" /><span>I agree to Together Clinic telling my GP about any treatment prescribed, including the medicine and dose. <strong id="gp-share-note-under-75">Strongly recommended:</strong><strong id="gp-share-note-75" style="display:none;">Required for people aged 75 and over.</strong> <span id="gp-share-note-under-75-text">without this, the prescriber may not be able to treat you safely.</span></span>
 			</label>
 			<div id="consent-error" class="error-message" style="display:none;"></div>
 			<div class="button-group">

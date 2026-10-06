@@ -23,7 +23,7 @@
 		ineligibleReason: ''
 	};
 
-	// Rules WM-2026-10-v1 (AT Health IP-FRM-01 3A). Mirrors
+	// Rules WM-2026-10-v2 (AT Health IP-FRM-01 3A). Mirrors
 	// TC_Eligibility_Rules on the server, which always has the final say.
 	var SERIOUS_CONDITIONS = [
 		'I have chronic malabsorption syndrome',
@@ -84,6 +84,26 @@
 		kg = parseFloat(kg || '0'); cm = parseFloat(cm || '0');
 		if (!kg || !cm) return 0;
 		return kg / Math.pow(cm / 100, 2);
+	}
+
+	// Rule S1: 18 to 85 inclusive by date of birth. Rule S1A: extra
+	// questions and mandatory GP sharing from 75. The answers are for the
+	// prescriber and never pass or fail anyone here, except a reported eGFR
+	// below 30 (exclusion E11), which the server also applies.
+	var MAX_AGE = 85;
+	var S1A_AGE = 75;
+	var TOO_OLD = "Our weight loss plan isn't suitable for people aged 86 or over.";
+	var S1A_PRISMA = {
+		limitActivities: 's1a-prisma-limit',
+		needHelp: 's1a-prisma-help',
+		stayHome: 's1a-prisma-home',
+		countOnSomeone: 's1a-prisma-count',
+		walkingAid: 's1a-prisma-aid'
+	};
+
+	function isS1A() {
+		var a = state.userData.ageYears;
+		return typeof a === 'number' && a >= S1A_AGE && a <= MAX_AGE;
 	}
 
 	var PREV_MEDS = ['Wegovy', 'Ozempic', 'Saxenda', 'Rybelsus', 'Mounjaro', 'Alli', 'Mysimba', 'Other', 'I have never taken medication to lose weight'];
@@ -243,6 +263,14 @@
 			gpConsentSCR: $('gp-consent-2') && $('gp-consent-2').checked,
 			consentIdVideo: $('consent-id-video') && $('consent-id-video').checked,
 			consentLifestyle: $('consent-lifestyle') && $('consent-lifestyle').checked,
+			s1aFalls: isS1A() ? (u.s1aFalls || '') : '',
+			s1aFracture: isS1A() ? (u.s1aFracture || '') : '',
+			s1aPrisma: isS1A() ? (u.s1aPrisma || {}) : {},
+			s1aMedsCount: isS1A() ? (u.s1aMedsCount || '') : '',
+			s1aBpWater: isS1A() ? (u.s1aBpWater || '') : '',
+			s1aKidneyTest: isS1A() ? (u.s1aKidneyTest || '') : '',
+			s1aEgfrDate: isS1A() ? (u.s1aEgfrDate || '') : '',
+			s1aEgfrResult: isS1A() ? (u.s1aEgfrResult || '') : '',
 			startWeightKg: parseFloat(u.startWeight || '0') || 0,
 			lastDoseDate: u.lastDoseDate || '',
 			couldConceive: u.couldConceive || '',
@@ -460,8 +488,8 @@
 		state.userData.age = value;
 		if (value === 'under-18') {
 			showIneligible("Our weight loss plan isn't suitable for people under 18 years old.");
-		} else if (value === '75-over') {
-			showIneligible("Our weight loss plan isn't suitable for people over 75 years old.");
+		} else if (value === '86-over') {
+			showIneligible(TOO_OLD);
 		} else {
 			pushScreen('1b');
 		}
@@ -834,11 +862,15 @@
 
 	function saveConsents() {
 		var err = $('consent-error');
-		var ok = ['consent-id-video', 'gp-consent-2', 'consent-lifestyle'].every(function (id) {
+		var required = ['consent-id-video', 'gp-consent-2', 'consent-lifestyle'];
+		if (isS1A()) required.push('gp-consent-1');
+		var ok = required.every(function (id) {
 			return $(id) && $(id).checked;
 		});
 		if (!ok) {
-			err.textContent = 'Please tick the three required boxes. We cannot prescribe without them.';
+			err.textContent = isS1A()
+				? 'Please tick the four required boxes. From age 75, sharing with your GP is required. We cannot prescribe without them.'
+				: 'Please tick the three required boxes. We cannot prescribe without them.';
 			err.style.display = 'block';
 			return;
 		}
@@ -923,14 +955,97 @@
 			err.style.display = 'block';
 			return;
 		}
-		if (age >= 75) {
-			showIneligible("Our weight loss plan isn't suitable for people over 75 years old.");
+		if (age > MAX_AGE) {
+			showIneligible(TOO_OLD);
 			return;
 		}
 
 		err.style.display = 'none';
 		state.userData.dob = iso;
-		nextScreen();
+		state.userData.ageYears = age;
+		updateGpShareNote();
+		if (isS1A()) {
+			pushScreen('18a');
+		} else {
+			nextScreen();
+		}
+	}
+
+	function updateGpShareNote() {
+		var s1a = isS1A();
+		['gp-share-note-under-75', 'gp-share-note-under-75-text'].forEach(function (id) {
+			if ($(id)) $(id).style.display = s1a ? 'none' : '';
+		});
+		if ($('gp-share-note-75')) $('gp-share-note-75').style.display = s1a ? '' : 'none';
+	}
+
+	function radioValue(name) {
+		var el = root().querySelector('input[name="' + name + '"]:checked');
+		return el ? el.value : '';
+	}
+
+	function saveS1A() {
+		var err = $('s1a-error');
+		var u = state.userData;
+		var prisma = {};
+		var complete = true;
+		Object.keys(S1A_PRISMA).forEach(function (key) {
+			prisma[key] = radioValue(S1A_PRISMA[key]);
+			if (!prisma[key]) complete = false;
+		});
+		var falls = radioValue('s1a-falls');
+		var fracture = radioValue('s1a-fracture');
+		var meds = radioValue('s1a-meds-count');
+		var bp = radioValue('s1a-bp-water');
+		var kidney = radioValue('s1a-kidney-test');
+		if (!complete || !falls || !fracture || !meds || !bp || !kidney) {
+			err.textContent = 'Please answer every question on this page';
+			err.style.display = 'block';
+			return;
+		}
+
+		var month = parseInt((($('s1a-egfr-month') || {}).value || '').trim(), 10);
+		var year = parseInt((($('s1a-egfr-year') || {}).value || '').trim(), 10);
+		var egfrDate = '';
+		if (month || year) {
+			var now = new Date();
+			var thisMonth = now.getFullYear() * 12 + now.getMonth() + 1;
+			if (!month || !year || month < 1 || month > 12 || year < 1990 || (year * 12 + month) > thisMonth) {
+				err.textContent = 'Please enter a valid month and year for your kidney test, or leave both blank';
+				err.style.display = 'block';
+				return;
+			}
+			egfrDate = year + '-' + (month < 10 ? '0' + month : month);
+		}
+		var resultRaw = (($('s1a-egfr-result') || {}).value || '').trim();
+		var egfr = '';
+		if (resultRaw) {
+			var n = parseInt(resultRaw, 10);
+			if (isNaN(n) || n < 1 || n > 200 || String(n) !== resultRaw.replace(/^0+/, '')) {
+				err.textContent = 'Please enter your eGFR result as a number, or leave it blank';
+				err.style.display = 'block';
+				return;
+			}
+			egfr = String(n);
+		}
+		err.style.display = 'none';
+
+		u.s1aFalls = falls;
+		u.s1aFracture = fracture;
+		u.s1aPrisma = prisma;
+		u.s1aMedsCount = meds;
+		u.s1aBpWater = bp;
+		u.s1aKidneyTest = kidney;
+		u.s1aEgfrDate = egfrDate;
+		u.s1aEgfrResult = egfr;
+
+		// Exclusion E11 (severe kidney impairment). Nothing else on this
+		// screen screens anyone out: the prescriber decides.
+		if (egfr && parseInt(egfr, 10) < 30) {
+			showIneligible('Based on the medical history you provided, weight loss medication is not clinically appropriate. Please speak with your GP about alternative options.');
+			return;
+		}
+		pushScreen(19);
 	}
 
 	function setupDobAutoAdvance() {
@@ -1128,6 +1243,7 @@
 			case 'continue-allergies': continueAllergies(); break;
 			case 'set-goal-weight-q': setGoalWeightQ(value); break;
 			case 'save-dob': saveDOB(); break;
+			case 'save-s1a': saveS1A(); break;
 			case 'save-address': saveAddress(); break;
 			case 'select-treatment': selectTreatment(value); break;
 			case 'submit-assessment': submitAssessment(); break;

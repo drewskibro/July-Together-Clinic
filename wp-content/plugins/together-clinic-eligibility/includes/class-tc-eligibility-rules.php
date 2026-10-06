@@ -7,13 +7,19 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Server-side triage rules for the weight-management questionnaire.
  *
  * Source of truth: AT Health IP-FRM-01 section 3A, rules version
- * WM-2026-10-v1 (Superintendent Pharmacist). The questionnaire is TRIAGE
+ * WM-2026-10-v2 (Superintendent Pharmacist). The questionnaire is TRIAGE
  * ONLY: it screens out patients who clearly fall outside the product licence
  * or meet an exclusion. It never decides that a patient will be treated; the
  * prescriber decides in a video consultation after ID, weight/height and
  * Summary Care Record checks.
  *
  * Key rules:
+ *  - Age 18 to 85 inclusive, by date of birth; screened out from the 86th
+ *    birthday (rule S1). Ages 75 to 85 (rule S1A): GP sharing consent is
+ *    mandatory and extra answers (falls, fracture, PRISMA-7, medicines
+ *    count, blood pressure or water tablets, kidney test) are recorded for
+ *    the prescriber. Those answers never pass or fail anyone, except a
+ *    reported eGFR below 30 (exclusion E11).
  *  - Starting BMI is the licence threshold for every adult: 30+, or 27 to
  *    29.9 with a weight-related condition. No ethnicity reduction (none of the
  *    four UK licences allows one; NICE's 2.5 reduction applies to NHS
@@ -35,11 +41,43 @@ if ( ! defined( 'ABSPATH' ) ) {
  *   start_bmi float   server-calculated BMI when first starting (switchers)
  *   pathway   string  new | transfer
  *   flags     array   key => prescriber-facing note (merged into order flags)
+ *   prisma7_score int|null  ages 75 to 85 only (rule S1A)
  *   rules_version string
  */
 class TC_Eligibility_Rules {
 
-	const RULES_VERSION = 'WM-2026-10-v1';
+	const RULES_VERSION = 'WM-2026-10-v2';
+
+	/** Rule S1: online service age range, inclusive, by date of birth. */
+	const MIN_AGE = 18;
+	const MAX_AGE = 85;
+	/** Rule S1A applies from this age to MAX_AGE. */
+	const S1A_AGE = 75;
+
+	/** Heading used wherever the rule S1A answers are shown to staff. */
+	const S1A_LABEL = 'Age 75 to 85: rule S1A checks';
+
+	/** PRISMA-7 questions 3 to 7 (asked); 1 and 2 come from DOB and sex. */
+	const PRISMA_ITEMS = [
+		'limitActivities' => 'Health problems that limit activities',
+		'needHelp'        => 'Needs someone to help on a regular basis',
+		'stayHome'        => 'Health problems that require staying at home',
+		'countOnSomeone'  => 'Can count on someone close if help is needed',
+		'walkingAid'      => 'Regularly uses a stick, walker or wheelchair',
+	];
+
+	const S1A_MEDS_COUNT = [
+		'under-5' => 'Fewer than 5',
+		'5-9'     => '5 to 9',
+		'10-plus' => '10 or more',
+		'unsure'  => 'Not sure',
+	];
+
+	const S1A_KIDNEY_TEST = [
+		'within-12m' => 'In the last 12 months',
+		'over-12m'   => 'More than 12 months ago',
+		'unsure'     => 'Never, or not sure',
+	];
 
 	const DISQUALIFYING_CONDITIONS = [
 		'chronic_malabsorption' => 'chronic malabsorption syndrome',
@@ -111,26 +149,31 @@ class TC_Eligibility_Rules {
 			'start_bmi'     => 0.0,
 			'pathway'       => ( ( $payload['userType'] ?? '' ) === 'switching' ) ? 'transfer' : 'new',
 			'flags'         => [],
+			'prisma7_score' => null,
 			'rules_version' => self::RULES_VERSION,
 		];
 
+		$too_old  = "Our weight loss plan isn't suitable for people aged 86 or over.";
 		$age_band = (string) ( $payload['ageBand'] ?? '' );
 		if ( $age_band === 'under-18' ) {
 			return self::ineligible( $base, "Our weight loss plan isn't suitable for people under 18 years old." );
 		}
-		if ( $age_band === '75-over' ) {
-			return self::ineligible( $base, "Our weight loss plan isn't suitable for people over 75 years old." );
+		if ( $age_band === '86-over' ) {
+			return self::ineligible( $base, $too_old );
 		}
 
+		// Rule S1 is applied to the date of birth, which is required.
 		$dob_age = self::age_from_dob( $payload['dob'] ?? '' );
-		if ( $dob_age !== null ) {
-			if ( $dob_age < 18 ) {
-				return self::ineligible( $base, 'You must be at least 18 years old to use this service.' );
-			}
-			if ( $dob_age >= 75 ) {
-				return self::ineligible( $base, "Our weight loss plan isn't suitable for people over 75 years old." );
-			}
+		if ( $dob_age === null ) {
+			return self::ineligible( $base, 'Please enter your date of birth.' );
 		}
+		if ( $dob_age < self::MIN_AGE ) {
+			return self::ineligible( $base, 'You must be at least 18 years old to use this service.' );
+		}
+		if ( $dob_age > self::MAX_AGE ) {
+			return self::ineligible( $base, $too_old );
+		}
+		$is_s1a = $dob_age >= self::S1A_AGE;
 
 		$is_female = ( $payload['sex'] ?? '' ) === 'female';
 		if ( $is_female ) {
@@ -185,6 +228,10 @@ class TC_Eligibility_Rules {
 		// Mandatory consents (AT Health decisions 16 and 18 Sep 2026).
 		if ( empty( $payload['consentIdVideo'] ) || empty( $payload['gpConsentSCR'] ) || empty( $payload['consentLifestyle'] ) ) {
 			return self::ineligible( $base, 'To be treated, you need to agree to a photo ID check, a video consultation where your weight and height are checked, a check of your NHS Summary Care Record, and to follow a reduced-calorie diet with more physical activity.' );
+		}
+		if ( $is_s1a && empty( $payload['gpConsentShare'] ) ) {
+			// Rule S1A / consent 7.4: GP sharing is mandatory from 75.
+			return self::ineligible( $base, 'From age 75, we can only offer a consultation if you agree to us telling your GP about any treatment prescribed.' );
 		}
 		if ( empty( $payload['gpConsentShare'] ) ) {
 			$flags['no_gp_consent'] = 'RED FLAG: patient did not consent to GP sharing. NPA: proceeding is unlikely to be appropriate; record individual risk-based decision.';
@@ -265,11 +312,174 @@ class TC_Eligibility_Rules {
 			$flags[ 'med_' . $key ] = $note;
 		}
 
+		if ( $is_s1a ) {
+			$s1a = self::s1a_check( $payload, $dob_age );
+			if ( $s1a['missing'] ) {
+				return self::ineligible( $base, 'Please answer all the extra questions for people aged 75 and over.' );
+			}
+			if ( $s1a['exclude'] ) {
+				// Exclusion E11: eGFR below 30.
+				return self::ineligible( $base, 'Based on the medical history you provided, weight loss medication is not clinically appropriate. Please speak with your GP about alternative options.' );
+			}
+			$base['prisma7_score'] = $s1a['prisma7_score'];
+			$flags                 = array_merge( $flags, $s1a['flags'] );
+		}
+
 		$flags['triage_only'] = 'Triage passed (rules ' . self::RULES_VERSION . '). Video consultation, photo ID, SCR check and independent weight/height verification required before prescribing.';
 
 		$base['eligible'] = true;
 		$base['flags']    = $flags;
 		return $base;
+	}
+
+	/**
+	 * Rule S1A (ages 75 to 85). Triage support only: the answers are recorded
+	 * and flagged for the prescriber and never pass or fail the patient, with
+	 * one exception: a reported eGFR below 30 is exclusion E11.
+	 *
+	 * @return array { missing: bool, exclude: bool, prisma7_score: int|null, flags: array }
+	 */
+	public static function s1a_check( array $payload, $age ) {
+		$out = [ 'missing' => false, 'exclude' => false, 'prisma7_score' => null, 'flags' => [] ];
+		$yn  = [ 'yes', 'no' ];
+
+		$falls    = (string) ( $payload['s1aFalls'] ?? '' );
+		$fracture = (string) ( $payload['s1aFracture'] ?? '' );
+		$meds     = (string) ( $payload['s1aMedsCount'] ?? '' );
+		$bp       = (string) ( $payload['s1aBpWater'] ?? '' );
+		$kidney   = (string) ( $payload['s1aKidneyTest'] ?? '' );
+		$prisma   = (array) ( $payload['s1aPrisma'] ?? [] );
+
+		if ( ! in_array( $falls, $yn, true ) || ! in_array( $fracture, $yn, true )
+			|| ! isset( self::S1A_MEDS_COUNT[ $meds ] )
+			|| ! in_array( $bp, [ 'yes', 'no', 'unsure' ], true )
+			|| ! isset( self::S1A_KIDNEY_TEST[ $kidney ] ) ) {
+			$out['missing'] = true;
+			return $out;
+		}
+		foreach ( array_keys( self::PRISMA_ITEMS ) as $item ) {
+			if ( ! in_array( $prisma[ $item ] ?? '', $yn, true ) ) {
+				$out['missing'] = true;
+				return $out;
+			}
+		}
+
+		$egfr      = self::egfr_value( $payload['s1aEgfrResult'] ?? '' );
+		$egfr_date = self::egfr_date( $payload['s1aEgfrDate'] ?? '' );
+		if ( $egfr !== null && $egfr < 30 ) {
+			$out['exclude'] = true;
+			return $out;
+		}
+
+		// PRISMA-7: one point per "yes" across all seven questions, as on the
+		// Raiche PRISMA-7 form (question 1 "older than 85" is always no here).
+		$score = ( ( $payload['sex'] ?? '' ) === 'male' ) ? 1 : 0;
+		foreach ( array_keys( self::PRISMA_ITEMS ) as $item ) {
+			$score += ( $prisma[ $item ] === 'yes' ) ? 1 : 0;
+		}
+		$out['prisma7_score'] = $score;
+
+		$f = [];
+		$f['s1a'] = self::S1A_LABEL . ' (age ' . (int) $age . '). Triage support only, no automatic approval. Record capacity (any doubt: no remote prescribing, face-to-face referral). GP sharing consented (mandatory from 75). Take the full medicines list from the SCR. Weight from a clinical record or in-person weighing if unsteady, never scales on camera; independent weight verification every 3 months. Pause during vomiting, diarrhoea or poor fluid intake. Advise enough protein, and a vitamin and mineral supplement if intake is poor. For Wegovy, explain the fracture finding in people 75 and over (SmPC 4.8).';
+
+		$triggers = [];
+		if ( $score >= 3 ) {
+			$triggers[] = 'PRISMA-7 score ' . $score . ' (counted as yes answers; some versions score question 6 the other way: confirm)';
+		}
+		if ( $falls === 'yes' ) {
+			$triggers[] = 'fall in the last 12 months';
+		}
+		if ( $fracture === 'yes' ) {
+			$triggers[] = 'fragility fracture';
+		}
+		if ( $triggers ) {
+			$f['s1a_face_to_face'] = 'Rule S1A: ' . implode( '; ', $triggers ) . '. The rules require a face-to-face assessment before prescribing.';
+		}
+
+		if ( $meds === '10-plus' ) {
+			$f['s1a_polypharmacy'] = 'Rule S1A: 10 or more regular medicines reported. GP liaison before starting (NICE NG56 1.3.5).';
+		} elseif ( $meds === 'unsure' ) {
+			$f['s1a_polypharmacy'] = 'Rule S1A: patient not sure how many regular medicines they take. Count from the SCR; 10 or more means GP liaison before starting.';
+		}
+
+		if ( $bp !== 'no' ) {
+			$f['s1a_bp_water'] = 'Rule S1A: blood pressure or water tablets ' . ( $bp === 'yes' ? 'reported' : 'possible (patient not sure)' ) . '. Advise on dizziness and dehydration (Foundayo: hypotension warning).';
+		}
+
+		if ( $kidney === 'within-12m' ) {
+			$f['s1a_egfr'] = 'Rule S1A: kidney test in the last 12 months reported'
+				. ( $egfr_date ? ' (' . $egfr_date . ')' : '' )
+				. ( $egfr !== null ? ', eGFR ' . $egfr : ', result not known' )
+				. '. See the eGFR result in a clinical record before the first supply.';
+		} else {
+			$f['s1a_egfr'] = 'Rule S1A: no kidney test in the last 12 months reported. GP blood test (eGFR) first, before the first supply.'
+				. ( $egfr !== null ? ' Older result given: eGFR ' . $egfr . ( $egfr_date ? ' (' . $egfr_date . ')' : '' ) . '.' : '' );
+		}
+
+		if ( (int) $age === self::MAX_AGE ) {
+			$f['s1_age_85'] = 'Rule S1: age 85. Record that the licence data are limited from age 85 and that this was discussed with the patient.';
+		}
+
+		if ( trim( (string) ( $payload['gpName'] ?? '' ) ) === '' ) {
+			$f['s1a_no_gp_name'] = 'Rule S1A: GP sharing is mandatory from 75 but no GP surgery was given. Obtain GP details before prescribing.';
+		}
+
+		$out['flags'] = $f;
+		return $out;
+	}
+
+	/**
+	 * Rule S1A answers as label => value rows, for the clinician email and
+	 * the order screen. Empty when the patient was not asked.
+	 */
+	public static function s1a_summary( array $payload ) {
+		if ( empty( $payload['s1aFalls'] ) && empty( $payload['s1aKidneyTest'] ) ) {
+			return [];
+		}
+		$yn     = function ( $v ) {
+			return [ 'yes' => 'Yes', 'no' => 'No', 'unsure' => 'Not sure' ][ (string) $v ] ?? 'Not answered';
+		};
+		$prisma = (array) ( $payload['s1aPrisma'] ?? [] );
+		$rows   = [];
+		$rows['Falls in the last 12 months'] = $yn( $payload['s1aFalls'] ?? '' );
+		$rows['Any fragility fracture']      = $yn( $payload['s1aFracture'] ?? '' );
+		$rows['Number of regular medicines'] = self::S1A_MEDS_COUNT[ (string) ( $payload['s1aMedsCount'] ?? '' ) ] ?? 'Not answered';
+		$rows['Blood pressure tablets or water tablets'] = $yn( $payload['s1aBpWater'] ?? '' );
+		$rows['Most recent kidney blood test (eGFR)']    = self::S1A_KIDNEY_TEST[ (string) ( $payload['s1aKidneyTest'] ?? '' ) ] ?? 'Not answered';
+		$egfr_date = self::egfr_date( $payload['s1aEgfrDate'] ?? '' );
+		$egfr      = self::egfr_value( $payload['s1aEgfrResult'] ?? '' );
+		$rows['eGFR test date (month)'] = $egfr_date ?: 'Not known';
+		$rows['eGFR result']            = ( $egfr !== null ) ? (string) $egfr : 'Not known';
+		$rows['PRISMA-7 Q1: older than 85'] = 'No (from date of birth)';
+		$rows['PRISMA-7 Q2: male']          = ( ( $payload['sex'] ?? '' ) === 'male' ) ? 'Yes' : 'No';
+		$q = 3;
+		foreach ( self::PRISMA_ITEMS as $key => $label ) {
+			$rows[ 'PRISMA-7 Q' . $q . ': ' . $label ] = $yn( $prisma[ $key ] ?? '' );
+			$q++;
+		}
+		if ( isset( $payload['s1aPrismaScore'] ) && $payload['s1aPrismaScore'] !== '' && $payload['s1aPrismaScore'] !== null ) {
+			$rows['PRISMA-7 score (yes answers; 3 or more: face-to-face)'] = (string) (int) $payload['s1aPrismaScore'];
+		}
+		return $rows;
+	}
+
+	/** eGFR as an integer 1 to 200, or null when blank or invalid. */
+	public static function egfr_value( $v ) {
+		$v = trim( (string) $v );
+		if ( $v === '' || ! is_numeric( $v ) ) {
+			return null;
+		}
+		$n = (float) $v;
+		return ( $n >= 1 && $n <= 200 ) ? (int) round( $n ) : null;
+	}
+
+	/** eGFR test month as YYYY-MM, not in the future, or '' when invalid. */
+	public static function egfr_date( $v ) {
+		$v = (string) $v;
+		if ( ! preg_match( '/^(\d{4})-(\d{2})$/', $v, $m ) || (int) $m[2] < 1 || (int) $m[2] > 12 || (int) $m[1] < 1990 ) {
+			return '';
+		}
+		return ( $v <= gmdate( 'Y-m' ) ) ? $v : '';
 	}
 
 	public static function bmi( $weight_kg, $height_cm ) {
@@ -387,7 +597,7 @@ class TC_Eligibility_Rules {
 		return false;
 	}
 
-	private static function age_from_dob( $dob ) {
+	public static function age_from_dob( $dob ) {
 		if ( empty( $dob ) ) {
 			return null;
 		}

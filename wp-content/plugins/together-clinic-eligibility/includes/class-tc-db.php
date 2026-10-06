@@ -7,7 +7,7 @@ class TC_DB {
 
 	const TABLE = 'tc_eligibility_submissions';
 	const SCHEMA_VERSION_OPTION = 'tc_eligibility_db_version';
-	const SCHEMA_VERSION = '1.1.0';
+	const SCHEMA_VERSION = '1.2.0';
 
 	public static function table_name() {
 		global $wpdb;
@@ -78,6 +78,15 @@ class TC_DB {
 			consent_contraception TINYINT(1) NOT NULL DEFAULT 0,
 			consent_id_video TINYINT(1) NOT NULL DEFAULT 0,
 			consent_lifestyle TINYINT(1) NOT NULL DEFAULT 0,
+			s1a_falls VARCHAR(10) NOT NULL DEFAULT '',
+			s1a_fracture VARCHAR(10) NOT NULL DEFAULT '',
+			s1a_meds_count VARCHAR(20) NOT NULL DEFAULT '',
+			s1a_bp_water VARCHAR(10) NOT NULL DEFAULT '',
+			s1a_kidney_test VARCHAR(20) NOT NULL DEFAULT '',
+			s1a_egfr_date VARCHAR(10) NOT NULL DEFAULT '',
+			s1a_egfr_result VARCHAR(10) NOT NULL DEFAULT '',
+			s1a_prisma LONGTEXT NULL,
+			s1a_prisma_score VARCHAR(5) NOT NULL DEFAULT '',
 			clinical_flags LONGTEXT NULL,
 			raw_payload LONGTEXT NULL,
 			ip_address VARCHAR(45) NOT NULL DEFAULT '',
@@ -182,6 +191,15 @@ class TC_DB {
 			'consent_contraception' => ! empty( $payload['consentContraception'] ) ? 1 : 0,
 			'consent_id_video'      => ! empty( $payload['consentIdVideo'] ) ? 1 : 0,
 			'consent_lifestyle'     => ! empty( $payload['consentLifestyle'] ) ? 1 : 0,
+			's1a_falls'             => sanitize_text_field( $payload['s1aFalls'] ?? '' ),
+			's1a_fracture'          => sanitize_text_field( $payload['s1aFracture'] ?? '' ),
+			's1a_meds_count'        => sanitize_text_field( $payload['s1aMedsCount'] ?? '' ),
+			's1a_bp_water'          => sanitize_text_field( $payload['s1aBpWater'] ?? '' ),
+			's1a_kidney_test'       => sanitize_text_field( $payload['s1aKidneyTest'] ?? '' ),
+			's1a_egfr_date'         => sanitize_text_field( $payload['s1aEgfrDate'] ?? '' ),
+			's1a_egfr_result'       => sanitize_text_field( $payload['s1aEgfrResult'] ?? '' ),
+			's1a_prisma'            => wp_json_encode( $payload['s1aPrisma'] ?? [] ),
+			's1a_prisma_score'      => isset( $payload['s1aPrismaScore'] ) ? (string) (int) $payload['s1aPrismaScore'] : '',
 			'clinical_flags'        => wp_json_encode( $payload['clinicalFlags'] ?? [] ),
 			'raw_payload'           => wp_json_encode( $payload ),
 		];
@@ -217,7 +235,7 @@ class TC_DB {
 
 	/**
 	 * Most recent recorded height for a patient, from their eligibility
-	 * assessments. Used by the reorder BMI floor (rules WM-2026-10-v1).
+	 * assessments. Used by the reorder BMI floor (rules WM-2026-10-v1 onwards).
 	 */
 	public static function latest_height_for_user( $user_id ) {
 		global $wpdb;

@@ -1,5 +1,6 @@
 <?php
 define('ABSPATH', '/tmp/');
+function esc_html($s){ return htmlspecialchars((string)$s); }
 function sanitize_text_field($s){ return trim(strip_tags((string)$s)); }
 function apply_filters($h,$v){ return $v; }
 function get_option($k,$d=false){ return $d; }
@@ -10,7 +11,7 @@ require $P.'/includes/class-tc-dose-ladder.php';
 require $P.'/includes/class-tc-eligibility-rules.php';
 $pass=0;$fail=0;
 function check($name,$cond,$extra=''){ global $pass,$fail; if($cond){$pass++; echo "PASS $name\n";} else {$fail++; echo "FAIL $name $extra\n";} }
-function base($o=[]){ return array_merge(['ageBand'=>'18-74','dob'=>'1980-01-01','sex'=>'male','weightKg'=>100,'heightCm'=>180,'termsAgreed'=>true,'consentIdVideo'=>true,'gpConsentSCR'=>true,'consentLifestyle'=>true,'gpConsentShare'=>true,'conditions'=>['None of these apply'],'weightConditions'=>['None of these apply'],'diabetes'=>'none','userType'=>'new','ethnicity'=>'white'],$o); }
+function base($o=[]){ return array_merge(['ageBand'=>'18-85','dob'=>'1980-01-01','sex'=>'male','weightKg'=>100,'heightCm'=>180,'termsAgreed'=>true,'consentIdVideo'=>true,'gpConsentSCR'=>true,'consentLifestyle'=>true,'gpConsentShare'=>true,'conditions'=>['None of these apply'],'weightConditions'=>['None of these apply'],'diabetes'=>'none','userType'=>'new','ethnicity'=>'white'],$o); }
 $R='TC_Eligibility_Rules';
 // Today's two orders
 $r=$R::evaluate(base(['sex'=>'female','pregnant'=>'no','breastfeeding'=>'no','conceive'=>'no','weightKg'=>75,'heightCm'=>160,'weightConditions'=>['My weight makes me anxious in social situations'],'couldConceive'=>'no']));
@@ -102,4 +103,49 @@ $r=$R::evaluate(base(['sex'=>'female','weightKg'=>100,'heightCm'=>170]));
 check('Female with pregnancy answers missing -> not eligible',!$r['eligible']);
 $r=$R::evaluate(base(['currentMedsList'=>'amlodipine 5mg','selectedTreatment'=>'mounjaro']));
 check('Foundayo BP flag raised even if Mounjaro preferred',isset($r['flags']['med_foundayo_bp']));
+// Rules WM-2026-10-v2: age 18 to 85 by date of birth (rule S1), ages 75 to 85 (rule S1A).
+check('Rules version is WM-2026-10-v2', $R::RULES_VERSION==='WM-2026-10-v2');
+$r=$R::evaluate(base()); check('Result records rules version v2', $r['rules_version']==='WM-2026-10-v2');
+function dob_years_ago($y,$plus_days=0){ return (new DateTime('today'))->modify("-$y years")->modify(($plus_days>=0?'+':'').$plus_days.' days')->format('Y-m-d'); }
+function s1a($o=[]){ return array_merge(['s1aFalls'=>'no','s1aFracture'=>'no','s1aMedsCount'=>'under-5','s1aBpWater'=>'no','s1aKidneyTest'=>'within-12m','s1aEgfrDate'=>'','s1aEgfrResult'=>'','gpName'=>'Test Surgery','s1aPrisma'=>['limitActivities'=>'no','needHelp'=>'no','stayHome'=>'no','countOnSomeone'=>'no','walkingAid'=>'no']],$o); }
+$r=$R::evaluate(base(['dob'=>dob_years_ago(18)])); check('DOB: 18th birthday today -> may proceed',$r['eligible'],json_encode($r));
+$r=$R::evaluate(base(['dob'=>dob_years_ago(18,1)])); check('DOB: 18th birthday tomorrow (17) -> not eligible',!$r['eligible']);
+$r=$R::evaluate(base(s1a(['dob'=>dob_years_ago(86,1)]))); check('DOB: age 85, 86th birthday tomorrow -> may proceed',$r['eligible'],json_encode($r));
+check('Age 85 -> licence data flag', isset($r['flags']['s1_age_85']));
+$r=$R::evaluate(base(s1a(['dob'=>dob_years_ago(86)]))); check('DOB: 86th birthday today -> not eligible',!$r['eligible'] && strpos($r['reason'],'86')!==false,json_encode($r));
+$r=$R::evaluate(base(s1a(['dob'=>dob_years_ago(90)]))); check('DOB: age 90 -> not eligible',!$r['eligible']);
+$r=$R::evaluate(base(['dob'=>''])); check('Missing DOB -> not eligible',!$r['eligible']);
+$r=$R::evaluate(base(['ageBand'=>'86-over'])); check('Age band 86-over -> not eligible',!$r['eligible']);
+$r=$R::evaluate(base(['ageBand'=>'under-18'])); check('Age band under-18 -> not eligible',!$r['eligible']);
+$r=$R::evaluate(base(['ageBand'=>'18-85'])); check('Age band 18-85 -> may proceed',$r['eligible']);
+$r=$R::evaluate(base(['dob'=>dob_years_ago(74,-1)])); check('Age 74: no S1A questions needed, no S1A flag',$r['eligible'] && !isset($r['flags']['s1a']) && $r['prisma7_score']===null,json_encode($r));
+$r=$R::evaluate(base(['dob'=>dob_years_ago(74,-1),'gpConsentShare'=>false])); check('Age 74, no GP consent -> red flag only',$r['eligible'] && isset($r['flags']['no_gp_consent']));
+$d75=dob_years_ago(75);
+$r=$R::evaluate(base(s1a(['dob'=>$d75]))); check('Age 75 (birthday today) with S1A answers -> may proceed, S1A flag',$r['eligible'] && isset($r['flags']['s1a']) && isset($r['flags']['triage_only']),json_encode($r));
+check('Age 75: S1A flag carries the S1A heading', strpos($r['flags']['s1a'],'Age 75 to 85: rule S1A checks')===0);
+$r=$R::evaluate(base(s1a(['dob'=>$d75,'gpConsentShare'=>false]))); check('Age 75, no GP consent -> not eligible (mandatory)',!$r['eligible'] && strpos($r['reason'],'GP')!==false);
+$r=$R::evaluate(base(s1a(['dob'=>dob_years_ago(85),'gpConsentShare'=>false]))); check('Age 85, no GP consent -> not eligible',!$r['eligible']);
+$r=$R::evaluate(base(['dob'=>$d75])); check('Age 75, S1A answers missing -> not eligible (unanswered)',!$r['eligible'] && strpos($r['reason'],'75')!==false);
+$p=s1a(['dob'=>$d75]); unset($p['s1aPrisma']['walkingAid']); $r=$R::evaluate(base($p)); check('Age 75, a PRISMA-7 answer missing -> not eligible (unanswered)',!$r['eligible']);
+$r=$R::evaluate(base(s1a(['dob'=>$d75,'s1aFalls'=>'maybe']))); check('Age 75, invalid falls answer -> not eligible (unanswered)',!$r['eligible']);
+// S1A answers never auto-pass or auto-fail, except eGFR below 30 (E11).
+$worst=s1a(['dob'=>$d75,'s1aFalls'=>'yes','s1aFracture'=>'yes','s1aMedsCount'=>'10-plus','s1aBpWater'=>'yes','s1aKidneyTest'=>'unsure','s1aEgfrResult'=>'','gpName'=>'','s1aPrisma'=>['limitActivities'=>'yes','needHelp'=>'yes','stayHome'=>'yes','countOnSomeone'=>'yes','walkingAid'=>'yes']]);
+$r=$R::evaluate(base($worst)); check('S1A: every concerning answer -> still not screened out, all flagged',$r['eligible'] && isset($r['flags']['s1a_face_to_face'],$r['flags']['s1a_polypharmacy'],$r['flags']['s1a_bp_water'],$r['flags']['s1a_egfr'],$r['flags']['s1a_no_gp_name']),json_encode($r));
+check('S1A: PRISMA-7 male + 5 yes = 6', $r['prisma7_score']===6, json_encode($r['prisma7_score']));
+check('S1A: no recent kidney test -> GP blood test first flag', strpos($r['flags']['s1a_egfr'],'GP blood test')!==false);
+$b=$R::evaluate(base(['weightKg'=>80,'heightCm'=>180]+s1a(['dob'=>$d75])));
+check('S1A: best answers do not rescue a BMI fail (BMI 24.7)', !$b['eligible']);
+$r=$R::evaluate(base(s1a(['dob'=>$d75]))); check('S1A: reassuring answers -> no face-to-face flag, PRISMA 1 (male)',$r['eligible'] && !isset($r['flags']['s1a_face_to_face']) && $r['prisma7_score']===1);
+$r=$R::evaluate(base(s1a(['dob'=>$d75,'sex'=>'female','pregnant'=>'no','breastfeeding'=>'no','conceive'=>'no','couldConceive'=>'no','s1aPrisma'=>['limitActivities'=>'yes','needHelp'=>'yes','stayHome'=>'no','countOnSomeone'=>'no','walkingAid'=>'no']])));
+check('S1A: female PRISMA-7 score 2 -> no face-to-face flag',$r['eligible'] && $r['prisma7_score']===2 && !isset($r['flags']['s1a_face_to_face']),json_encode($r));
+$r=$R::evaluate(base(s1a(['dob'=>$d75,'s1aPrisma'=>['limitActivities'=>'yes','needHelp'=>'yes','stayHome'=>'no','countOnSomeone'=>'no','walkingAid'=>'no']])));
+check('S1A: male PRISMA-7 score 3 -> face-to-face flag, still may proceed',$r['eligible'] && isset($r['flags']['s1a_face_to_face']));
+$r=$R::evaluate(base(s1a(['dob'=>$d75,'s1aFalls'=>'yes']))); check('S1A: fall only -> face-to-face flag, may proceed',$r['eligible'] && isset($r['flags']['s1a_face_to_face']));
+$r=$R::evaluate(base(s1a(['dob'=>$d75,'s1aEgfrResult'=>'29','s1aEgfrDate'=>'2026-05']))); check('S1A: eGFR 29 -> not eligible (E11 hard exclusion)',!$r['eligible']);
+$r=$R::evaluate(base(s1a(['dob'=>$d75,'s1aEgfrResult'=>'30','s1aEgfrDate'=>'2026-05']))); check('S1A: eGFR 30 -> may proceed, result in flag',$r['eligible'] && strpos($r['flags']['s1a_egfr'],'eGFR 30')!==false,json_encode($r['flags']['s1a_egfr']??''));
+$r=$R::evaluate(base(s1a(['dob'=>$d75,'s1aEgfrResult'=>'abc']))); check('S1A: non-numeric eGFR ignored, may proceed',$r['eligible']);
+$r=$R::evaluate(base(['dob'=>dob_years_ago(60),'s1aEgfrResult'=>'20'])); check('Under 75: S1A fields ignored',$r['eligible'] && !isset($r['flags']['s1a']));
+$rows=$R::s1a_summary(s1a(['sex'=>'male','s1aPrismaScore'=>1])); check('S1A summary lists answers and score', isset($rows['Falls in the last 12 months'],$rows['eGFR result'],$rows['PRISMA-7 Q7: Regularly uses a stick, walker or wheelchair']) && $rows['PRISMA-7 Q2: male']==='Yes' && isset($rows['PRISMA-7 score (yes answers; 3 or more: face-to-face)']), json_encode($rows));
+check('S1A summary empty when not asked', $R::s1a_summary(base())===[]);
+check('eGFR future month rejected', $R::egfr_date('2999-01')==='' && $R::egfr_date('2026-13')==='' && $R::egfr_date('2025-06')==='2025-06');
 echo "\n$pass passed, $fail failed\n"; exit($fail?1:0);

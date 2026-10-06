@@ -73,6 +73,7 @@ $tc_flags    = (array) ( $payload['clinicalFlags'] ?? ( $eligibility['flags'] ??
 <h3 style="margin-top: 24px;">Health metrics</h3>
 <table cellspacing="0" cellpadding="6" border="1" style="width: 100%; font-size: 13px; border-collapse: collapse;">
 	<tr><th align="left">Age band</th><td><?php echo esc_html( $payload['ageBand'] ?? '' ); ?></td></tr>
+	<tr><th align="left">Age (from date of birth)</th><td><?php $tc_age = TC_Eligibility_Rules::age_from_dob( $payload['dob'] ?? '' ); echo esc_html( $tc_age === null ? 'Not known' : (string) $tc_age ); ?></td></tr>
 	<tr><th align="left">Ethnicity</th><td><?php echo esc_html( $payload['ethnicity'] ?? '' ); ?></td></tr>
 	<tr><th align="left">Sex at birth</th><td><?php echo esc_html( $payload['sex'] ?? '' ); ?></td></tr>
 	<tr><th align="left">Weight</th><td><?php echo esc_html( number_format( (float) ( $payload['weightKg'] ?? 0 ), 1 ) ); ?> kg</td></tr>
@@ -81,6 +82,8 @@ $tc_flags    = (array) ( $payload['clinicalFlags'] ?? ( $eligibility['flags'] ??
 	<tr><th align="left">Diabetes</th><td><?php echo esc_html( $payload['diabetes'] ?? 'Not specified' ); ?></td></tr>
 	<tr><th align="left">Goal weight</th><td><?php echo esc_html( $payload['goalWeight'] ?? 'Not provided' ); ?></td></tr>
 </table>
+
+<?php include TC_ELIGIBILITY_PATH . 'templates/s1a-answers.php'; ?>
 
 <?php if ( ( $payload['sex'] ?? '' ) === 'female' ) : ?>
 	<h3 style="margin-top: 24px;">Pregnancy screening</h3>

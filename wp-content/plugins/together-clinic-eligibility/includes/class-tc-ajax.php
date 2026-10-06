@@ -146,6 +146,9 @@ class TC_Ajax {
 			$payload['bmi'] = $eligibility['bmi'];
 		}
 		$payload['startBmi']     = $eligibility['start_bmi'] ?? 0;
+		if ( isset( $eligibility['prisma7_score'] ) && $eligibility['prisma7_score'] !== null ) {
+			$payload['s1aPrismaScore'] = (int) $eligibility['prisma7_score'];
+		}
 		$payload['rulesVersion'] = $eligibility['rules_version'] ?? TC_Eligibility_Rules::RULES_VERSION;
 		if ( ! empty( $eligibility['flags'] ) ) {
 			$review_flags = array_merge( $eligibility['flags'], $review_flags );
@@ -420,6 +423,23 @@ class TC_Ajax {
 		$p['consentIdVideo']       = ! empty( $p['consentIdVideo'] );
 		$p['consentLifestyle']     = ! empty( $p['consentLifestyle'] );
 		$p['currentMeds']          = in_array( $p['currentMeds'] ?? '', [ 'yes', 'none' ], true ) ? $p['currentMeds'] : sanitize_text_field( $p['currentMeds'] ?? '' );
+		// Rules WM-2026-10-v2, rule S1A (ages 75 to 85). Unknown values are
+		// dropped; the rules treat a missing answer as unanswered.
+		$yn                    = [ 'yes', 'no' ];
+		$p['s1aFalls']         = in_array( $p['s1aFalls'] ?? '', $yn, true ) ? $p['s1aFalls'] : '';
+		$p['s1aFracture']      = in_array( $p['s1aFracture'] ?? '', $yn, true ) ? $p['s1aFracture'] : '';
+		$p['s1aMedsCount']     = isset( TC_Eligibility_Rules::S1A_MEDS_COUNT[ (string) ( $p['s1aMedsCount'] ?? '' ) ] ) ? (string) $p['s1aMedsCount'] : '';
+		$p['s1aBpWater']       = in_array( $p['s1aBpWater'] ?? '', [ 'yes', 'no', 'unsure' ], true ) ? $p['s1aBpWater'] : '';
+		$p['s1aKidneyTest']    = isset( TC_Eligibility_Rules::S1A_KIDNEY_TEST[ (string) ( $p['s1aKidneyTest'] ?? '' ) ] ) ? (string) $p['s1aKidneyTest'] : '';
+		$p['s1aEgfrDate']      = TC_Eligibility_Rules::egfr_date( $p['s1aEgfrDate'] ?? '' );
+		$egfr                  = TC_Eligibility_Rules::egfr_value( $p['s1aEgfrResult'] ?? '' );
+		$p['s1aEgfrResult']    = ( $egfr === null ) ? '' : (string) $egfr;
+		$prisma_in             = is_array( $p['s1aPrisma'] ?? null ) ? $p['s1aPrisma'] : [];
+		$p['s1aPrisma']        = [];
+		foreach ( array_keys( TC_Eligibility_Rules::PRISMA_ITEMS ) as $item ) {
+			$p['s1aPrisma'][ $item ] = in_array( $prisma_in[ $item ] ?? '', $yn, true ) ? $prisma_in[ $item ] : '';
+		}
+		unset( $p['s1aPrismaScore'] ); // Server-calculated only.
 
 		return $p;
 	}

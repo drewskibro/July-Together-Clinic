@@ -53,11 +53,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <h4 style="margin-top:20px;border-bottom:2px solid #e5e7eb;padding-bottom:8px;">Health metrics</h4>
 <p><strong>Age band:</strong> <?php echo esc_html( $payload['ageBand'] ?? '' ); ?></p>
+<p><strong>Age (from date of birth):</strong> <?php $tc_age = TC_Eligibility_Rules::age_from_dob( $payload['dob'] ?? '' ); echo esc_html( $tc_age === null ? 'Not known' : (string) $tc_age ); ?></p>
 <p><strong>Ethnicity:</strong> <?php echo esc_html( $payload['ethnicity'] ?? '' ); ?></p>
 <p><strong>Sex at birth:</strong> <?php echo esc_html( $payload['sex'] ?? '' ); ?></p>
 <p><strong>Weight:</strong> <?php echo esc_html( number_format( (float) ( $payload['weightKg'] ?? 0 ), 1 ) ); ?> kg</p>
 <p><strong>Height:</strong> <?php echo esc_html( number_format( (float) ( $payload['heightCm'] ?? 0 ), 1 ) ); ?> cm</p>
 <p><strong>BMI:</strong> <?php echo esc_html( number_format( (float) ( $payload['bmi'] ?? 0 ), 1 ) ); ?></p>
+
+<?php include TC_ELIGIBILITY_PATH . 'templates/s1a-answers.php'; ?>
 
 <h4 style="margin-top:20px;border-bottom:2px solid #e5e7eb;padding-bottom:8px;">Medical history</h4>
 <p><strong>Diabetes:</strong> <?php echo esc_html( $payload['diabetes'] ?? 'Not specified' ); ?></p>
