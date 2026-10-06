@@ -87,7 +87,7 @@
 	}
 
 	// Rule S1: 18 to 85 inclusive by date of birth. Rule S1A: extra
-	// questions and mandatory GP sharing from 75. The answers are for the
+	// questions from 75. The answers are for the
 	// prescriber and never pass or fail anyone here, except a reported eGFR
 	// below 30 (exclusion E11), which the server also applies.
 	var MAX_AGE = 85;
@@ -863,14 +863,11 @@
 	function saveConsents() {
 		var err = $('consent-error');
 		var required = ['consent-id-video', 'gp-consent-2', 'consent-lifestyle'];
-		if (isS1A()) required.push('gp-consent-1');
 		var ok = required.every(function (id) {
 			return $(id) && $(id).checked;
 		});
 		if (!ok) {
-			err.textContent = isS1A()
-				? 'Please tick the four required boxes. From age 75, sharing with your GP is required. We cannot prescribe without them.'
-				: 'Please tick the three required boxes. We cannot prescribe without them.';
+			err.textContent = 'Please tick the three required boxes. We cannot prescribe without them.';
 			err.style.display = 'block';
 			return;
 		}
@@ -972,11 +969,12 @@
 	}
 
 	function updateGpShareNote() {
-		var s1a = isS1A();
+		// GP sharing is strongly recommended at every age (GPhC 4.2 k); the
+		// prescriber decides if it is refused. The 75+ note is no longer shown.
 		['gp-share-note-under-75', 'gp-share-note-under-75-text'].forEach(function (id) {
-			if ($(id)) $(id).style.display = s1a ? 'none' : '';
+			if ($(id)) $(id).style.display = '';
 		});
-		if ($('gp-share-note-75')) $('gp-share-note-75').style.display = s1a ? '' : 'none';
+		if ($('gp-share-note-75')) $('gp-share-note-75').style.display = 'none';
 	}
 
 	function radioValue(name) {

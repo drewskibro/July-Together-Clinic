@@ -695,7 +695,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				<input type="checkbox" id="consent-lifestyle" /><span><strong>Required.</strong> I will follow a reduced-calorie diet and increase my physical activity alongside any treatment.</span>
 			</label>
 			<label class="checkbox-item" style="background:white;border:2px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:24px;">
-				<input type="checkbox" id="gp-consent-1" /><span>I agree to Together Clinic telling my GP about any treatment prescribed, including the medicine and dose. <strong id="gp-share-note-under-75">Strongly recommended:</strong><strong id="gp-share-note-75" style="display:none;">Required for people aged 75 and over.</strong> <span id="gp-share-note-under-75-text">without this, the prescriber may not be able to treat you safely.</span></span>
+				<input type="checkbox" id="gp-consent-1" /><span>I agree to Together Clinic telling my GP about any treatment prescribed, including the medicine and dose. <strong id="gp-share-note-under-75">Strongly recommended:</strong><span id="gp-share-note-under-75-text">without this, the prescriber may not be able to treat you safely.</span></span>
 			</label>
 			<div id="consent-error" class="error-message" style="display:none;"></div>
 			<div class="button-group">

@@ -15,8 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * Key rules:
  *  - Age 18 to 85 inclusive, by date of birth; screened out from the 86th
- *    birthday (rule S1). Ages 75 to 85 (rule S1A): GP sharing consent is
- *    mandatory and extra answers (falls, fracture, PRISMA-7, medicines
+ *    birthday (rule S1). Ages 75 to 85 (rule S1A): extra answers (falls, fracture, PRISMA-7, medicines
  *    count, blood pressure or water tablets, kidney test) are recorded for
  *    the prescriber. Those answers never pass or fail anyone, except a
  *    reported eGFR below 30 (exclusion E11).
@@ -229,12 +228,13 @@ class TC_Eligibility_Rules {
 		if ( empty( $payload['consentIdVideo'] ) || empty( $payload['gpConsentSCR'] ) || empty( $payload['consentLifestyle'] ) ) {
 			return self::ineligible( $base, 'To be treated, you need to agree to a photo ID check, a video consultation where your weight and height are checked, a check of your NHS Summary Care Record, and to follow a reduced-calorie diet with more physical activity.' );
 		}
-		if ( $is_s1a && empty( $payload['gpConsentShare'] ) ) {
-			// Rule S1A / consent 7.4: GP sharing is mandatory from 75.
-			return self::ineligible( $base, 'From age 75, we can only offer a consultation if you agree to us telling your GP about any treatment prescribed.' );
-		}
+		// Consent 7.4: no GP sharing is a red flag at every age, never an
+		// automatic stop; the prescriber decides (GPhC distance guidance 4.2 k).
+		// From 75 the prescriber gives particular weight to the lack of GP
+		// oversight (rule S1A, Superintendent decision 6 Oct 2026).
 		if ( empty( $payload['gpConsentShare'] ) ) {
-			$flags['no_gp_consent'] = 'RED FLAG: patient did not consent to GP sharing. NPA: proceeding is unlikely to be appropriate; record individual risk-based decision.';
+			$flags['no_gp_consent'] = 'RED FLAG: patient did not consent to GP sharing. NPA: proceeding is unlikely to be appropriate; record individual risk-based decision (GPhC 4.2 k).'
+				. ( $is_s1a ? ' Age 75 to 85: give particular weight to the lack of GP oversight (rule S1A).' : '' );
 		}
 
 		if ( $is_female && ( $payload['couldConceive'] ?? '' ) === 'yes' ) {
@@ -380,7 +380,7 @@ class TC_Eligibility_Rules {
 		$out['prisma7_score'] = $score;
 
 		$f = [];
-		$f['s1a'] = self::S1A_LABEL . ' (age ' . (int) $age . '). Triage support only, no automatic approval. Record capacity (any doubt: no remote prescribing, face-to-face referral). GP sharing consented (mandatory from 75). Take the full medicines list from the SCR. Weight from a clinical record or in-person weighing if unsteady, never scales on camera; independent weight verification every 3 months. Pause during vomiting, diarrhoea or poor fluid intake. Advise enough protein, and a vitamin and mineral supplement if intake is poor. For Wegovy, explain the fracture finding in people 75 and over (SmPC 4.8).';
+		$f['s1a'] = self::S1A_LABEL . ' (age ' . (int) $age . '). Triage support only, no automatic approval. Record capacity (any doubt: no remote prescribing, face-to-face referral). GP sharing: no GP or refusal is a red flag, prescriber decides, giving particular weight to the lack of GP oversight. Take the full medicines list from the SCR. Weight from a clinical record or in-person weighing if unsteady, never scales on camera; independent weight verification every 3 months. Pause during vomiting, diarrhoea or poor fluid intake. Advise enough protein, and a vitamin and mineral supplement if intake is poor. For Wegovy, explain the fracture finding in people 75 and over (SmPC 4.8).';
 
 		$triggers = [];
 		if ( $score >= 3 ) {
@@ -421,7 +421,7 @@ class TC_Eligibility_Rules {
 		}
 
 		if ( trim( (string) ( $payload['gpName'] ?? '' ) ) === '' ) {
-			$f['s1a_no_gp_name'] = 'Rule S1A: GP sharing is mandatory from 75 but no GP surgery was given. Obtain GP details before prescribing.';
+			$f['s1a_no_gp_name'] = 'Rule S1A: no GP surgery given. Red flag: the prescriber decides after an individual risk-based assessment, giving particular weight to the lack of GP oversight (GPhC 4.2 k).';
 		}
 
 		$out['flags'] = $f;
@@ -470,7 +470,8 @@ class TC_Eligibility_Rules {
 			return null;
 		}
 		$n = (float) $v;
-		return ( $n >= 1 && $n <= 200 ) ? (int) round( $n ) : null;
+		// Keep one decimal place so 29.5 to 29.9 stays below 30 (exclusion E11).
+		return ( $n >= 1 && $n <= 200 ) ? round( $n, 1 ) : null;
 	}
 
 	/** eGFR test month as YYYY-MM, not in the future, or '' when invalid. */
