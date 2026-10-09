@@ -238,15 +238,13 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
           <h3 class="text-3xl font-serif text-gray-900 mb-2">Orlistat</h3>
           <p class="text-purple-600 font-bold text-lg mb-3">Branded as Xenical</p>
           <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_orlistat_desc', 'A clinically proven weight loss tablet that reduces the amount of fat your body absorbs from food. Suitable for patients with a Body Mass Index (BMI) of 28 or above.' ) ); ?></p>
-          <?php $tr_p = (string) ah_field( 'tr_orlistat_price', '' ); if ( $tr_p !== '' && stripos( $tr_p, 'XX' ) === false ) : ?>
+          <?php $tr_p = (string) ah_field( 'tr_orlistat_price', '£50 per pack' ); if ( $tr_p !== '' && stripos( $tr_p, 'XX' ) === false ) : ?>
           <p class="tr-price"><?php echo esc_html( $tr_p ); ?></p>
           <?php endif; ?>
-          <?php /* Orlistat has no product page, and the online assessment does not
-                   offer it, so "Start Journey" would lead nowhere useful. Until it
-                   is added to the assessment, patients enquire through the team. */
-                $or_contact = get_page_by_path( 'contact-us' ) ?: get_page_by_path( 'contact' ); ?>
+          <?php /* Orlistat is offered in the assessment. There is no product page
+                   yet, so this card carries the one action that works. */ ?>
           <div class="flex gap-3">
-            <a href="<?php echo esc_url( $or_contact ? get_permalink( $or_contact ) : home_url( '/contact-us/' ) ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Enquire about Orlistat</a>
+            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
           </div>
         </div>
       </div>
