@@ -604,8 +604,8 @@ acf_add_local_field_group( array(
         array( 'key' => 'field_ah_tr_foundayo_desc', 'label' => 'Foundayo Description', 'name' => 'tr_foundayo_desc', 'type' => 'textarea', 'rows' => 2 ),
         array( 'key' => 'field_ah_tr_foundayo_price', 'label' => 'Foundayo Price (e.g. "from £99")', 'name' => 'tr_foundayo_price', 'type' => 'text', 'default_value' => 'from £99' ),
         array( 'key' => 'field_ah_tr_orlistat_image', 'label' => 'Orlistat Card Image', 'name' => 'tr_orlistat_image', 'type' => 'image', 'return_format' => 'id' ),
-        array( 'key' => 'field_ah_tr_orlistat_desc', 'label' => 'Orlistat Description', 'name' => 'tr_orlistat_desc', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'A capsule that reduces the amount of fat your body absorbs from food, used alongside a reduced-calorie diet. Licensed for adults with a Body Mass Index (BMI) of 30 or above, or 28 or above with a weight-related condition such as type 2 diabetes, high blood pressure or high cholesterol. Take with main meals: one capsule immediately before, during or up to 1 hour after each main meal; skip the dose if you miss a meal or it has no fat. 28-day pack. A prescriber decides at your consultation whether it is suitable.' ),
-        array( 'key' => 'field_ah_tr_orlistat_price', 'label' => 'Orlistat Price (e.g. "from £XX")', 'name' => 'tr_orlistat_price', 'type' => 'text', 'default_value' => '£50 per pack', 'instructions' => 'Leave blank to hide the price line.' ),
+        array( 'key' => 'field_ah_tr_orlistat_desc', 'label' => 'Orlistat Description', 'name' => 'tr_orlistat_desc', 'type' => 'textarea', 'rows' => 2, 'default_value' => 'A capsule that reduces the amount of fat your body absorbs from food, used alongside a reduced-calorie diet. Licensed for adults with a Body Mass Index (BMI) of 30 or above, or 28 or above with a weight-related condition such as type 2 diabetes, high blood pressure or high cholesterol. Take with main meals: one capsule immediately before, during or up to 1 hour after each main meal; skip the dose if you miss a meal or it has no fat. 28-day pack. A prescriber decides at your consultation whether it is suitable. Your preferred treatment is not prescribed if it is not suitable for you.' ),
+        array( 'key' => 'field_ah_tr_orlistat_price', 'label' => 'Orlistat Price (e.g. "from £XX")', 'name' => 'tr_orlistat_price', 'type' => 'text', 'default_value' => '£50 per pack of 84 capsules', 'instructions' => 'Leave blank to hide the price line.' ),
     ),
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-treatments.php' ) ) ),
 ) );
@@ -686,7 +686,7 @@ acf_add_local_field_group( array(
     'key'   => 'group_ah_g1_eligibility',
     'title' => 'G1 — Eligibility: All Fields',
     'fields' => array(
-        array( 'key' => 'field_ah_el_eyebrow', 'label' => 'Eyebrow', 'name' => 'el_eyebrow', 'type' => 'text', 'default_value' => 'Free Eligibility Check' ),
+        array( 'key' => 'field_ah_el_eyebrow', 'label' => 'Eyebrow', 'name' => 'el_eyebrow', 'type' => 'text', 'default_value' => 'Free First Check' ),
         array( 'key' => 'field_ah_el_title', 'label' => 'Title (HTML)', 'name' => 'el_title', 'type' => 'textarea', 'rows' => 2 ),
         array( 'key' => 'field_ah_el_subtitle', 'label' => 'Subtitle', 'name' => 'el_subtitle', 'type' => 'textarea', 'rows' => 3 ),
         array( 'key' => 'field_ah_el_hero_image', 'label' => 'Hero Image', 'name' => 'el_hero_image', 'type' => 'image', 'return_format' => 'id' ),
@@ -783,9 +783,9 @@ acf_add_local_field_group( array(
         array( 'key' => 'field_ah_ro_subtitle', 'label' => 'Subtitle', 'name' => 'ro_subtitle', 'type' => 'textarea', 'rows' => 2 ),
         array( 'key' => 'field_ah_ro_selection_title', 'label' => 'Selection Title', 'name' => 'ro_selection_title', 'type' => 'text', 'default_value' => 'Which medication are you reordering?' ),
         array( 'key' => 'field_ah_ro_wegovy_price', 'label' => 'Wegovy Price', 'name' => 'ro_wegovy_price', 'type' => 'text', 'default_value' => '125' ),
-        array( 'key' => 'field_ah_ro_wegovy_stat', 'label' => 'Wegovy Stat', 'name' => 'ro_wegovy_stat', 'type' => 'text', 'default_value' => '15% average weight loss within 68 weeks' ),
+        array( 'key' => 'field_ah_ro_wegovy_stat', 'label' => 'Wegovy Stat', 'name' => 'ro_wegovy_stat', 'type' => 'text', 'default_value' => 'Semaglutide, once-weekly injection' ),
         array( 'key' => 'field_ah_ro_mounjaro_price', 'label' => 'Mounjaro Price', 'name' => 'ro_mounjaro_price', 'type' => 'text', 'default_value' => '145' ),
-        array( 'key' => 'field_ah_ro_mounjaro_stat', 'label' => 'Mounjaro Stat', 'name' => 'ro_mounjaro_stat', 'type' => 'text', 'default_value' => '20% average weight loss within 72 weeks' ),
+        array( 'key' => 'field_ah_ro_mounjaro_stat', 'label' => 'Mounjaro Stat', 'name' => 'ro_mounjaro_stat', 'type' => 'text', 'default_value' => 'Tirzepatide, once-weekly injection' ),
     ),
     'location' => array( array( array( 'param' => 'page_template', 'operator' => '==', 'value' => 'page-templates/page-reorder.php' ) ) ),
 ) );

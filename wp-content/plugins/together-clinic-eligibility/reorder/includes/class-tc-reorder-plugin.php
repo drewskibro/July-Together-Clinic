@@ -279,12 +279,38 @@ class TC_Reorder_Plugin {
 				'previousOrderId'     => $prefill['previous_order_id'],
 			] : null,
 			'doseOptions'  => $dose_options_with_prices,
+			'medication'   => self::medication_display( $prefill ? $prefill['previous_medication'] : '' ),
 			'assets'       => [
 				'wegovy'   => TC_REORDER_URL . 'assets/img/wegovy.jpg',
 				'mounjaro' => TC_REORDER_URL . 'assets/img/mounjaro.png',
 				'logo'     => TC_REORDER_URL . 'assets/img/together-clinic-logo.png',
 			],
 		] );
+	}
+
+	/**
+	 * Name, image and dose model of the medicine being reordered. Every
+	 * product shows its own name (previously anything not Mounjaro showed as
+	 * "Wegovy"). Orlistat has one strength, so its screens never offer a
+	 * step up or down (rules O2.3, WM-2026-10-v3). There is no Orlistat
+	 * image in the plugin yet, so none is shown.
+	 *
+	 * @return array { name: string, image: string, single_strength: bool }
+	 */
+	public static function medication_display( $treatment ) {
+		$treatment = class_exists( 'TC_Variation_Map' ) ? TC_Variation_Map::normalize_treatment( (string) $treatment ) : (string) $treatment;
+		$images    = [
+			'wegovy'         => TC_REORDER_URL . 'assets/img/wegovy.jpg',
+			'mounjaro'       => TC_REORDER_URL . 'assets/img/mounjaro.png',
+			'wegovy-tablets' => TC_ELIGIBILITY_URL . 'assets/img/wegovy-tablets.png',
+			'foundayo'       => TC_ELIGIBILITY_URL . 'assets/img/foundayo.png',
+		];
+		$name = class_exists( 'TC_Variation_Map' ) ? TC_Variation_Map::treatment_label( $treatment ) : ucfirst( $treatment );
+		return [
+			'name'            => $name ?: 'Your medication',
+			'image'           => $images[ $treatment ] ?? '',
+			'single_strength' => class_exists( 'TC_Dose_Ladder' ) && count( TC_Dose_Ladder::ladder( $treatment ) ) === 1,
+		];
 	}
 
 	private function assessment_url( $force_assessment = false ) {

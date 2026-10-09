@@ -155,8 +155,8 @@ defined( 'ABSPATH' ) || exit;
 							<svg class="w-5 h-5" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
 						</div>
 						<div>
-							<h3 class="text-lg font-serif text-gray-900 mb-1">Identity verified &mdash; you're all set</h3>
-							<p class="text-sm text-gray-600">Your ID was checked automatically and securely. Nothing further is needed from you &mdash; your prescriber will review your assessment next.</p>
+							<h3 class="text-lg font-serif text-gray-900 mb-1">Identity verified</h3>
+							<p class="text-sm text-gray-600">Your ID was checked automatically and securely. Next, we will contact you to book your video consultation.</p>
 						</div>
 					</div>
 				<?php elseif ( $idv_pending ) : ?>
@@ -182,7 +182,7 @@ defined( 'ABSPATH' ) || exit;
 				<?php elseif ( $id_available ) : ?>
 					<?php if ( $idv_available ) : ?>
 						<h3 class="text-lg font-serif text-gray-900 mb-2">One more step &mdash; verify your identity</h3>
-						<p class="text-sm text-gray-600 mb-5">UK regulations require us to confirm who you are before a prescriber can approve your treatment. The quickest way takes about a minute: photograph your photo ID and take a selfie. It's handled by our verification partner &mdash; your documents are never stored on this website.</p>
+						<p class="text-sm text-gray-600 mb-5">Pharmacy regulator guidance requires us to confirm who you are before a prescriber can approve your treatment. The quickest way takes about a minute: photograph your photo ID and take a selfie. It's handled by our verification partner &mdash; your documents are never stored on this website.</p>
 						<?php if ( 'unavailable' === $idv_flag ) : ?>
 							<p class="text-sm font-semibold text-amber-700 mb-4">We couldn't start the automatic check just now &mdash; please upload your ID below instead.</p>
 						<?php elseif ( $idv_status && ! $idv_verified && ! $idv_pending ) : ?>
@@ -194,7 +194,7 @@ defined( 'ABSPATH' ) || exit;
 						<p class="text-sm text-gray-500 mb-4">Or upload a photo of your ID instead &mdash; JPG, PNG, WEBP or PDF, up to 10MB.</p>
 					<?php else : ?>
 						<h3 class="text-lg font-serif text-gray-900 mb-2">One more step &mdash; upload your photo ID</h3>
-						<p class="text-sm text-gray-600 mb-5">UK regulations require us to verify your identity before a prescriber can approve your treatment. A passport, driving licence or other photo ID works &mdash; JPG, PNG, WEBP or PDF, up to 10MB. It is stored securely, never publicly, and only our pharmacy team can view it.</p>
+						<p class="text-sm text-gray-600 mb-5">Pharmacy regulator guidance requires us to confirm who you are before a prescriber can approve your treatment. A passport, driving licence or other photo ID works &mdash; JPG, PNG, WEBP or PDF, up to 10MB. It is stored securely, never publicly, and only our pharmacy team can view it.</p>
 					<?php endif; ?>
 					<?php if ( $id_flag && isset( $id_errors[ $id_flag ] ) ) : ?>
 						<p class="text-sm font-semibold text-red-600 mb-4"><?php echo esc_html( $id_errors[ $id_flag ] ); ?></p>

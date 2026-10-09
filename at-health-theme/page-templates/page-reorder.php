@@ -43,7 +43,7 @@ get_header();
             <span class="text-3xl font-serif text-gray-900">&pound;<?php echo esc_html( ah_field( 'ro_wegovy_price', '125' ) ); ?></span>
             <span class="text-gray-500 text-sm">/month</span>
           </div>
-          <p class="text-sm text-gray-600 mb-6"><?php echo esc_html( ah_field( 'ro_wegovy_stat', '15% average weight loss within 68 weeks' ) ); ?></p>
+          <p class="text-sm text-gray-600 mb-6"><?php echo esc_html( ah_field( 'ro_wegovy_stat', 'Semaglutide, once-weekly injection' ) ); ?></p>
           <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="w-full flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Reorder Wegovy</a>
         </div>
       </div>
@@ -56,7 +56,7 @@ get_header();
             <span class="text-3xl font-serif text-gray-900">&pound;<?php echo esc_html( ah_field( 'ro_mounjaro_price', '145' ) ); ?></span>
             <span class="text-gray-500 text-sm">/month</span>
           </div>
-          <p class="text-sm text-gray-600 mb-6"><?php echo esc_html( ah_field( 'ro_mounjaro_stat', '20% average weight loss within 72 weeks' ) ); ?></p>
+          <p class="text-sm text-gray-600 mb-6"><?php echo esc_html( ah_field( 'ro_mounjaro_stat', 'Tirzepatide, once-weekly injection' ) ); ?></p>
           <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="w-full flex items-center justify-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Reorder Mounjaro</a>
         </div>
       </div>

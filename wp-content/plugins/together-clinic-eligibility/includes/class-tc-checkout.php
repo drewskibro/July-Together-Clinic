@@ -13,6 +13,7 @@ class TC_Checkout {
 		add_action( 'template_redirect', [ $this, 'enforce_before_checkout' ] );
 		add_action( 'template_redirect', [ $this, 'redirect_returning_customers_from_assessment' ], 5 );
 		add_action( 'template_redirect', [ $this, 'redirect_single_product' ], 6 );
+		add_filter( 'woocommerce_product_is_visible', [ $this, 'hide_prescription_products' ], 10, 2 );
 
 		add_filter( 'woocommerce_checkout_fields',    [ $this, 'prefill_checkout_fields' ] );
 		add_filter( 'woocommerce_checkout_get_value', [ $this, 'prefill_checkout_get_value' ], 999, 2 );
@@ -392,6 +393,19 @@ class TC_Checkout {
 	 * add-to-basket and express-pay buttons, so send visitors to the treatment
 	 * page instead. Filterable, and never interferes with admin or the REST API.
 	 */
+	/**
+	 * Keep prescription products out of shop, category and search listings
+	 * (MHRA Blue Guide Appendix 6: no "Add to basket" for a POM; supply only
+	 * through the assessment). Affects listings only: the assessment, the
+	 * prescriber's pay link and order-pay are unchanged.
+	 */
+	public function hide_prescription_products( $visible, $product_id ) {
+		if ( ! $visible || is_admin() ) {
+			return $visible;
+		}
+		return self::product_requires_assessment( $product_id ) ? false : $visible;
+	}
+
 	public function redirect_single_product() {
 		if ( is_admin() || wp_doing_ajax() || ! function_exists( 'is_product' ) || ! is_product() ) {
 			return;

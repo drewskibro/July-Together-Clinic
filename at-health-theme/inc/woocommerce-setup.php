@@ -142,7 +142,7 @@ function ah_create_all_products() {
             'slug'             => 'wegovy-' . sanitize_title( $w['dose'] ),
             'sku'              => $w['sku'],
             'price'            => $w['price'],
-            'description'      => 'Wegovy (semaglutide) ' . $w['dose'] . ' once-weekly injection for weight management. FDA and MHRA approved with proven cardiovascular benefits. Includes medication, clinical consultation, and tracked delivery.',
+            'description'      => 'Wegovy (semaglutide) ' . $w['dose'] . ' once-weekly injection for weight management, licensed in the UK. Includes medication, clinical consultation, and tracked delivery.',
             'short_description'=> 'Semaglutide ' . $w['dose'] . ' — once-weekly injection. ' . ( $w['label'] === 'Starter' ? 'Starting dose for new patients.' : 'Ongoing treatment dose.' ),
             'categories'       => array( $cat_wegovy, $cat_glp1, $cat_weight ),
             'virtual'          => false,
@@ -197,7 +197,9 @@ function ah_create_simple_product( $args ) {
     $product->set_description( $args['description'] );
     $product->set_short_description( $args['short_description'] );
     $product->set_status( 'publish' );
-    $product->set_catalog_visibility( 'visible' );
+    // Prescription-only: never listed in the shop or search; supplied only
+    // through the assessment and the prescriber's pay link.
+    $product->set_catalog_visibility( 'hidden' );
     $product->set_sold_individually( true );
     $product->set_manage_stock( false );
     $product->set_stock_status( 'instock' );

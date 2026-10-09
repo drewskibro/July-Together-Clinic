@@ -45,7 +45,7 @@ class TC_Reorder_Emails {
 			'Previous order'              => '#' . (int) ( $prefill['previous_order_id'] ?? 0 ),
 			'Weight now'                  => $payload['currentWeight'] ? $payload['currentWeight'] . ' kg' : '',
 			'Lost weight since starting'  => sanitize_text_field( $payload['hasLostWeight'] ?? '' ),
-			'Appetite suppression lasting' => sanitize_text_field( $payload['appetiteLasting'] ?? '' ),
+			( $medication === 'orlistat' ? 'Taking with each main meal as advised' : 'Appetite suppression lasting' ) => sanitize_text_field( $payload['appetiteLasting'] ?? '' ),
 			'Side effects'                => sanitize_text_field( $payload['hasSideEffects'] ?? '' ),
 			'Health changed'              => sanitize_text_field( $payload['healthChanged'] ?? '' ),
 			'New medications'             => sanitize_text_field( $payload['newMedications'] ?? '' ),
@@ -55,6 +55,10 @@ class TC_Reorder_Emails {
 		];
 
 		$body = '<div style="background:#dcfce7;padding:12px 16px;border-radius:8px;margin-bottom:16px;"><strong>REORDER — prescriber review required</strong></div>';
+		if ( ! empty( $payload['reorderBlocked'] ) ) {
+			$subject = str_replace( '[REORDER]', '[REORDER BLOCKED]', $subject );
+			$body    = '<div style="background:#fee2e2;padding:12px 16px;border-radius:8px;margin-bottom:16px;"><strong>REORDER BLOCKED — no order created. Contact the patient.</strong><div style="margin-top:6px;font-size:13px;">' . esc_html( (string) $payload['reorderBlocked'] ) . '</div></div>';
+		}
 
 		// Prescriber flags on the order (BMI band, Orlistat weight review and
 		// medicine flags, dose gate), each with its basis.

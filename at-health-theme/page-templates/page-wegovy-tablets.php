@@ -117,7 +117,7 @@ get_header();
     </div>
     <h2 class="text-3xl md:text-4xl font-serif text-gray-900 mb-4"><?php echo wp_kses_post( ah_field( 'wt_ingredient_title', 'Proven semaglutide, without the needle' ) ); ?></h2>
     <p class="text-base md:text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
-      <?php echo esc_html( ah_field( 'wt_ingredient_text', 'Wegovy tablets contain semaglutide — the same clinically proven medication as the injections — taken as a simple once-daily tablet. Suitable for adults who prefer not to self-inject.' ) ); ?>
+      <?php echo esc_html( ah_field( 'wt_ingredient_text', 'Wegovy tablets contain semaglutide — the same active ingredient as the injections — taken as a simple once-daily tablet. Suitable for adults who prefer not to self-inject.' ) ); ?>
     </p>
   </div>
 </section>

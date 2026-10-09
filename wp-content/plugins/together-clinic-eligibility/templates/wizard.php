@@ -41,7 +41,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				</div>
 			</div>
 			<h2>Let's save your assessment</h2>
-			<p>Enter your details so our clinicians can send your eligibility result and support you with the next steps if treatment is appropriate.</p>
+			<p>Enter your details so our clinicians can send the outcome of your first check and support you with the next steps if treatment is appropriate.</p>
 			<div class="form-group">
 				<div class="form-grid-2">
 					<div><label class="form-label">First name</label><input type="text" class="form-input" id="early-first-name" placeholder="e.g. Sarah" autocomplete="given-name" /></div>
@@ -517,7 +517,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				<label class="checkbox-item" style="background:white;border:2px solid #e5e7eb;border-radius:12px;padding:16px;margin:16px 0;">
 					<input type="checkbox" id="consent-contraception" /><span>I will use effective contraception while taking weight loss medication and for at least 2 months after stopping, and I will tell the prescriber straight away if I could be pregnant. I understand some of these medicines make the pill less reliable.</span>
 				</label>
-				<p style="font-size:14px;color:#6b7280;margin:-8px 0 16px;">This agreement is needed for Wegovy, Mounjaro and Foundayo. It is not needed for Orlistat, but Orlistat is still not prescribed during pregnancy or if you are planning a pregnancy.</p>
+				<p style="font-size:14px;color:#6b7280;margin:-8px 0 16px;">This agreement is needed for Wegovy, Mounjaro and Foundayo, not for Orlistat. We do not prescribe Orlistat if you are pregnant or planning a pregnancy. If you take the contraceptive pill, use an extra method such as condoms if you get severe diarrhoea.</p>
 				<div id="contraception-error" class="error-message" style="display:none;"></div>
 				<button class="button button-primary" data-action="save-contraception">Next &rarr;</button>
 			</div>
@@ -554,7 +554,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 		<div id="screen-18" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">85%</div><div class="progress-bar"><div class="progress-fill" style="width: 85%"></div></div></div></div>
 			<h2>Almost there &mdash; just a couple more details</h2>
-			<p>We need your date of birth to verify your eligibility.</p>
+			<p>We need your date of birth to confirm your details.</p>
 			<div class="dob-identity-card">
 				<div class="dob-identity-avatar" id="dob-avatar-initials">?</div>
 				<div>
@@ -734,7 +734,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 						<ul class="treatment-benefits">
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Licensed for weight management in the UK</li>
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Once-weekly injection</li>
-							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA approved</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Licensed in the UK</li>
 						</ul>
 					</div>
 				</button>
@@ -754,7 +754,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 						<ul class="treatment-benefits">
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Licensed for weight management in the UK</li>
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Once-weekly injection</li>
-							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA approved</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Licensed in the UK</li>
 						</ul>
 					</div>
 				</button>
@@ -795,7 +795,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 						<ul class="treatment-benefits">
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Take it any time &mdash; with or without food</li>
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>No needles &mdash; one tablet a day</li>
-							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA approved &mdash; reviewed by a prescriber before dispatch</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Licensed in the UK &mdash; reviewed by a prescriber before dispatch</li>
 						</ul>
 						<p class="treatment-admin-note">Swallow one tablet whole with water, at any time of day. No waiting period before eating or drinking.</p>
 					</div>
@@ -812,11 +812,11 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 							</div>
 							<span class="tc-radio" aria-hidden="true"><svg class="tc-radio-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg></span>
 						</div>
-						<p class="treatment-description">Orlistat (Xenical) &mdash; a lipase inhibitor that reduces how much fat your body absorbs from food. Not a GLP-1: an option if you would rather not take an appetite-suppressing medicine. Licensed for adults with a BMI of 30 or above, or 28 or above with a weight-related condition such as type 2 diabetes, high blood pressure or high cholesterol, alongside a reduced-calorie diet.</p>
+						<p class="treatment-description">Orlistat (Xenical) &mdash; a lipase inhibitor that reduces how much fat your body absorbs from food. It works in the gut and is not a GLP-1 medicine. Licensed for adults with a BMI of 30 or above, or 28 or above with a weight-related condition such as type 2 diabetes, high blood pressure or high cholesterol, alongside a reduced-calorie diet.</p>
 						<ul class="treatment-benefits">
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Taken with meals &mdash; one capsule up to three times a day</li>
-							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>No injections and no dose increases &mdash; one strength</li>
-							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA licensed &mdash; reviewed by a prescriber before dispatch</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>One strength, taken by mouth</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Licensed medicine. Prescribed only if a prescriber decides it is suitable at your video consultation.</li>
 						</ul>
 						<p class="treatment-admin-note">Take with main meals: one capsule with water immediately before, during or up to 1 hour after each main meal. Skip the dose if you miss a meal or it has no fat, so a pack may last longer than 28 days.</p>
 					</div>

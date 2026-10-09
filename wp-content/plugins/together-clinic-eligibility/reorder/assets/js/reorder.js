@@ -311,8 +311,12 @@
 		var doseOptions = cfg.doseOptions || [];
 		var medication = state.data.currentMedication;
 		var currentDose = state.data.currentDose;
-		var medImage = (medication === 'mounjaro') ? (cfg.assets && cfg.assets.mounjaro) : (cfg.assets && cfg.assets.wegovy);
-		var medName = medication === 'mounjaro' ? 'Mounjaro' : 'Wegovy';
+		// Name, image and dose model come from the server (rules WM-2026-10-v3):
+		// every product shows its own name; Orlistat has one strength.
+		var med = cfg.medication || {};
+		var medImage = med.image || '';
+		var medName = med.name || 'Your medication';
+		var single = !!med.single_strength;
 
 		var doseCardsHtml = doseOptions.map(function (opt) {
 			var isCurrent = opt.dose === currentDose;
@@ -326,10 +330,13 @@
 		}).join('');
 
 		container.innerHTML =
-			'<h2 style="text-align:center;">Choose your dose</h2>' +
-			'<p style="text-align:center;">Continue at the same dose, step up, or step down. Our prescriber reviews every choice.</p>' +
+			(single
+				? '<h2 style="text-align:center;">Confirm your treatment</h2>' +
+				  '<p style="text-align:center;">' + escapeHtml(medName) + ' comes in one strength. Take one capsule with each main meal, immediately before, during or up to 1 hour after; skip the dose if you miss a meal or it has no fat. Our prescriber reviews every order.</p>'
+				: '<h2 style="text-align:center;">Choose your dose</h2>' +
+				  '<p style="text-align:center;">Continue at the same dose, step up, or step down. Our prescriber reviews every choice.</p>') +
 			'<div class="med-info-card"><div class="med-info-inner">' +
-				'<div class="med-thumb"><img src="' + escapeAttr(medImage || '') + '" alt="' + escapeAttr(medName) + '" /></div>' +
+				(medImage ? '<div class="med-thumb"><img src="' + escapeAttr(medImage) + '" alt="' + escapeAttr(medName) + '" /></div>' : '') +
 				'<div class="med-info-body">' +
 					'<div class="med-badge">Your current medication</div>' +
 					'<p class="med-name">' + escapeHtml(medName) + '</p>' +
