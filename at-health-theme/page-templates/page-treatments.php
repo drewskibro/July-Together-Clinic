@@ -237,7 +237,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
         <div class="p-8">
           <h3 class="text-3xl font-serif text-gray-900 mb-2">Orlistat</h3>
           <p class="text-purple-600 font-bold text-lg mb-3">Branded as Xenical</p>
-          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_orlistat_desc', 'A clinically proven weight loss tablet that reduces the amount of fat your body absorbs from food. Suitable for patients with a Body Mass Index (BMI) of 28 or above.' ) ); ?></p>
+          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_orlistat_desc', 'A capsule that reduces the amount of fat your body absorbs from food, used alongside a reduced-calorie diet. Licensed for adults with a Body Mass Index (BMI) of 30 or above, or 28 or above with a weight-related condition such as type 2 diabetes, high blood pressure or high cholesterol. Take with main meals: one capsule immediately before, during or up to 1 hour after each main meal; skip the dose if you miss a meal or it has no fat. 28-day pack. A prescriber decides at your consultation whether it is suitable.' ) ); ?></p>
           <?php $tr_p = (string) ah_field( 'tr_orlistat_price', '£50 per pack' ); if ( $tr_p !== '' && stripos( $tr_p, 'XX' ) === false ) : ?>
           <p class="tr-price"><?php echo esc_html( $tr_p ); ?></p>
           <?php endif; ?>

@@ -424,7 +424,7 @@ class TC_Ajax {
 		$p['consentIdVideo']       = ! empty( $p['consentIdVideo'] );
 		$p['consentLifestyle']     = ! empty( $p['consentLifestyle'] );
 		$p['currentMeds']          = in_array( $p['currentMeds'] ?? '', [ 'yes', 'none' ], true ) ? $p['currentMeds'] : sanitize_text_field( $p['currentMeds'] ?? '' );
-		// Rules WM-2026-10-v2, rule S1A (ages 75 to 85). Unknown values are
+		// Rules WM-2026-10-v3 (from v2), rule S1A (ages 75 to 85). Unknown values are
 		// dropped; the rules treat a missing answer as unanswered.
 		$yn                    = [ 'yes', 'no' ];
 		$p['s1aFalls']         = in_array( $p['s1aFalls'] ?? '', $yn, true ) ? $p['s1aFalls'] : '';

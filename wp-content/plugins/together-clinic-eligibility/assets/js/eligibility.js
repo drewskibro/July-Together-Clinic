@@ -20,12 +20,17 @@
 		selectedTabletsDose: '1.5mg',
 		selectedFoundayoDose: '0.8mg',
 		selectedOrlistatDose: '120mg',
+		// Answers that rule out the GLP-1 products but not Orlistat (rules
+		// section O, OF16): keyed by the question, so a changed answer clears it.
+		glp1Only: {},
 		isSubmitting: false,
 		ineligibleReason: ''
 	};
 
-	// Rules WM-2026-10-v2 (AT Health IP-FRM-01 3A). Mirrors
-	// TC_Eligibility_Rules on the server, which always has the final say.
+	// Rules WM-2026-10-v3 (AT Health IP-FRM-01 3A, and section O for
+	// Orlistat). Mirrors TC_Eligibility_Rules on the server, which always has
+	// the final say. The treatment is chosen last, so the browser only screens
+	// a patient out when neither the GLP-1 products nor Orlistat remain open.
 	var SERIOUS_CONDITIONS = [
 		'I have chronic malabsorption syndrome',
 		'I have cholestasis',
@@ -48,6 +53,15 @@
 	var DISQUALIFYING_CONDITIONS = SERIOUS_CONDITIONS.filter(function (c) {
 		return c.indexOf('bariatric') === -1 && c !== 'None of these apply';
 	});
+
+	// Orlistat blocks OE5, OE6 and OE9; the other conditions above rule out
+	// the GLP-1 products only (information flags for Orlistat, OF16).
+	var ORLISTAT_BLOCK_CONDITIONS = [
+		'I have chronic malabsorption syndrome',
+		'I have cholestasis',
+		'I have or have had an eating disorder'
+	];
+	var GLP1_CARDS = ['wegovy-card', 'mounjaro-card', 'wegovy-tablets-card', 'foundayo-card'];
 
 	var WEIGHT_CONDITIONS = [
 		"I've been diagnosed with high blood pressure",
@@ -127,6 +141,7 @@
 		if (screen) {
 			screen.classList.add('active');
 			state.currentScreen = id;
+			if (String(id) === '21') updateTreatmentAvailability();
 		}
 		window.scrollTo(0, 0);
 	}
@@ -627,18 +642,60 @@
 	// Transfer rules apply only when the last dose was within 3 months.
 	function isTransfer() {
 		var u = state.userData;
-		if (u.userType !== 'switching' || !u.lastDoseDate) return false;
+		// A move from Orlistat to a GLP-1 is a new start (rule O2.3).
+		if (u.userType !== 'switching' || !u.lastDoseDate || u.currentMedication === 'orlistat') return false;
 		var days = (new Date().setHours(0, 0, 0, 0) - new Date(u.lastDoseDate + 'T00:00:00')) / 86400000;
 		return days <= 91;
 	}
 
-	function checkBMIEligibility() {
+	// Rule O2.3/O2.4: a patient already on Orlistat elsewhere.
+	function fromOrlistat() {
+		var u = state.userData;
+		return u.userType === 'switching' && u.currentMedication === 'orlistat';
+	}
+
+	function currentBmi() {
 		// Unrounded, to match the server (26.96 must not pass as 27.0).
-		var bmi = state.userData.bmiRaw || parseFloat(state.userData.bmi || '0');
-		// Starting treatment: licence threshold for every adult (27 is the
-		// floor; 27 to 29.9 also needs a qualifying condition, checked after
-		// the condition questions). Transfer: current BMI above 25.
-		if (!bmi || (isTransfer() ? bmi <= 25 : bmi < 27)) {
+		return state.userData.bmiRaw || parseFloat(state.userData.bmi || '0');
+	}
+
+	// GLP-1 floor before the condition questions: 27 to start (27 to 29.9
+	// also needs a condition, checked later); transfer: current BMI above 25.
+	function glp1BmiFloorOk() {
+		var bmi = currentBmi();
+		return !!bmi && (isTransfer() ? bmi > 25 : bmi >= 27);
+	}
+
+	// Orlistat floor (rule O2.2): 28 to start; 20 for a transfer from
+	// Orlistat elsewhere (rule O2.4).
+	function orlistatBmiFloorOk() {
+		var bmi = currentBmi();
+		return !!bmi && bmi >= (fromOrlistat() ? 20 : 28);
+	}
+
+	// Rule O2.2 / O2.4 in full (after the condition questions).
+	function orlistatLicenceOk() {
+		var u = state.userData;
+		var bmi = currentBmi();
+		var cond = hasQualifyingCondition();
+		if (fromOrlistat()) {
+			var start = bmiFrom(u.startWeight, u.height);
+			if (start && bmi >= 20 && (start >= 30 || (start >= 28 && cond))) return true;
+		}
+		return bmi >= 30 || (bmi >= 28 && cond);
+	}
+
+	function glp1Blocked() {
+		var g = state.glp1Only;
+		return Object.keys(g).some(function (k) { return g[k]; });
+	}
+
+	function glp1Possible() {
+		return !glp1Blocked() && glp1BmiFloorOk() && licenceCheckPasses();
+	}
+
+	function checkBMIEligibility() {
+		if (!glp1BmiFloorOk() && !orlistatBmiFloorOk()) {
 			showIneligible(NOT_LICENSED);
 		} else {
 			pushScreen(9);
@@ -647,7 +704,9 @@
 
 	function setDiabetes(value) {
 		state.userData.diabetes = value;
-		if (value === 'type1') {
+		// Type 1 diabetes rules out the GLP-1 products only (OF16 for Orlistat).
+		state.glp1Only.type1 = (value === 'type1');
+		if (value === 'type1' && !orlistatBmiFloorOk()) {
 			showIneligible('Based on your answers, our online weight loss service is not suitable for you. Please speak with your GP or diabetes team about the options available to you.');
 			return;
 		}
@@ -683,11 +742,15 @@
 
 		var hasNone = values.indexOf('None of these apply') !== -1;
 		var hasBariatric = values.some(function (v) { return v.toLowerCase().indexOf('bariatric') !== -1; });
-		var disqualifying = values.some(function (v) {
-			return DISQUALIFYING_CONDITIONS.indexOf(v) !== -1;
+		var blocksAll = values.some(function (v) {
+			return ORLISTAT_BLOCK_CONDITIONS.indexOf(v) !== -1;
 		});
+		var glp1Only = values.some(function (v) {
+			return DISQUALIFYING_CONDITIONS.indexOf(v) !== -1 && ORLISTAT_BLOCK_CONDITIONS.indexOf(v) === -1;
+		});
+		state.glp1Only.conditions = glp1Only;
 
-		if (disqualifying) {
+		if (blocksAll || (glp1Only && !orlistatBmiFloorOk())) {
 			showIneligible('Based on the medical history you provided, weight loss medication is not clinically appropriate. Please speak with your GP about alternative options.');
 			return;
 		}
@@ -738,7 +801,7 @@
 
 		var hasMentalHealth = values.some(function (v) { return v.toLowerCase().indexOf('mental health') !== -1; });
 
-		if (!licenceCheckPasses()) {
+		if (!glp1Possible() && !orlistatLicenceOk()) {
 			showIneligible(NOT_LICENSED);
 			return;
 		}
@@ -841,6 +904,7 @@
 			if (section) section.style.display = 'none';
 			state.userData.contraception = '';
 			state.userData.consentContraception = false;
+			state.glp1Only.contraception = false;
 			pushScreen(16);
 		}
 	}
@@ -854,14 +918,17 @@
 			err.style.display = 'block';
 			return;
 		}
-		if (!agreed) {
+		// The agreement is needed for the GLP-1 products, not for Orlistat
+		// (rule O3). Without it only Orlistat stays open.
+		if (!agreed && !orlistatLicenceOk()) {
 			err.textContent = 'These medicines can only be prescribed if you agree to use effective contraception during treatment';
 			err.style.display = 'block';
 			return;
 		}
 		err.style.display = 'none';
 		state.userData.contraception = choice.value;
-		state.userData.consentContraception = true;
+		state.userData.consentContraception = !!agreed;
+		state.glp1Only.contraception = !agreed;
 		pushScreen(16);
 	}
 
@@ -1044,9 +1111,11 @@
 		u.s1aEgfrDate = egfrDate;
 		u.s1aEgfrResult = egfr;
 
-		// Exclusion E11 (severe kidney impairment). Nothing else on this
-		// screen screens anyone out: the prescriber decides.
-		if (egfr && parseFloat(egfr) < 30) {
+		// Exclusion E11 (severe kidney impairment) for the GLP-1 products; a
+		// flag for Orlistat (OF11, OF16). Nothing else on this screen screens
+		// anyone out: the prescriber decides.
+		state.glp1Only.egfr = !!(egfr && parseFloat(egfr) < 30);
+		if (state.glp1Only.egfr && !orlistatLicenceOk()) {
 			showIneligible('Based on the medical history you provided, weight loss medication is not clinically appropriate. Please speak with your GP about alternative options.');
 			return;
 		}
@@ -1103,6 +1172,7 @@
 	}
 
 	function selectTreatment(value) {
+		if (!treatmentAvailable(value)) return;
 		state.selectedTreatment = value;
 		updateTreatmentCards();
 		updateSubmitButton();
@@ -1117,6 +1187,45 @@
 		'foundayo-card': 'foundayo',
 		'orlistat-card': 'orlistat'
 	};
+
+	function treatmentAvailable(treatment) {
+		return treatment === 'orlistat' ? orlistatLicenceOk() : glp1Possible();
+	}
+
+	// Screen 21: offer only the products the answers leave open. The server
+	// applies the same rules per product and has the final say.
+	function updateTreatmentAvailability() {
+		var glp1 = glp1Possible();
+		var orl = orlistatLicenceOk();
+		if (!glp1 && !orl) {
+			showIneligible(NOT_LICENSED);
+			return;
+		}
+		Object.keys(TREATMENT_CARDS).forEach(function (cardId) {
+			var card = $(cardId);
+			if (!card) return;
+			var open = treatmentAvailable(TREATMENT_CARDS[cardId]);
+			card.disabled = !open;
+			card.classList.toggle('treatment-unavailable', !open);
+			card.setAttribute('aria-disabled', String(!open));
+		});
+		if (state.selectedTreatment && !treatmentAvailable(state.selectedTreatment)) {
+			state.selectedTreatment = '';
+		}
+		var note = $('treatment-availability-note');
+		if (note) {
+			var text = '';
+			if (!glp1) {
+				text = 'Based on your answers, Wegovy, Mounjaro and Foundayo are not options we can offer you. Orlistat can be discussed with a prescriber, who decides at your consultation whether it is suitable.';
+			} else if (!orl) {
+				text = 'Orlistat is not available to choose: its licence is for a BMI of 30 or above, or 28 or above with a weight-related condition.';
+			}
+			note.textContent = text;
+			note.style.display = text ? 'block' : 'none';
+		}
+		updateTreatmentCards();
+		updateSubmitButton();
+	}
 
 	function updateTreatmentCards() {
 		Object.keys(TREATMENT_CARDS).forEach(function (cardId) {

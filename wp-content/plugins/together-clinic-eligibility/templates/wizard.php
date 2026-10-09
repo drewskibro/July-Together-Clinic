@@ -517,6 +517,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				<label class="checkbox-item" style="background:white;border:2px solid #e5e7eb;border-radius:12px;padding:16px;margin:16px 0;">
 					<input type="checkbox" id="consent-contraception" /><span>I will use effective contraception while taking weight loss medication and for at least 2 months after stopping, and I will tell the prescriber straight away if I could be pregnant. I understand some of these medicines make the pill less reliable.</span>
 				</label>
+				<p style="font-size:14px;color:#6b7280;margin:-8px 0 16px;">This agreement is needed for Wegovy, Mounjaro and Foundayo. It is not needed for Orlistat, but Orlistat is still not prescribed during pregnancy or if you are planning a pregnancy.</p>
 				<div id="contraception-error" class="error-message" style="display:none;"></div>
 				<button class="button button-primary" data-action="save-contraception">Next &rarr;</button>
 			</div>
@@ -582,7 +583,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			</div>
 		</div>
 
-		<!-- Screen 18a: Ages 75 to 85 (rules WM-2026-10-v2, rule S1A) -->
+		<!-- Screen 18a: Ages 75 to 85 (rules WM-2026-10-v3, rule S1A) -->
 		<div id="screen-18a" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">87%</div><div class="progress-bar"><div class="progress-fill" style="width: 87%"></div></div></div></div>
 			<h2>A few more questions for people aged 75 and over</h2>
@@ -680,7 +681,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			</div>
 		</div>
 
-		<!-- Screen 20: GP and consents (rules WM-2026-10-v2) -->
+		<!-- Screen 20: GP and consents (rules WM-2026-10-v3) -->
 		<div id="screen-20" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">95%</div><div class="progress-bar"><div class="progress-fill" style="width: 95%"></div></div></div></div>
 			<h2>Your GP and your consent</h2>
@@ -714,7 +715,8 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				<p>Based on your answers, you can have a video consultation with one of our prescribers. They will decide with you whether treatment is suitable.</p>
 			</div>
 			<h2 style="text-align:center;margin:32px 0 16px;">Your preferred treatment</h2>
-			<p style="text-align:center;margin-bottom:24px;">Choose the treatment you would like to discuss. Your prescriber may recommend a different option or dose.</p>
+			<p style="text-align:center;margin-bottom:24px;">Choose the treatment you would like to discuss. Your prescriber decides at the consultation and may recommend a different option or dose. A treatment you choose is not prescribed if it is not suitable for you.</p>
+			<div id="treatment-availability-note" class="info-box" style="display:none;text-align:left;margin-bottom:24px;"></div>
 			<div class="treatment-grid" role="group" aria-label="Choose your treatment">
 				<button type="button" class="treatment-card" id="wegovy-card" data-action="select-treatment" data-value="wegovy" aria-pressed="false">
 					<span class="treatment-selected-pill" aria-hidden="true"><svg class="tsp-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg>Selected</span>
@@ -810,13 +812,13 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 							</div>
 							<span class="tc-radio" aria-hidden="true"><svg class="tc-radio-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg></span>
 						</div>
-						<p class="treatment-description">Orlistat (Xenical) &mdash; a lipase inhibitor that reduces how much fat your body absorbs from food. Not a GLP-1: an option if you would rather not take an appetite-suppressing medicine.</p>
+						<p class="treatment-description">Orlistat (Xenical) &mdash; a lipase inhibitor that reduces how much fat your body absorbs from food. Not a GLP-1: an option if you would rather not take an appetite-suppressing medicine. Licensed for adults with a BMI of 30 or above, or 28 or above with a weight-related condition such as type 2 diabetes, high blood pressure or high cholesterol, alongside a reduced-calorie diet.</p>
 						<ul class="treatment-benefits">
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Taken with meals &mdash; one capsule up to three times a day</li>
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>No injections and no dose increases &mdash; one strength</li>
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA licensed &mdash; reviewed by a prescriber before dispatch</li>
 						</ul>
-						<p class="treatment-admin-note">Take one capsule with water immediately before, during, or up to one hour after each main meal that contains fat. If you miss a meal or it contains no fat, skip that dose.</p>
+						<p class="treatment-admin-note">Take with main meals: one capsule with water immediately before, during or up to 1 hour after each main meal. Skip the dose if you miss a meal or it has no fat, so a pack may last longer than 28 days.</p>
 					</div>
 				</button>
 			</div>

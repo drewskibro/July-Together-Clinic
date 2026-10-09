@@ -104,7 +104,7 @@ $r=$R::evaluate(base(['sex'=>'female','weightKg'=>100,'heightCm'=>170]));
 check('Female with pregnancy answers missing -> not eligible',!$r['eligible']);
 $r=$R::evaluate(base(['currentMedsList'=>'amlodipine 5mg','selectedTreatment'=>'mounjaro']));
 check('Foundayo BP flag raised even if Mounjaro preferred',isset($r['flags']['med_foundayo_bp']));
-// Rules WM-2026-10-v2: age 18 to 85 by date of birth (rule S1), ages 75 to 85 (rule S1A); v3 adds Orlistat.
+// Age 18 to 85 by date of birth (rule S1), ages 75 to 85 (rule S1A); rules version v3 adds Orlistat.
 check('Rules version is WM-2026-10-v3', $R::RULES_VERSION==='WM-2026-10-v3');
 $r=$R::evaluate(base()); check('Result records rules version v3', $r['rules_version']==='WM-2026-10-v3');
 function dob_years_ago($y,$plus_days=0){ return (new DateTime('today'))->modify("-$y years")->modify(($plus_days>=0?'+':'').$plus_days.' days')->format('Y-m-d'); }

@@ -39,19 +39,20 @@ get_header();
         <div class="w-1 h-8 bg-purple-600 rounded-full"></div>
         <p class="text-purple-600 text-xs md:text-sm font-bold uppercase tracking-wider">Eligibility Criteria</p>
       </div>
-      <h2 class="text-3xl md:text-4xl font-serif text-gray-900 mb-4">You May Qualify If...</h2>
+      <h2 class="text-3xl md:text-4xl font-serif text-gray-900 mb-4">Who These Medicines Are Licensed For</h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">The questionnaire is a first check only. A prescriber decides at your video consultation whether any treatment is suitable, and a treatment you prefer is not prescribed if it is not suitable for you.</p>
     </div>
     <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto" data-stagger>
       <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm" data-reveal style="--stagger-index:0">
-        <h3 class="text-xl font-serif text-gray-900 mb-4">You May Be Suitable If</h3>
+        <h3 class="text-xl font-serif text-gray-900 mb-4">Licence Conditions</h3>
         <ul class="space-y-3">
-          <?php foreach ( array( 'Body Mass Index (BMI) 30+ (or 27+ with a qualifying condition)', 'Aged 18 to 85', 'Tried diet and exercise without lasting results', 'Committed to lifestyle changes', 'No contraindications to Glucagon-Like Peptide-1 (GLP-1) medications' ) as $item ) : ?>
+          <?php foreach ( array( 'Wegovy, Mounjaro and Foundayo (GLP-1 medicines): Body Mass Index (BMI) 30 or above, or 27 to 29.9 with a weight-related condition', 'Orlistat: BMI 30 or above, or 28 to 29.9 with a weight-related condition', 'Aged 18 to 85', 'Committed to a reduced-calorie diet and more physical activity', 'Not pregnant, planning a pregnancy or breastfeeding' ) as $item ) : ?>
           <li class="flex items-start gap-3"><svg class="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span class="text-gray-700 text-[15px]"><?php echo esc_html( $item ); ?></span></li>
           <?php endforeach; ?>
         </ul>
       </div>
       <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm" data-reveal style="--stagger-index:1">
-        <h3 class="text-xl font-serif text-gray-900 mb-4">Weight-Related Conditions (BMI 27 to 29.9)</h3>
+        <h3 class="text-xl font-serif text-gray-900 mb-4">Weight-Related Conditions (BMI 27 to 29.9 for GLP-1 medicines, 28 to 29.9 for Orlistat)</h3>
         <ul class="space-y-3">
           <?php foreach ( array( 'Type 2 diabetes or pre-diabetes', 'High blood pressure', 'High cholesterol', 'Sleep apnoea', 'Heart or circulation problems' ) as $item ) : ?>
           <li class="flex items-start gap-3"><svg class="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-gray-700 text-[15px]"><?php echo esc_html( $item ); ?></span></li>
