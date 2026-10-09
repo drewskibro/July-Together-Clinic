@@ -24,6 +24,7 @@ class TC_Eligibility_Plugin {
 		TC_Review_Status::init();
 		TC_Review_Payment::init();
 		TC_Secure_Docs::init();
+		TC_Identity::init();
 
 		new TC_Review_Actions();
 		new TC_Review_Cron();
@@ -264,6 +265,7 @@ class TC_Eligibility_Plugin {
 				'mounjaro'       => TC_ELIGIBILITY_URL . 'assets/img/mounjaro.png',
 				'wegovy-tablets' => TC_ELIGIBILITY_URL . 'assets/img/wegovy-tablets.png',
 				'foundayo'       => TC_ELIGIBILITY_URL . 'assets/img/foundayo.png',
+				'orlistat'       => TC_ELIGIBILITY_URL . 'assets/img/orlistat.png',
 			],
 		] );
 	}

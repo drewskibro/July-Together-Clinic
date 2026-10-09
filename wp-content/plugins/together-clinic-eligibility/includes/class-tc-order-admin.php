@@ -23,6 +23,10 @@ class TC_Order_Admin {
 
 		$this->render_review_panel( $order );
 
+		if ( class_exists( 'TC_Identity' ) ) {
+			TC_Identity::render_admin_panel( $order );
+		}
+
 		if ( class_exists( 'TC_Secure_Docs' ) ) {
 			TC_Secure_Docs::render_admin_panel( $order );
 		}

@@ -32,6 +32,12 @@ class TC_Dose_Ladder {
 		// fragment with them, but the same exact-match identity rule applies.
 		// Six licensed strengths, minimum 30 days at each before an increase.
 		'foundayo'       => [ '0.8mg', '2.5mg', '5.5mg', '9mg', '14.5mg', '17.2mg' ],
+		// Orlistat (Xenical) — a lipase inhibitor, NOT a GLP-1. One licensed
+		// strength and no titration, so a single-rung ladder: the ±1 reorder
+		// gate and the switching matrix both degrade correctly to "the only
+		// step". Licence BMI threshold (≥28 with risk factors) differs from the
+		// GLP-1s' and belongs in the rules class, not here.
+		'orlistat'       => [ '120mg' ],
 	];
 
 	/**

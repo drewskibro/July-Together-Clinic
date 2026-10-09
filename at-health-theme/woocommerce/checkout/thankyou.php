@@ -124,6 +124,20 @@ defined( 'ABSPATH' ) || exit;
 		$id_flag       = isset( $_GET['tc_id'] ) ? sanitize_key( wp_unslash( $_GET['tc_id'] ) ) : '';
 		$id_uploaded   = $id_module && ( TC_Secure_Docs::has_document( $order ) || 'uploaded' === $id_flag );
 		$id_available  = $id_module && TC_Secure_Docs::is_configured();
+
+		/*
+		 * Stripe Identity sits in front of the manual upload when available:
+		 * the check is instant and no document ever reaches this server. The
+		 * upload stays underneath as the fallback, so an unsupported document
+		 * or a Stripe outage never blocks a patient.
+		 */
+		$idv_module    = class_exists( 'TC_Identity' );
+		$idv_flag      = isset( $_GET['tc_idv'] ) ? sanitize_key( wp_unslash( $_GET['tc_idv'] ) ) : '';
+		$idv_available = $idv_module && TC_Identity::is_enabled();
+		$idv_status    = $idv_module ? TC_Identity::status( $order ) : '';
+		$idv_verified  = 'verified' === $idv_status;
+		$idv_pending   = 'processing' === $idv_status;
+		$id_settled    = $id_uploaded || $idv_verified;
 		$id_errors     = [
 			'toobig'      => 'That file is too large — please upload an image or PDF under 10MB.',
 			'type'        => 'That file type is not supported — please upload a JPG, PNG, WEBP or PDF.',
@@ -134,8 +148,28 @@ defined( 'ABSPATH' ) || exit;
 		?>
 		<?php if ( $id_module ) : ?>
 		<div class="max-w-3xl mx-auto mb-12">
-			<div class="bg-white rounded-3xl border p-8 md:p-10 <?php echo $id_uploaded ? 'border-emerald-200' : 'border-amber-300'; ?>" <?php echo $id_uploaded ? '' : 'style="box-shadow:0 0 0 4px rgba(245,158,11,0.08);"'; ?>>
-				<?php if ( $id_uploaded ) : ?>
+			<div class="bg-white rounded-3xl border p-8 md:p-10 <?php echo $id_settled ? 'border-emerald-200' : 'border-amber-300'; ?>" <?php echo $id_settled ? '' : 'style="box-shadow:0 0 0 4px rgba(245,158,11,0.08);"'; ?>>
+				<?php if ( $idv_verified ) : ?>
+					<div class="flex items-start gap-4">
+						<div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:#ecfdf5;">
+							<svg class="w-5 h-5" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+						</div>
+						<div>
+							<h3 class="text-lg font-serif text-gray-900 mb-1">Identity verified &mdash; you're all set</h3>
+							<p class="text-sm text-gray-600">Your ID was checked automatically and securely. Nothing further is needed from you &mdash; your prescriber will review your assessment next.</p>
+						</div>
+					</div>
+				<?php elseif ( $idv_pending ) : ?>
+					<div class="flex items-start gap-4">
+						<div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:#eff6ff;">
+							<svg class="w-5 h-5" style="color:#3b82f6;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+						</div>
+						<div>
+							<h3 class="text-lg font-serif text-gray-900 mb-1">Checking your ID</h3>
+							<p class="text-sm text-gray-600">This usually takes a minute or two. You don't need to wait &mdash; we'll carry on with your prescriber review and let you know if anything else is needed.</p>
+						</div>
+					</div>
+				<?php elseif ( $id_uploaded ) : ?>
 					<div class="flex items-start gap-4">
 						<div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background:#ecfdf5;">
 							<svg class="w-5 h-5" style="color:#10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -146,8 +180,22 @@ defined( 'ABSPATH' ) || exit;
 						</div>
 					</div>
 				<?php elseif ( $id_available ) : ?>
-					<h3 class="text-lg font-serif text-gray-900 mb-2">One more step &mdash; upload your photo ID</h3>
-					<p class="text-sm text-gray-600 mb-5">UK regulations require us to verify your identity before a prescriber can approve your treatment. A passport, driving licence or other photo ID works &mdash; JPG, PNG, WEBP or PDF, up to 10MB. It is stored securely, never publicly, and only our pharmacy team can view it.</p>
+					<?php if ( $idv_available ) : ?>
+						<h3 class="text-lg font-serif text-gray-900 mb-2">One more step &mdash; verify your identity</h3>
+						<p class="text-sm text-gray-600 mb-5">UK regulations require us to confirm who you are before a prescriber can approve your treatment. The quickest way takes about a minute: photograph your photo ID and take a selfie. It's handled by our verification partner &mdash; your documents are never stored on this website.</p>
+						<?php if ( 'unavailable' === $idv_flag ) : ?>
+							<p class="text-sm font-semibold text-amber-700 mb-4">We couldn't start the automatic check just now &mdash; please upload your ID below instead.</p>
+						<?php elseif ( $idv_status && ! $idv_verified && ! $idv_pending ) : ?>
+							<p class="text-sm font-semibold text-amber-700 mb-4">That check couldn't be completed. You can try again, or upload your ID below.</p>
+						<?php endif; ?>
+						<a href="<?php echo esc_url( TC_Identity::start_url( $order ) ); ?>" class="inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold px-7 py-3.5 rounded-xl transition-all mb-6">
+							Verify my ID &rarr;
+						</a>
+						<p class="text-sm text-gray-500 mb-4">Or upload a photo of your ID instead &mdash; JPG, PNG, WEBP or PDF, up to 10MB.</p>
+					<?php else : ?>
+						<h3 class="text-lg font-serif text-gray-900 mb-2">One more step &mdash; upload your photo ID</h3>
+						<p class="text-sm text-gray-600 mb-5">UK regulations require us to verify your identity before a prescriber can approve your treatment. A passport, driving licence or other photo ID works &mdash; JPG, PNG, WEBP or PDF, up to 10MB. It is stored securely, never publicly, and only our pharmacy team can view it.</p>
+					<?php endif; ?>
 					<?php if ( $id_flag && isset( $id_errors[ $id_flag ] ) ) : ?>
 						<p class="text-sm font-semibold text-red-600 mb-4"><?php echo esc_html( $id_errors[ $id_flag ] ); ?></p>
 					<?php endif; ?>
