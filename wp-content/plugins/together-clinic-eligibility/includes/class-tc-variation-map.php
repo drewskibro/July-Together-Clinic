@@ -74,6 +74,8 @@ class TC_Variation_Map {
 		'mounjaro'     => 'mounjaro',
 		'foundayo'     => 'foundayo',
 		'orforglipron' => 'foundayo', // generic name, in case a payload carries it
+		'orlistat'     => 'orlistat',
+		'xenical'      => 'orlistat',  // brand name, in case a payload carries it
 		'semaglutide'  => 'wegovy',   // legacy payloads only (injection era)
 		'tirzepatide'  => 'mounjaro', // legacy payloads only (injection era)
 	];
@@ -146,6 +148,10 @@ class TC_Variation_Map {
 				'14.5mg' => 'FDY-14.5',
 				'17.2mg' => 'FDY-17.2',
 			],
+			// Orlistat: one SKU, matches at-health-theme/inc/woocommerce-setup.php.
+			'orlistat' => [
+				'120mg' => 'ORL-120',
+			],
 		] );
 	}
 
@@ -165,6 +171,7 @@ class TC_Variation_Map {
 			'mounjaro'       => 'Mounjaro',
 			'wegovy-tablets' => 'Wegovy Tablets',
 			'foundayo'       => 'Foundayo',
+			'orlistat'       => 'Orlistat',
 		] );
 		return isset( $labels[ $treatment ] ) ? $labels[ $treatment ] : ucfirst( $treatment );
 	}
@@ -184,6 +191,7 @@ class TC_Variation_Map {
 			'mounjaro'       => [ 'text' => 'Tirzepatide injection',   'form' => 'injection' ],
 			'wegovy-tablets' => [ 'text' => 'Oral semaglutide tablet', 'form' => 'tablet' ],
 			'foundayo'       => [ 'text' => 'Orforglipron tablet',     'form' => 'tablet' ],
+			'orlistat'       => [ 'text' => 'Orlistat capsule',        'form' => 'tablet' ],
 		] );
 
 		return isset( $map[ $treatment ] )

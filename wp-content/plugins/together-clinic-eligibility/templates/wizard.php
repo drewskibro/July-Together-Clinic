@@ -7,6 +7,7 @@ $wegovy_img         = TC_ELIGIBILITY_URL . 'assets/img/wegovy.jpg';
 $mounjaro_img       = TC_ELIGIBILITY_URL . 'assets/img/mounjaro.png';
 $wegovy_tablets_img = TC_ELIGIBILITY_URL . 'assets/img/wegovy-tablets.png';
 $foundayo_img       = TC_ELIGIBILITY_URL . 'assets/img/foundayo.png';
+$orlistat_img       = TC_ELIGIBILITY_URL . 'assets/img/orlistat.png';
 $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png';
 ?>
 <div class="tc-eligibility" id="tc-eligibility-root">
@@ -661,6 +662,27 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA approved &mdash; reviewed by a prescriber before dispatch</li>
 						</ul>
 						<p class="treatment-admin-note">Swallow one tablet whole with water, at any time of day. No waiting period before eating or drinking.</p>
+					</div>
+				</button>
+				<button type="button" class="treatment-card" id="orlistat-card" data-action="select-treatment" data-value="orlistat" aria-pressed="false">
+					<span class="treatment-selected-pill" aria-hidden="true"><svg class="tsp-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg>Selected</span>
+					<div class="treatment-image"><img src="<?php echo esc_url( $orlistat_img ); ?>" alt="Illustration of capsules" onerror="this.style.display='none'" /></div>
+					<div class="treatment-body">
+						<div class="treatment-body-head">
+							<div class="treatment-head-text">
+								<span class="treatment-title">Orlistat</span>
+								<div class="treatment-price">&pound;50<span class="treatment-price-unit">/pack</span></div>
+								<p class="treatment-price-note">120mg capsules &middot; 28-day pack</p>
+							</div>
+							<span class="tc-radio" aria-hidden="true"><svg class="tc-radio-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg></span>
+						</div>
+						<p class="treatment-description">Orlistat (Xenical) &mdash; a lipase inhibitor that reduces how much fat your body absorbs from food. Not a GLP-1: an option if you would rather not take an appetite-suppressing medicine.</p>
+						<ul class="treatment-benefits">
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Taken with meals &mdash; one capsule up to three times a day</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>No injections and no dose increases &mdash; one strength</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA licensed &mdash; reviewed by a prescriber before dispatch</li>
+						</ul>
+						<p class="treatment-admin-note">Take one capsule with water immediately before, during, or up to one hour after each main meal that contains fat. If you miss a meal or it contains no fat, skip that dose.</p>
 					</div>
 				</button>
 			</div>
