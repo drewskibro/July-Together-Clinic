@@ -58,7 +58,7 @@
                     <ul class="space-y-3.5">
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) ); ?>" class="ah-footer-link">Weight management</a></li>
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'treatments' ) ) . '#our-treatments' ); ?>" class="ah-footer-link">Our treatments</a></li>
-                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'weight-loss-eligibility' ) ?: get_page_by_path( 'eligibility' ) ) ); ?>" class="ah-footer-link">Check Eligibility</a></li>
+                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'weight-loss-eligibility' ) ?: get_page_by_path( 'eligibility' ) ) ); ?>" class="ah-footer-link">Start your first check</a></li>
                     </ul>
                 </div>
 

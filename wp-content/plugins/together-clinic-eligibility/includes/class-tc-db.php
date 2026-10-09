@@ -7,7 +7,7 @@ class TC_DB {
 
 	const TABLE = 'tc_eligibility_submissions';
 	const SCHEMA_VERSION_OPTION = 'tc_eligibility_db_version';
-	const SCHEMA_VERSION = '1.0.0';
+	const SCHEMA_VERSION = '1.2.0';
 
 	public static function table_name() {
 		global $wpdb;
@@ -69,6 +69,25 @@ class TC_DB {
 			selected_dose VARCHAR(20) NOT NULL DEFAULT '',
 			ineligible_reason TEXT NULL,
 			terms_agreed TINYINT(1) NOT NULL DEFAULT 0,
+			rules_version VARCHAR(30) NOT NULL DEFAULT '',
+			start_weight_kg DECIMAL(6,2) NOT NULL DEFAULT 0,
+			start_bmi DECIMAL(5,2) NOT NULL DEFAULT 0,
+			last_dose_date VARCHAR(20) NOT NULL DEFAULT '',
+			could_conceive VARCHAR(10) NOT NULL DEFAULT '',
+			contraception VARCHAR(20) NOT NULL DEFAULT '',
+			consent_contraception TINYINT(1) NOT NULL DEFAULT 0,
+			consent_id_video TINYINT(1) NOT NULL DEFAULT 0,
+			consent_lifestyle TINYINT(1) NOT NULL DEFAULT 0,
+			s1a_falls VARCHAR(10) NOT NULL DEFAULT '',
+			s1a_fracture VARCHAR(10) NOT NULL DEFAULT '',
+			s1a_meds_count VARCHAR(20) NOT NULL DEFAULT '',
+			s1a_bp_water VARCHAR(10) NOT NULL DEFAULT '',
+			s1a_kidney_test VARCHAR(20) NOT NULL DEFAULT '',
+			s1a_egfr_date VARCHAR(10) NOT NULL DEFAULT '',
+			s1a_egfr_result VARCHAR(10) NOT NULL DEFAULT '',
+			s1a_prisma LONGTEXT NULL,
+			s1a_prisma_score VARCHAR(5) NOT NULL DEFAULT '',
+			clinical_flags LONGTEXT NULL,
 			raw_payload LONGTEXT NULL,
 			ip_address VARCHAR(45) NOT NULL DEFAULT '',
 			user_agent VARCHAR(255) NOT NULL DEFAULT '',
@@ -163,6 +182,25 @@ class TC_DB {
 			'selected_dose'         => sanitize_text_field( $payload['selectedDose'] ?? '' ),
 			'ineligible_reason'     => $eligibility['eligible'] ? null : sanitize_text_field( $eligibility['reason'] ),
 			'terms_agreed'          => ! empty( $payload['termsAgreed'] ) ? 1 : 0,
+			'rules_version'         => sanitize_text_field( $payload['rulesVersion'] ?? '' ),
+			'start_weight_kg'       => (float) ( $payload['startWeightKg'] ?? 0 ),
+			'start_bmi'             => (float) ( $payload['startBmi'] ?? 0 ),
+			'last_dose_date'        => sanitize_text_field( $payload['lastDoseDate'] ?? '' ),
+			'could_conceive'        => sanitize_text_field( $payload['couldConceive'] ?? '' ),
+			'contraception'         => sanitize_text_field( $payload['contraception'] ?? '' ),
+			'consent_contraception' => ! empty( $payload['consentContraception'] ) ? 1 : 0,
+			'consent_id_video'      => ! empty( $payload['consentIdVideo'] ) ? 1 : 0,
+			'consent_lifestyle'     => ! empty( $payload['consentLifestyle'] ) ? 1 : 0,
+			's1a_falls'             => sanitize_text_field( $payload['s1aFalls'] ?? '' ),
+			's1a_fracture'          => sanitize_text_field( $payload['s1aFracture'] ?? '' ),
+			's1a_meds_count'        => sanitize_text_field( $payload['s1aMedsCount'] ?? '' ),
+			's1a_bp_water'          => sanitize_text_field( $payload['s1aBpWater'] ?? '' ),
+			's1a_kidney_test'       => sanitize_text_field( $payload['s1aKidneyTest'] ?? '' ),
+			's1a_egfr_date'         => sanitize_text_field( $payload['s1aEgfrDate'] ?? '' ),
+			's1a_egfr_result'       => sanitize_text_field( $payload['s1aEgfrResult'] ?? '' ),
+			's1a_prisma'            => wp_json_encode( $payload['s1aPrisma'] ?? [] ),
+			's1a_prisma_score'      => isset( $payload['s1aPrismaScore'] ) ? (string) (int) $payload['s1aPrismaScore'] : '',
+			'clinical_flags'        => wp_json_encode( $payload['clinicalFlags'] ?? [] ),
 			'raw_payload'           => wp_json_encode( $payload ),
 		];
 
@@ -193,6 +231,51 @@ class TC_DB {
 			$wpdb->prepare( 'SELECT * FROM ' . self::table_name() . ' WHERE assessment_id = %s', $assessment_id ),
 			ARRAY_A
 		);
+	}
+
+	/**
+	 * Most recent recorded height for a patient, from their eligibility
+	 * assessments. Used by the reorder BMI floor (rules WM-2026-10-v1 onwards).
+	 */
+	public static function latest_height_for_user( $user_id ) {
+		global $wpdb;
+		$user_id = (int) $user_id;
+		if ( $user_id <= 0 ) {
+			return 0.0;
+		}
+		return (float) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT height_cm FROM ' . self::table_name() . ' WHERE user_id = %d AND height_cm > 0 ORDER BY created_at DESC LIMIT 1',
+				$user_id
+			)
+		);
+	}
+
+	/**
+	 * The EARLIEST assessment that chose Orlistat and created an order, as a
+	 * fallback start weight for the 12-week stop rule (rules O4.2,
+	 * WM-2026-10-v3). The first paid Orlistat order's own snapshot is
+	 * preferred (TC_Reorder_Rules::orlistat_context()). A later assessment
+	 * never resets the start weight.
+	 *
+	 * @return array|null { weight_kg, start_weight_kg, user_type, current_medication, selected_treatment, created_at }
+	 */
+	public static function orlistat_start_for_user( $user_id ) {
+		global $wpdb;
+		$user_id = (int) $user_id;
+		if ( $user_id <= 0 ) {
+			return null;
+		}
+		$row = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT weight_kg, start_weight_kg, user_type, current_medication, selected_treatment, created_at FROM " . self::table_name() . "
+				 WHERE user_id = %d AND order_id IS NOT NULL AND weight_kg > 0 AND selected_treatment = 'orlistat'
+				 ORDER BY created_at ASC LIMIT 1",
+				$user_id
+			),
+			ARRAY_A
+		);
+		return $row ?: null;
 	}
 
 	public static function purge_stale( $days = 30 ) {

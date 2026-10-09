@@ -33,14 +33,14 @@ get_header();
         <h1 class="text-5xl lg:text-6xl font-serif text-gray-900 mb-5 leading-[1.02] tracking-[-0.02em]"><?php echo esc_html( ah_field( 'mj_title', 'Mounjaro' ) ); ?></h1>
 
         <p class="text-base md:text-lg text-gray-600 leading-relaxed mb-8 max-w-lg">
-          <?php echo esc_html( ah_field( 'mj_description', 'Mounjaro (tirzepatide) is a once-weekly injection that helps you lose weight by reducing appetite and slowing digestion. Clinical trials show patients lose up to 22.5% of their body weight. Food and Drug Administration (FDA) and Medicines and Healthcare products Regulatory Agency (MHRA) approved for weight management.' ) ); ?>
+          <?php echo esc_html( ah_field( 'mj_description', 'Mounjaro (tirzepatide) is a once-weekly injection that helps you lose weight by reducing appetite and slowing digestion. Licensed by the Medicines and Healthcare products Regulatory Agency (MHRA) for weight management.' ) ); ?>
         </p>
 
         <!-- Key Benefits -->
         <div class="space-y-3 mb-8">
           <?php
           $benefits = array(
-              '<strong>Up to 22.5% body weight loss</strong> in clinical trials',
+              '<strong>Licensed in the UK</strong> for weight management',
               '<strong>Once-weekly injection</strong> — convenient dosing',
               '<strong>Dual-action formula</strong> — Glucagon-Like Peptide-1 (GLP-1) and Glucose-dependent Insulinotropic Polypeptide (GIP) receptor agonist',
               '<strong>Tracked, discreet delivery</strong> with ongoing support',
@@ -61,7 +61,7 @@ get_header();
         <div class="flex flex-wrap items-center gap-x-6 gap-y-3 pt-6 border-t border-gray-200/70">
           <div class="flex items-center gap-2 text-gray-600 text-sm">
             <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-            <span class="font-medium">MHRA Approved</span>
+            <span class="font-medium">Licensed in the UK</span>
           </div>
           <div class="flex items-center gap-2 text-gray-600 text-sm">
             <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
@@ -166,9 +166,9 @@ get_header();
     <div class="max-w-3xl mx-auto space-y-4 ah-faq-accordion" data-stagger>
       <?php
       $default_faqs = array(
-          array( 'question' => 'How does Mounjaro work?', 'answer' => 'Mounjaro (tirzepatide) works by activating both GLP-1 and GIP receptors, which reduces appetite, slows digestion, and helps regulate blood sugar. This dual-action mechanism makes it one of the most effective weight loss treatments available.' ),
+          array( 'question' => 'How does Mounjaro work?', 'answer' => 'Mounjaro (tirzepatide) works by activating both GLP-1 and GIP receptors, which reduces appetite, slows digestion, and helps regulate blood sugar. ' ),
           array( 'question' => 'What are the common side effects?', 'answer' => 'The most common side effects are mild nausea, reduced appetite, and occasional digestive discomfort. Your prescriber will explain what to expect and how to manage them. Starting at a low dose and gradually increasing helps minimise side effects.' ),
-          array( 'question' => 'What results can I expect?', 'answer' => 'Results vary from person to person, and your prescriber will review your progress each time you reorder. Clinical trials show average losses of 22.5% body weight over 72 weeks.' ),
+          array( 'question' => 'What results can I expect?', 'answer' => 'Results vary from person to person, and your prescriber will review your progress each time you reorder.' ),
           array( 'question' => 'Can I take Mounjaro with other medications?', 'answer' => 'Your prescriber will review your full medical history and current medications before approving treatment. Mounjaro can interact with some medications, so it\'s important to disclose everything during your assessment.' ),
       );
       $faqs = ah_field( 'mj_faqs', '' );

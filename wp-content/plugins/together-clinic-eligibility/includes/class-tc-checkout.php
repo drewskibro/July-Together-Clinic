@@ -13,6 +13,7 @@ class TC_Checkout {
 		add_action( 'template_redirect', [ $this, 'enforce_before_checkout' ] );
 		add_action( 'template_redirect', [ $this, 'redirect_returning_customers_from_assessment' ], 5 );
 		add_action( 'template_redirect', [ $this, 'redirect_single_product' ], 6 );
+		add_filter( 'woocommerce_product_is_visible', [ $this, 'hide_prescription_products' ], 10, 2 );
 
 		add_filter( 'woocommerce_checkout_fields',    [ $this, 'prefill_checkout_fields' ] );
 		add_filter( 'woocommerce_checkout_get_value', [ $this, 'prefill_checkout_get_value' ], 999, 2 );
@@ -332,7 +333,7 @@ class TC_Checkout {
 
 		$cookie = TC_Cookie_Store::get();
 		if ( empty( $cookie ) || empty( $cookie['assessment_id'] ) ) {
-			wc_add_notice( 'Please complete the eligibility assessment before ordering.', 'error' );
+			wc_add_notice( 'Please complete the first check before ordering.', 'error' );
 			TC_Log::info( 'add_to_cart_blocked_no_assessment', [ 'product_id' => $product_id ] );
 			return false;
 		}
@@ -384,6 +385,19 @@ class TC_Checkout {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Keep prescription products out of shop, category and search listings
+	 * (MHRA Blue Guide Appendix 6: no "Add to basket" for a POM; supply only
+	 * through the assessment). Affects listings only: the assessment, the
+	 * prescriber's pay link and order-pay are unchanged.
+	 */
+	public function hide_prescription_products( $visible, $product_id ) {
+		if ( ! $visible || is_admin() ) {
+			return $visible;
+		}
+		return self::product_requires_assessment( $product_id ) ? false : $visible;
 	}
 
 	/**

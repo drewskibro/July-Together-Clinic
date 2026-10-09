@@ -41,13 +41,13 @@ get_header();
         <h1 class="text-5xl lg:text-6xl font-serif text-gray-900 mb-5 leading-[1.02] tracking-[-0.02em]"><?php echo esc_html( ah_field( 'wt_title', 'Wegovy Tablets' ) ); ?></h1>
 
         <p class="text-base md:text-lg text-gray-600 leading-relaxed mb-8 max-w-lg">
-          <?php echo esc_html( ah_field( 'wt_description', 'A once-daily oral form of semaglutide containing the same active ingredient as Wegovy® injection. Designed for adults who prefer a needle-free option for weight management. In clinical studies, patients lost up to 16.6% of their body weight (OASIS-4 trial, oral semaglutide 25 mg over 64 weeks; trial-product estimand).' ) ); ?>
+          <?php echo esc_html( ah_field( 'wt_description', 'A once-daily oral form of semaglutide containing the same active ingredient as Wegovy® injection. Designed for adults who prefer a needle-free option for weight management. Whether it is suitable for you is decided by a prescriber at your video consultation.' ) ); ?>
         </p>
 
         <div class="space-y-3 mb-8">
           <?php
           $benefits = array(
-              '<strong>Up to 16.6% body weight loss</strong> in clinical studies (OASIS-4 trial)',
+              '<strong>Licensed in the UK</strong> for weight management, alongside a reduced-calorie diet and more physical activity',
               '<strong>Once-daily tablet</strong> — no needles',
               '<strong>Same active ingredient</strong> as Wegovy&reg; injection',
               '<strong>Gradually increased</strong> over four dose strengths',
@@ -66,7 +66,7 @@ get_header();
         </div>
 
         <div class="flex flex-wrap items-center gap-x-6 gap-y-3 pt-6 border-t border-gray-200/70">
-          <?php foreach ( array( 'MHRA Approved', 'UK Prescribers', 'Needle-Free' ) as $badge ) : ?>
+          <?php foreach ( array( 'Licensed in the UK', 'UK Prescribers', 'Needle-Free' ) as $badge ) : ?>
           <div class="flex items-center gap-2 text-gray-600 text-sm">
             <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
             <span class="font-medium"><?php echo esc_html( $badge ); ?></span>
@@ -115,9 +115,9 @@ get_header();
       <div class="w-1 h-8 bg-purple-600 rounded-full"></div>
       <p class="text-purple-600 text-xs md:text-sm font-bold uppercase tracking-wider"><?php echo esc_html( ah_field( 'wt_ingredient_eyebrow', 'The Same Active Ingredient' ) ); ?></p>
     </div>
-    <h2 class="text-3xl md:text-4xl font-serif text-gray-900 mb-4"><?php echo wp_kses_post( ah_field( 'wt_ingredient_title', 'Proven semaglutide, without the needle' ) ); ?></h2>
+    <h2 class="text-3xl md:text-4xl font-serif text-gray-900 mb-4"><?php echo wp_kses_post( ah_field( 'wt_ingredient_title', 'Semaglutide in tablet form' ) ); ?></h2>
     <p class="text-base md:text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
-      <?php echo esc_html( ah_field( 'wt_ingredient_text', 'Wegovy tablets contain semaglutide — the same clinically proven medication as the injections — taken as a simple once-daily tablet. Suitable for adults who prefer not to self-inject.' ) ); ?>
+      <?php echo esc_html( ah_field( 'wt_ingredient_text', 'Wegovy tablets contain semaglutide — the same active ingredient as the injections — taken as a simple once-daily tablet. Suitable for adults who prefer not to self-inject.' ) ); ?>
     </p>
   </div>
 </section>
@@ -143,7 +143,7 @@ get_header();
           array( 'dose' => '1.5mg', 'label' => 'Starting Dose', 'price' => '99', 'desc' => 'Your body adjusts to daily oral semaglutide over the first weeks.' ),
           array( 'dose' => '4mg', 'label' => 'Step 2', 'price' => '119', 'desc' => 'First increase — appetite changes typically begin.' ),
           array( 'dose' => '9mg', 'label' => 'Step 3', 'price' => '129', 'desc' => 'Continued increase if clinically appropriate.' ),
-          array( 'dose' => '25mg', 'label' => 'Maximum Dose', 'price' => '189', 'desc' => 'Full maintenance dose — up to 16.6% body weight loss in clinical studies.' ),
+          array( 'dose' => '25mg', 'label' => 'Maximum Dose', 'price' => '189', 'desc' => 'Full maintenance dose, one tablet a day.' ),
       );
       $doses = ah_field( 'wt_doses', '' );
       if ( ! is_array( $doses ) || count( $doses ) === 0 ) { $doses = $default_doses; }
@@ -213,7 +213,7 @@ get_header();
       <?php echo wp_kses_post( ah_field( 'wt_cta_title', 'Ready to go<br><em class="not-italic" style="color: #a89dd6;">needle-free?</em>' ) ); ?>
     </h2>
     <p class="text-base md:text-lg text-gray-400 leading-relaxed mb-10 max-w-xl mx-auto">
-      <?php echo esc_html( ah_field( 'wt_cta_subtitle', 'The proven results of semaglutide in a simple once-daily tablet — prescribed and supervised by UK clinicians.' ) ); ?>
+      <?php echo esc_html( ah_field( 'wt_cta_subtitle', 'Semaglutide, now as a daily tablet — prescribed and supervised by UK clinicians.' ) ); ?>
     </p>
     <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="inline-flex items-center gap-3 bg-white hover:bg-gray-100 text-gray-900 text-[15px] font-semibold px-10 py-4 rounded-xl transition-all hover-lift shadow-xl mb-10">
       Start Journey <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>

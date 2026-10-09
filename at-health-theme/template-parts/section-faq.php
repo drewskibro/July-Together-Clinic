@@ -11,8 +11,8 @@ $faq_subtitle = ah_field( 'faq_subtitle', 'Everything you need to know before st
 // Default FAQ items
 $default_faqs = array(
     array(
-        'question' => 'How do I know if I\'m eligible?',
-        'answer'   => 'You\'ll need a Body Mass Index (BMI) of 30 or above (or 27+ with a weight-related health condition). Our free 5-minute online assessment checks your eligibility instantly — no General Practitioner (GP) referral needed. If you\'re not eligible, you won\'t be charged.',
+        'question' => 'How do I know if treatment could be right for me?',
+        'answer'   => 'Our free first check asks about your health, weight and medicines. A prescriber then decides at a video consultation whether any treatment is suitable for you. The medicines are licensed for a Body Mass Index (BMI) of 30 or above, or a lower BMI with a weight-related condition: from 27 for the GLP-1 medicines (Wegovy, Mounjaro and Foundayo) and from 28 for Orlistat. No General Practitioner (GP) referral is needed, and you are only charged if a prescriber prescribes treatment.',
     ),
     array(
         'question' => 'What are the common side effects?',
@@ -32,7 +32,7 @@ $default_faqs = array(
     ),
     array(
         'question' => 'Is this safe? Who prescribes my medication?',
-        'answer'   => 'All prescriptions are reviewed and approved by UK-registered prescribers (GPhC qualified). We\'re a pharmacy registered with the General Pharmaceutical Council (GPhC). Every medication we dispense is genuine, UK-sourced, and fully traceable. Your safety is our absolute priority.',
+        'answer'   => 'All prescriptions are reviewed and approved by UK-registered prescribers (registered with the GPhC). We\'re a pharmacy registered with the General Pharmaceutical Council (GPhC). Every medication we dispense is genuine, UK-sourced, and fully traceable. Your safety is our absolute priority.',
     ),
 );
 

@@ -48,7 +48,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
             <svg class="w-3.5 h-3.5 text-purple-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
             <span class="text-[11px] font-bold text-purple-700 uppercase tracking-[0.14em]"><?php echo esc_html( ah_field( 'tr_bmi_pill', 'Takes 10 seconds' ) ); ?></span>
           </div>
-          <h2 class="text-2xl md:text-[1.75rem] font-serif text-gray-900 leading-tight mb-2"><?php echo esc_html( ah_field( 'tr_bmi_title', 'Am I eligible?' ) ); ?></h2>
+          <h2 class="text-2xl md:text-[1.75rem] font-serif text-gray-900 leading-tight mb-2"><?php echo esc_html( ah_field( 'tr_bmi_title', 'Could this be right for me?' ) ); ?></h2>
           <p class="text-sm text-gray-600 leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_bmi_subtitle', 'Enter your height and weight for an instant, private indication. Nothing is stored.' ) ); ?></p>
 
           <form id="bmiForm" novalidate>
@@ -90,7 +90,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
             <p id="bmiError" class="hidden text-sm text-red-600 mb-3" role="alert"></p>
 
             <button type="submit" class="w-full flex items-center justify-center gap-2.5 bg-purple-600 hover:bg-purple-700 text-white text-base font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all hover-lift">
-              <?php echo esc_html( ah_field( 'tr_bmi_button', 'Check my eligibility' ) ); ?>
+              <?php echo esc_html( ah_field( 'tr_bmi_button', 'Start my first check' ) ); ?>
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </button>
           </form>
@@ -127,7 +127,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
     <!-- Injections: two cards, centred and a little wider, so the pair reads as a set rather than a short row -->
     <div class="max-w-4xl mx-auto mb-6">
       <h3 class="text-lg font-serif text-gray-900">Injections</h3>
-      <p class="text-sm text-gray-600">Once weekly. The highest average weight loss in clinical trials.</p>
+      <p class="text-sm text-gray-600">Once-weekly injections.</p>
     </div>
     <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto" data-stagger>
       <!-- Mounjaro Card -->
@@ -141,13 +141,13 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
         </div>
         <div class="p-8">
           <h3 class="text-3xl font-serif text-gray-900 mb-2">Mounjaro</h3>
-          <p class="text-purple-600 font-bold text-lg mb-3">22.5% average weight loss</p>
-          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_mounjaro_desc', 'Dual-action GLP-1 and GIP receptor agonist, taken once a week. Up to 22.5% body weight reduction in clinical trials.' ) ); ?></p>
+          <p class="text-purple-600 font-bold text-lg mb-3">Tirzepatide, once-weekly injection</p>
+          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_mounjaro_desc', 'Dual-action GLP-1 and GIP receptor agonist, taken once a week alongside a reduced-calorie diet and more physical activity.' ) ); ?></p>
           <?php $tr_p = (string) ah_field( 'tr_mounjaro_price', '' ); if ( $tr_p !== '' && stripos( $tr_p, 'XX' ) === false ) : ?>
           <p class="tr-price"><?php echo esc_html( $tr_p ); ?></p>
           <?php endif; ?>
           <div class="flex gap-3">
-            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
+            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start your consultation</a>
             <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'mounjaro' ) ) ); ?>" class="flex-1 text-center border-2 border-gray-200 hover:border-purple-300 text-gray-700 font-semibold py-3 rounded-xl transition-all">Learn More</a>
           </div>
         </div>
@@ -164,13 +164,13 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
         </div>
         <div class="p-8">
           <h3 class="text-3xl font-serif text-gray-900 mb-2">Wegovy</h3>
-          <p class="text-purple-600 font-bold text-lg mb-3">20.7% average weight loss</p>
-          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_wegovy_desc', 'GLP-1 receptor agonist with proven cardiovascular benefits. Up to 20.7% body weight reduction and 20% reduced cardiovascular risk.' ) ); ?></p>
+          <p class="text-purple-600 font-bold text-lg mb-3">Semaglutide, once-weekly injection</p>
+          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_wegovy_desc', 'GLP-1 receptor agonist, taken once a week alongside a reduced-calorie diet and more physical activity.' ) ); ?></p>
           <?php $tr_p = (string) ah_field( 'tr_wegovy_price', '' ); if ( $tr_p !== '' && stripos( $tr_p, 'XX' ) === false ) : ?>
           <p class="tr-price"><?php echo esc_html( $tr_p ); ?></p>
           <?php endif; ?>
           <div class="flex gap-3">
-            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
+            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start your consultation</a>
             <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy' ) ) ); ?>" class="flex-1 text-center border-2 border-gray-200 hover:border-purple-300 text-gray-700 font-semibold py-3 rounded-xl transition-all">Learn More</a>
           </div>
         </div>
@@ -194,11 +194,11 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
         </div>
         <div class="p-8">
           <h3 class="text-3xl font-serif text-gray-900 mb-2">Wegovy Tablets</h3>
-          <p class="text-purple-600 font-bold text-lg mb-3">Up to 16.6% average weight loss</p>
+          <p class="text-purple-600 font-bold text-lg mb-3">Semaglutide, once-daily tablet</p>
           <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_wegovy_tablets_desc', 'A once-daily oral form of semaglutide — the same active ingredient as Wegovy® injection — for adults who prefer a needle-free option for weight management.' ) ); ?></p>
           <p class="tr-price"><?php echo esc_html( ah_field( 'tr_wegovy_tablets_price', 'from £99' ) ); ?></p>
           <div class="flex gap-3">
-            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
+            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start your consultation</a>
             <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'wegovy-tablets' ) ) ); ?>" class="flex-1 text-center border-2 border-gray-200 hover:border-purple-300 text-gray-700 font-semibold py-3 rounded-xl transition-all">Learn More</a>
           </div>
         </div>
@@ -219,7 +219,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
           <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_foundayo_desc', 'Orforglipron — the first non-peptide GLP-1 tablet licensed in the UK. Once daily, taken with or without food, with no waiting period before you eat.' ) ); ?></p>
           <p class="tr-price"><?php echo esc_html( ah_field( 'tr_foundayo_price', 'from £99' ) ); ?></p>
           <div class="flex gap-3">
-            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
+            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start your consultation</a>
             <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'foundayo' ) ) ); ?>" class="flex-1 text-center border-2 border-gray-200 hover:border-purple-300 text-gray-700 font-semibold py-3 rounded-xl transition-all">Learn More</a>
           </div>
         </div>
@@ -236,15 +236,15 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
         </div>
         <div class="p-8">
           <h3 class="text-3xl font-serif text-gray-900 mb-2">Orlistat</h3>
-          <p class="text-purple-600 font-bold text-lg mb-3">Branded as Xenical</p>
-          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_orlistat_desc', 'A clinically proven weight loss tablet that reduces the amount of fat your body absorbs from food. Suitable for patients with a Body Mass Index (BMI) of 28 or above.' ) ); ?></p>
-          <?php $tr_p = (string) ah_field( 'tr_orlistat_price', '£50 per pack' ); if ( $tr_p !== '' && stripos( $tr_p, 'XX' ) === false ) : ?>
+          <p class="text-purple-600 font-bold text-lg mb-3">Also sold under the brand name Xenical</p>
+          <p class="text-gray-600 text-[15px] leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_orlistat_desc', 'A capsule that reduces the amount of fat your body absorbs from food, used alongside a reduced-calorie diet. Licensed for adults with a Body Mass Index (BMI) of 30 or above, or 28 or above with a weight-related condition such as type 2 diabetes, high blood pressure or high cholesterol. Take with main meals: one capsule immediately before, during or up to 1 hour after each main meal; skip the dose if you miss a meal or it has no fat. 28-day pack. A prescriber decides at your consultation whether it is suitable. Your preferred treatment is not prescribed if it is not suitable for you.' ) ); ?></p>
+          <?php $tr_p = (string) ah_field( 'tr_orlistat_price', '£50 per pack of 84 capsules' ); if ( $tr_p !== '' && stripos( $tr_p, 'XX' ) === false ) : ?>
           <p class="tr-price"><?php echo esc_html( $tr_p ); ?></p>
           <?php endif; ?>
           <?php /* Orlistat is offered in the assessment. There is no product page
                    yet, so this card carries the one action that works. */ ?>
           <div class="flex gap-3">
-            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start Journey</a>
+            <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="flex-1 text-center bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-all">Start your consultation</a>
           </div>
         </div>
       </div>
@@ -288,7 +288,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
       <!-- Injections -->
       <div>
         <h3 class="text-lg font-serif text-gray-900 mb-1">Injections</h3>
-        <p class="text-sm text-gray-600 mb-4">Once-weekly, with the highest average weight loss in clinical trials.</p>
+        <p class="text-sm text-gray-600 mb-4">Once-weekly injections.</p>
         <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm tr-table-scroll">
           <table class="tr-comparison-table">
             <thead>
@@ -296,7 +296,6 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
             </thead>
             <tbody>
               <tr><td class="font-semibold text-gray-900">Active Ingredient</td><td>Tirzepatide</td><td>Semaglutide</td></tr>
-              <tr><td class="font-semibold text-gray-900">Weight Loss</td><td class="text-purple-700 font-bold">Up to 22.5%</td><td class="text-purple-700 font-bold">Up to 20.7%</td></tr>
               <tr><td class="font-semibold text-gray-900">How It's Taken</td><td>Once-weekly injection</td><td>Once-weekly injection</td></tr>
               <tr><td class="font-semibold text-gray-900">Starting Dose</td><td>2.5mg</td><td>0.25mg</td></tr>
               <tr><td class="font-semibold text-gray-900">Dosing Plan</td><td>20 weeks to full dose</td><td>16 weeks to full dose</td></tr>

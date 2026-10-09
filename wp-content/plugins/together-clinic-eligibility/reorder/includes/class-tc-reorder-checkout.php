@@ -125,6 +125,11 @@ class TC_Reorder_Checkout {
 		// before this call) and back-links the order onto the submissions row.
 		self::attach_assessment_to_order( $order );
 
+		// Rules WM-2026-10-v3: BMI 20 to 22.9, and for Orlistat the weight
+		// review (rule O4.2) and the section O medicine screen.
+		if ( class_exists( 'TC_Reorder_Rules' ) ) {
+			$flags = array_merge( TC_Reorder_Rules::review_flags( $payload, $user_id ), $flags );
+		}
 		$order->update_meta_data( '_tc_review_flags', $flags );
 		$order->calculate_totals();
 		$order->save();

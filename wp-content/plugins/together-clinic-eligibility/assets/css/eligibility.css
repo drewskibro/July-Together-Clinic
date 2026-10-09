@@ -1083,3 +1083,9 @@
 	color: white;
 	text-decoration: none;
 }
+
+/* Rules WM-2026-10-v3: a product the answers rule out (for example the GLP-1
+   products when only Orlistat remains open) is shown but cannot be chosen. */
+.tc-eligibility .treatment-card.treatment-unavailable,
+.tc-eligibility .treatment-card[disabled] { opacity: .45; cursor: not-allowed; }
+.tc-eligibility .treatment-card.treatment-unavailable:hover { transform: none; box-shadow: none; }

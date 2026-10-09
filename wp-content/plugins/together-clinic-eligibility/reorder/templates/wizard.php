@@ -7,8 +7,12 @@ $wegovy_img   = TC_REORDER_URL . 'assets/img/wegovy.jpg';
 $mounjaro_img = TC_REORDER_URL . 'assets/img/mounjaro.png';
 $logo_img     = TC_REORDER_URL . 'assets/img/together-clinic-logo.png';
 
-$med_image = $prefill['previous_medication'] === 'mounjaro' ? $mounjaro_img : $wegovy_img;
-$med_name  = $prefill['previous_medication'] === 'mounjaro' ? 'Mounjaro' : 'Wegovy';
+$med_display = TC_Reorder_Plugin::medication_display( $prefill['previous_medication'] ?? '' );
+$med_image   = $med_display['image'];
+$med_name    = $med_display['name'];
+$med_single  = $med_display['single_strength'];
+$dose_word   = $med_single ? 'treatment' : 'dose';
+$progress_note = $med_single ? 'Your prescriber will review your progress.' : 'You may benefit from a dose increase.';
 ?>
 <div class="tc-reorder" id="tc-reorder-root">
 	<div class="tc-reorder-container">
@@ -88,11 +92,11 @@ $med_name  = $prefill['previous_medication'] === 'mounjaro' ? 'Mounjaro' : 'Wego
 
 			<div class="med-info-card">
 				<div class="med-info-inner">
-					<div class="med-thumb"><img src="<?php echo esc_url( $med_image ); ?>" alt="<?php echo esc_attr( $med_name ); ?>" /></div>
+					<?php if ( $med_image ) : ?><div class="med-thumb"><img src="<?php echo esc_url( $med_image ); ?>" alt="<?php echo esc_attr( $med_name ); ?>" /></div><?php endif; ?>
 					<div class="med-info-body">
 						<div class="med-badge">Reordering</div>
 						<p class="med-name"><?php echo esc_html( $med_name ); ?></p>
-						<p style="margin: 8px 0 0; color: #6b7280; font-size: 14px;">You'll pick your dose at the end of the assessment.</p>
+						<p style="margin: 8px 0 0; color: #6b7280; font-size: 14px;"><?php echo $med_single ? esc_html( $med_name . ' comes in one strength, so there is no dose to choose.' ) : "You'll pick your dose at the end of the assessment."; ?></p>
 					</div>
 				</div>
 			</div>
@@ -112,7 +116,7 @@ $med_name  = $prefill['previous_medication'] === 'mounjaro' ? 'Mounjaro' : 'Wego
 			<h2>Have you lost weight in the last 4 weeks?</h2>
 			<label class="radio-option"><input type="radio" name="weight-loss" value="yes" data-action="set-weight-loss" /><span>Yes</span></label>
 			<label class="radio-option"><input type="radio" name="weight-loss" value="no" data-action="set-weight-loss" /><span>No</span></label>
-			<div id="weight-loss-message" class="alert alert--brand hidden"><div class="alert__row"><div class="alert__body"><p>You may benefit from a dose increase.</p></div></div></div>
+			<div id="weight-loss-message" class="alert alert--brand hidden"><div class="alert__row"><div class="alert__body"><p><?php echo esc_html( $progress_note ); ?></p></div></div></div>
 			<button data-action="previous" class="btn btn-secondary mt-4">Back</button>
 		</div>
 
@@ -136,10 +140,10 @@ $med_name  = $prefill['previous_medication'] === 'mounjaro' ? 'Mounjaro' : 'Wego
 				<span class="progress-label">43%</span>
 				<div class="progress-track"><div class="progress-fill" style="width:43%"></div></div>
 			</div>
-			<h2>Is your appetite suppression lasting 6&ndash;7 days?</h2>
+			<h2><?php echo $med_single ? esc_html( 'Are you taking ' . $med_name . ' with each main meal as advised?' ) : 'Is your appetite suppression lasting 6&ndash;7 days?'; ?></h2>
 			<label class="radio-option"><input type="radio" name="appetite" value="yes" data-action="set-appetite" /><span>Yes</span></label>
 			<label class="radio-option"><input type="radio" name="appetite" value="no" data-action="set-appetite" /><span>No</span></label>
-			<div id="appetite-message" class="alert alert--brand hidden"><div class="alert__row"><div class="alert__body"><p>You may benefit from a dose increase.</p></div></div></div>
+			<div id="appetite-message" class="alert alert--brand hidden"><div class="alert__row"><div class="alert__body"><p><?php echo esc_html( $progress_note ); ?></p></div></div></div>
 			<button data-action="previous" class="btn btn-secondary mt-4">Back</button>
 		</div>
 
@@ -206,7 +210,7 @@ $med_name  = $prefill['previous_medication'] === 'mounjaro' ? 'Mounjaro' : 'Wego
 				<span class="progress-label">86%</span>
 				<div class="progress-track"><div class="progress-fill" style="width:86%"></div></div>
 			</div>
-			<h2>Would you like to speak with a clinician about your dose?</h2>
+			<h2>Would you like to speak with a clinician about your <?php echo esc_html( $dose_word ); ?>?</h2>
 			<label class="radio-option"><input type="radio" name="clinical-support" value="yes" data-action="set-clinical-support" /><span>Yes</span></label>
 			<label class="radio-option"><input type="radio" name="clinical-support" value="no" data-action="set-clinical-support" /><span>No</span></label>
 			<button data-action="previous" class="btn btn-secondary mt-4">Back</button>

@@ -33,7 +33,7 @@ class TC_Reorder_Ajax {
 		$prefill = TC_Reorder_Prefill::for_user( $user_id );
 
 		if ( ! $prefill || ! $prefill['has_previous_order'] ) {
-			wp_send_json_error( [ 'message' => 'No previous qualifying order found on your account.' ], 403 );
+			wp_send_json_error( [ 'message' => 'We could not find a previous order on your account that can be reordered.' ], 403 );
 		}
 
 		$assessment_id = TC_Reorder_DB::insert_partial( $user_id, $prefill['previous_order_id'], [
@@ -99,6 +99,13 @@ class TC_Reorder_Ajax {
 				'code'   => $rules['code'],
 				'reason' => $rules['reason'],
 			];
+
+			// The Orlistat 12-week block (rule O4.2) needs a prescriber review,
+			// so the prescriber is told even though no order is created.
+			if ( strpos( (string) $rules['code'], 'orlistat_12_week' ) === 0 ) {
+				$payload['reorderBlocked'] = (string) ( $rules['prescriber'] ?? $rules['reason'] );
+				TC_Reorder_Emails::send_clinician_notification( $payload, $assessment_id, $prefill, null );
+			}
 
 			if ( $rules['code'] === 'medication_mismatch' ) {
 				$response['redirect'] = $this->assessment_url( true );

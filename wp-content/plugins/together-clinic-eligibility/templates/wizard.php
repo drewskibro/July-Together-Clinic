@@ -41,7 +41,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				</div>
 			</div>
 			<h2>Let's save your assessment</h2>
-			<p>Enter your details so our clinicians can send your eligibility result and support you with the next steps if treatment is appropriate.</p>
+			<p>Enter your details so our clinicians can send the outcome of your first check and support you with the next steps if treatment is appropriate.</p>
 			<div class="form-group">
 				<div class="form-grid-2">
 					<div><label class="form-label">First name</label><input type="text" class="form-input" id="early-first-name" placeholder="e.g. Sarah" autocomplete="given-name" /></div>
@@ -67,13 +67,13 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			<h2>Are you currently using weight loss medication?</h2>
 			<button class="pathway-card" data-action="set-user-type" data-value="new">
 				<div class="pathway-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/></svg></div>
-				<strong class="pathway-title">I'm new to treatment</strong>
-				<span class="pathway-subtitle">First time using weight loss medication</span>
+				<strong class="pathway-title">I'm not taking it now</strong>
+				<span class="pathway-subtitle">I have never used weight loss medication, or I stopped more than 3 months ago</span>
 			</button>
 			<button class="pathway-card" data-action="set-user-type" data-value="switching">
 				<div class="pathway-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16"/><path d="M8 5l-4 4 4 4"/><path d="M20 15H4"/><path d="M16 19l4-4-4-4"/></svg></div>
-				<strong class="pathway-title">Switching providers</strong>
-				<span class="pathway-subtitle">Currently using medication elsewhere</span>
+				<strong class="pathway-title">I'm taking it now, or stopped recently</strong>
+				<span class="pathway-subtitle">I use weight loss medication from another provider, or stopped in the last 3 months</span>
 			</button>
 			<button class="button button-secondary" data-action="previous">Back</button>
 		</div>
@@ -130,6 +130,10 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 					<strong class="pathway-title"><?php echo esc_html( TC_Variation_Map::treatment_label( $tc_treatment ) ); ?></strong><span class="pathway-subtitle"><?php echo esc_html( $tc_desc['text'] ); ?></span>
 				</button>
 			<?php endforeach; ?>
+			<button class="pathway-card" data-action="set-current-medication" data-value="other">
+				<div class="pathway-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></div>
+				<strong class="pathway-title">Another medicine</strong><span class="pathway-subtitle">For example Ozempic, Saxenda or Rybelsus</span>
+			</button>
 			<button class="button button-secondary" data-action="previous">Back</button>
 		</div>
 
@@ -141,14 +145,46 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			<button class="button button-secondary" data-action="previous">Back</button>
 		</div>
 
+		<!-- Screen 3c: Last dose and starting weight (rules WM-2026-10-v1, 3A.3) -->
+		<div id="screen-3c" class="screen">
+			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">20%</div><div class="progress-bar"><div class="progress-fill" style="width: 20%"></div></div></div></div>
+			<h2>About your current treatment</h2>
+			<p>Your prescriber needs this to choose a safe dose. Please have your previous prescription or provider record ready: the prescriber will ask to see it.</p>
+			<div class="form-group">
+				<label class="form-label">Date of your last dose *</label>
+				<div class="dob-inputs">
+					<input type="text" id="last-dose-day" class="form-input dob-input" inputmode="numeric" placeholder="DD" maxlength="2" aria-label="Day of last dose" />
+					<input type="text" id="last-dose-month" class="form-input dob-input" inputmode="numeric" placeholder="MM" maxlength="2" aria-label="Month of last dose" />
+					<input type="text" id="last-dose-year" class="form-input dob-input" inputmode="numeric" placeholder="YYYY" maxlength="4" aria-label="Year of last dose" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="form-label">Your weight when you first started weight loss medication *</label>
+				<div class="unit-selector">
+					<label class="unit-option"><input type="radio" name="start-weight-unit" value="kg" checked /><span>kg</span></label>
+					<label class="unit-option"><input type="radio" name="start-weight-unit" value="st" /><span>st/lbs</span></label>
+				</div>
+				<input type="number" id="start-weight-kg" class="form-input" placeholder="Weight in kg" step="0.1" min="40" max="300" />
+				<div id="start-weight-st-inputs" style="display:none;" class="grid-input-group">
+					<div><label class="form-label">Stone</label><input type="number" id="start-weight-stone" class="form-input" placeholder="St" min="6" max="45" /></div>
+					<div><label class="form-label">Pounds</label><input type="number" id="start-weight-pounds" class="form-input" placeholder="Lbs" min="0" max="13" /></div>
+				</div>
+			</div>
+			<div id="current-treatment-error" class="error-message" style="display:none;"></div>
+			<div class="button-group">
+				<button class="button button-secondary" data-action="previous">Back</button>
+				<button class="button button-primary" data-action="save-current-treatment">Next &rarr;</button>
+			</div>
+		</div>
+
 		<!-- Screen 4: Age -->
 		<div id="screen-4" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">25%</div><div class="progress-bar"><div class="progress-fill" style="width: 25%"></div></div></div></div>
 			<h2>How old are you?</h2>
 			<div class="radio-group">
 				<label class="radio-item"><input type="radio" name="age" value="under-18" data-action="set-age" /><span>Under 18</span></label>
-				<label class="radio-item"><input type="radio" name="age" value="18-74" data-action="set-age" /><span>18 to 74</span></label>
-				<label class="radio-item"><input type="radio" name="age" value="75-over" data-action="set-age" /><span>75 or over</span></label>
+				<label class="radio-item"><input type="radio" name="age" value="18-85" data-action="set-age" /><span>18 to 85</span></label>
+				<label class="radio-item"><input type="radio" name="age" value="86-over" data-action="set-age" /><span>86 or over</span></label>
 			</div>
 			<button class="button button-secondary" data-action="previous">Back</button>
 		</div>
@@ -157,15 +193,20 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 		<div id="screen-5" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">30%</div><div class="progress-bar"><div class="progress-fill" style="width: 30%"></div></div></div></div>
 			<h2>Which ethnicity are you?</h2>
-			<p>Healthy BMI ranges differ according to ethnic background. Our clinicians evaluate your BMI and complete medical history together.</p>
+			<p>Some health risks linked to weight differ between ethnic backgrounds. This helps your prescriber assess your health.</p>
 			<div class="radio-group">
 				<?php
 				$ethnicities = [
-					'asian or asian british'    => 'Asian or Asian British',
-					'black (caribbean, african)' => 'Black (Caribbean, African)',
-					'mixed ethnicities'         => 'Mixed ethnicities',
-					'other ethnic group'        => 'Other ethnic group',
-					'white'                     => 'White',
+					'south asian'       => 'South Asian (for example Indian, Pakistani, Bangladeshi, Sri Lankan)',
+					'chinese'           => 'Chinese',
+					'other asian'       => 'Other Asian background',
+					'middle eastern'    => 'Middle Eastern or Arab',
+					'black african'     => 'Black African',
+					'african-caribbean' => 'Black Caribbean',
+					'mixed'             => 'Mixed or multiple ethnic groups',
+					'white'             => 'White',
+					'other'             => 'Other ethnic group',
+					'prefer not to say' => 'Prefer not to say',
 				];
 				foreach ( $ethnicities as $value => $label ) :
 					?>
@@ -267,7 +308,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			</div>
 			<div class="bmi-next-steps">
 				<div class="bmi-next-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-				<p class="bmi-next-text" id="bmi-message">Our clinical team will review your full profile.</p>
+				<p class="bmi-next-text" id="bmi-message">This is based on the weight and height you entered. Your prescriber will check your weight and height on a video call before any treatment.</p>
 			</div>
 			<div class="button-group">
 				<button class="button button-secondary" data-action="previous">Back</button>
@@ -281,8 +322,9 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			<h2>Have you been diagnosed with diabetes?</h2>
 			<p>Diabetes treatments can impact the way the medication included with our weight loss plan works.</p>
 			<div class="radio-group">
-				<label class="radio-item"><input type="radio" name="diabetes" value="medication" data-action="set-diabetes" /><span>I have diabetes and take medication for it</span></label>
-				<label class="radio-item"><input type="radio" name="diabetes" value="diet" data-action="set-diabetes" /><span>I have diabetes and it's diet-controlled</span></label>
+				<label class="radio-item"><input type="radio" name="diabetes" value="type1" data-action="set-diabetes" /><span>I have type 1 diabetes</span></label>
+				<label class="radio-item"><input type="radio" name="diabetes" value="type2-meds" data-action="set-diabetes" /><span>I have type 2 diabetes and take medication for it</span></label>
+				<label class="radio-item"><input type="radio" name="diabetes" value="type2-diet" data-action="set-diabetes" /><span>I have type 2 diabetes controlled by diet</span></label>
 				<label class="radio-item"><input type="radio" name="diabetes" value="family" data-action="set-diabetes" /><span>No, but there is history of diabetes in my family</span></label>
 				<label class="radio-item"><input type="radio" name="diabetes" value="pre" data-action="set-diabetes" /><span>I have pre-diabetes</span></label>
 				<label class="radio-item"><input type="radio" name="diabetes" value="none" data-action="set-diabetes" /><span>I don't have diabetes</span></label>
@@ -410,14 +452,11 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 		<!-- Screen 14: Current Meds -->
 		<div id="screen-14" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">76%</div><div class="progress-bar"><div class="progress-fill" style="width: 76%"></div></div></div></div>
-			<h2>Are you currently taking any regular prescription medications?</h2>
-			<div class="radio-group">
-				<label class="radio-item"><input type="radio" name="current-meds" value="none" data-action="set-current-meds" /><span>No, I don't take any prescription medications</span></label>
-				<label class="radio-item"><input type="radio" name="current-meds" value="bp" data-action="set-current-meds" /><span>Blood pressure medication</span></label>
-				<label class="radio-item"><input type="radio" name="current-meds" value="cholesterol" data-action="set-current-meds" /><span>Cholesterol medication</span></label>
-				<label class="radio-item"><input type="radio" name="current-meds" value="diabetes" data-action="set-current-meds" /><span>Diabetes medication</span></label>
-				<label class="radio-item"><input type="radio" name="current-meds" value="mental" data-action="set-current-meds" /><span>Mental health medication</span></label>
-				<label class="radio-item"><input type="radio" name="current-meds" value="other" data-action="set-current-meds-other" /><span>Other / I take more than one prescription medication</span></label>
+			<h2>Do you take any medicines?</h2>
+			<p>Include anything prescribed, the contraceptive pill, and anything you buy from a pharmacy, shop or online, including herbal remedies and supplements.</p>
+			<div class="two-col-buttons">
+				<button class="button button-secondary" data-action="set-current-meds-choice" data-value="yes">Yes</button>
+				<button class="button button-secondary" data-action="set-current-meds-choice" data-value="none">No</button>
 			</div>
 			<button class="button button-secondary" data-action="previous">Back</button>
 		</div>
@@ -425,11 +464,13 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 		<!-- Screen 14a: Medication List -->
 		<div id="screen-14a" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">77%</div><div class="progress-bar"><div class="progress-fill" style="width: 77%"></div></div></div></div>
-			<h2>Please include a full list of all medication that you currently take</h2>
-			<textarea class="form-textarea" id="medication-list" placeholder="List all your current medications..."></textarea>
+			<h2>Please list every medicine you take</h2>
+			<p>Include the name, strength and how often you take it, if you know. Include the contraceptive pill, and anything bought without a prescription.</p>
+			<textarea class="form-textarea" id="medication-list" placeholder="List all your current medicines..."></textarea>
+			<div id="medication-list-error" class="error-message" style="display:none;"></div>
 			<div class="button-group">
 				<button class="button button-secondary" data-action="previous">Back</button>
-				<button class="button button-primary" data-action="goto" data-value="15">Next &rarr;</button>
+				<button class="button button-primary" data-action="save-medication-list">Next &rarr;</button>
 			</div>
 		</div>
 
@@ -455,14 +496,30 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			</div>
 		</div>
 
-		<!-- Screen 15b: Pregnancy Gate -->
+		<!-- Screen 15b: Contraception (rules WM-2026-10-v1) -->
 		<div id="screen-15b" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">80%</div><div class="progress-bar"><div class="progress-fill" style="width: 80%"></div></div></div></div>
-			<h2>Are you currently pregnant, planning to become pregnant, or breastfeeding?</h2>
-			<p>Weight loss medications are not suitable during pregnancy or breastfeeding.</p>
+			<h2>Could you become pregnant?</h2>
+			<p>For example, you still have periods and have not been sterilised or had a hysterectomy.</p>
 			<div class="two-col-buttons">
-				<button class="button button-secondary" data-action="set-pregnancy-gate" data-value="yes">Yes</button>
-				<button class="button button-secondary" data-action="set-pregnancy-gate" data-value="no">No</button>
+				<button class="button button-secondary" data-action="set-could-conceive" data-value="yes">Yes</button>
+				<button class="button button-secondary" data-action="set-could-conceive" data-value="no">No</button>
+			</div>
+			<div id="contraception-section" style="display:none;margin-top:24px;">
+				<h3>Which contraception do you use?</h3>
+				<div class="radio-group">
+					<label class="radio-item"><input type="radio" name="contraception" value="pill" /><span>The pill (combined or progestogen-only)</span></label>
+					<label class="radio-item"><input type="radio" name="contraception" value="lng-iud" /><span>Coil, implant or injection</span></label>
+					<label class="radio-item"><input type="radio" name="contraception" value="barrier" /><span>Condoms or another barrier method only</span></label>
+					<label class="radio-item"><input type="radio" name="contraception" value="other" /><span>Something else</span></label>
+					<label class="radio-item"><input type="radio" name="contraception" value="none" /><span>I don't use contraception</span></label>
+				</div>
+				<label class="checkbox-item" style="background:white;border:2px solid #e5e7eb;border-radius:12px;padding:16px;margin:16px 0;">
+					<input type="checkbox" id="consent-contraception" /><span>I will use effective contraception while taking weight loss medication and for at least 2 months after stopping, and I will tell the prescriber straight away if I could be pregnant. I understand some of these medicines make the pill less reliable.</span>
+				</label>
+				<p style="font-size:14px;color:#6b7280;margin:-8px 0 16px;">This agreement is needed for Wegovy, Mounjaro and Foundayo, not for Orlistat. We do not prescribe Orlistat if you are pregnant or planning a pregnancy. If you take the contraceptive pill, use an extra method such as condoms if you get severe diarrhoea.</p>
+				<div id="contraception-error" class="error-message" style="display:none;"></div>
+				<button class="button button-primary" data-action="save-contraception">Next &rarr;</button>
 			</div>
 			<button class="button button-secondary" data-action="previous">Back</button>
 		</div>
@@ -497,7 +554,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 		<div id="screen-18" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">85%</div><div class="progress-bar"><div class="progress-fill" style="width: 85%"></div></div></div></div>
 			<h2>Almost there &mdash; just a couple more details</h2>
-			<p>We need your date of birth to verify your eligibility.</p>
+			<p>We need your date of birth to confirm your details.</p>
 			<div class="dob-identity-card">
 				<div class="dob-identity-avatar" id="dob-avatar-initials">?</div>
 				<div>
@@ -523,6 +580,77 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			<div class="button-group">
 				<button class="button button-secondary" data-action="previous">Back</button>
 				<button class="button button-primary" data-action="save-dob">Next &rarr;</button>
+			</div>
+		</div>
+
+		<!-- Screen 18a: Ages 75 to 85 (rules WM-2026-10-v3, rule S1A) -->
+		<div id="screen-18a" class="screen">
+			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">87%</div><div class="progress-bar"><div class="progress-fill" style="width: 87%"></div></div></div></div>
+			<h2>A few more questions for people aged 75 and over</h2>
+			<p>Your prescriber needs these answers to check whether treatment would be safe for you. Please answer as best you can.</p>
+			<?php
+			$tc_s1a_yes_no = [
+				's1a-falls'               => 'Have you had a fall in the last 12 months?',
+				's1a-fracture'            => 'Have you ever broken a bone from a minor fall or knock (for example a fall from standing height)?',
+				's1a-prisma-limit'        => 'In general, do you have any health problems that require you to limit your activities?',
+				's1a-prisma-help'         => 'Do you need someone to help you on a regular basis?',
+				's1a-prisma-home'         => 'In general, do you have any health problems that require you to stay at home?',
+				's1a-prisma-count'        => 'If you need help, can you count on someone close to you?',
+				's1a-prisma-aid'          => 'Do you regularly use a stick, walker or wheelchair to get about?',
+			];
+			foreach ( $tc_s1a_yes_no as $name => $question ) :
+				?>
+				<div class="screening-question">
+					<h3><?php echo esc_html( $question ); ?></h3>
+					<div class="radio-button-group">
+						<div class="radio-button">
+							<input type="radio" id="<?php echo esc_attr( $name ); ?>-yes" name="<?php echo esc_attr( $name ); ?>" value="yes" />
+							<label class="radio-button-label" for="<?php echo esc_attr( $name ); ?>-yes">Yes</label>
+						</div>
+						<div class="radio-button">
+							<input type="radio" id="<?php echo esc_attr( $name ); ?>-no" name="<?php echo esc_attr( $name ); ?>" value="no" />
+							<label class="radio-button-label" for="<?php echo esc_attr( $name ); ?>-no">No</label>
+						</div>
+					</div>
+				</div>
+			<?php endforeach; ?>
+			<div class="screening-question">
+				<h3>How many different medicines do you take regularly?</h3>
+				<div class="radio-group">
+					<?php foreach ( TC_Eligibility_Rules::S1A_MEDS_COUNT as $value => $label ) : ?>
+						<label class="radio-item"><input type="radio" name="s1a-meds-count" value="<?php echo esc_attr( $value ); ?>" /><span><?php echo esc_html( $label ); ?></span></label>
+					<?php endforeach; ?>
+				</div>
+			</div>
+			<div class="screening-question">
+				<h3>Do you take blood pressure tablets or water tablets (diuretics)?</h3>
+				<div class="radio-group">
+					<label class="radio-item"><input type="radio" name="s1a-bp-water" value="yes" /><span>Yes</span></label>
+					<label class="radio-item"><input type="radio" name="s1a-bp-water" value="no" /><span>No</span></label>
+					<label class="radio-item"><input type="radio" name="s1a-bp-water" value="unsure" /><span>Not sure</span></label>
+				</div>
+			</div>
+			<div class="screening-question">
+				<h3>When did you last have a kidney blood test (eGFR)?</h3>
+				<div class="radio-group">
+					<?php foreach ( TC_Eligibility_Rules::S1A_KIDNEY_TEST as $value => $label ) : ?>
+						<label class="radio-item"><input type="radio" name="s1a-kidney-test" value="<?php echo esc_attr( $value ); ?>" /><span><?php echo esc_html( $label ); ?></span></label>
+					<?php endforeach; ?>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="form-label">If you know them: month and year of that test, and the eGFR result</label>
+				<div class="dob-inputs">
+					<input type="text" id="s1a-egfr-month" class="form-input dob-input" inputmode="numeric" placeholder="MM" maxlength="2" aria-label="Month of kidney test" />
+					<input type="text" id="s1a-egfr-year" class="form-input dob-input" inputmode="numeric" placeholder="YYYY" maxlength="4" aria-label="Year of kidney test" />
+					<input type="text" id="s1a-egfr-result" class="form-input dob-input" inputmode="decimal" placeholder="eGFR" maxlength="6" aria-label="eGFR result" />
+				</div>
+				<p style="font-size:13px;color:#6b7280;margin-top:8px;margin-bottom:0;">Leave these blank if you do not know. Your prescriber will check your records.</p>
+			</div>
+			<div id="s1a-error" class="error-message" style="display:none;"></div>
+			<div class="button-group">
+				<button class="button button-secondary" data-action="previous">Back</button>
+				<button class="button button-primary" data-action="save-s1a">Next &rarr;</button>
 			</div>
 		</div>
 
@@ -553,21 +681,28 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			</div>
 		</div>
 
-		<!-- Screen 20: GP -->
+		<!-- Screen 20: GP and consents (rules WM-2026-10-v3) -->
 		<div id="screen-20" class="screen">
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">95%</div><div class="progress-bar"><div class="progress-fill" style="width: 95%"></div></div></div></div>
-			<h2>Who is your GP?</h2>
+			<h2>Your GP and your consent</h2>
 			<div class="form-group"><label class="form-label">GP Surgery Name</label><input type="text" id="gp-name" class="form-input" placeholder="Surgery name" /></div>
 			<div class="form-group"><label class="form-label">GP Surgery Postcode</label><input type="text" id="gp-postcode" class="form-input" placeholder="SW1A 1AA" /></div>
 			<label class="checkbox-item" style="background:white;border:2px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:12px;">
-				<input type="checkbox" id="gp-consent-1" /><span>I consent for Together Clinic to share information regarding any treatment prescribed with my GP</span>
+				<input type="checkbox" id="consent-id-video" /><span><strong>Required.</strong> I agree to a photo ID check and to a video consultation with a prescriber, where my weight and height will be checked. I understand no medicine is prescribed without this.</span>
+			</label>
+			<label class="checkbox-item" style="background:white;border:2px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:12px;">
+				<input type="checkbox" id="gp-consent-2" /><span><strong>Required.</strong> I agree to the prescriber checking my NHS Summary Care Record before prescribing, and at least every 6 months while I am treated.</span>
+			</label>
+			<label class="checkbox-item" style="background:white;border:2px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:12px;">
+				<input type="checkbox" id="consent-lifestyle" /><span><strong>Required.</strong> I will follow a reduced-calorie diet and increase my physical activity alongside any treatment.</span>
 			</label>
 			<label class="checkbox-item" style="background:white;border:2px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:24px;">
-				<input type="checkbox" id="gp-consent-2" /><span>I consent to a one-off request from Together Clinic to access my summary care record to verify the information I have provided</span>
+				<input type="checkbox" id="gp-consent-1" /><span>I agree to Together Clinic telling my GP about any treatment prescribed, including the medicine and dose. <strong id="gp-share-note-under-75">Strongly recommended:</strong> <span id="gp-share-note-under-75-text">without this, the prescriber may not be able to treat you safely.</span></span>
 			</label>
+			<div id="consent-error" class="error-message" style="display:none;"></div>
 			<div class="button-group">
 				<button class="button button-secondary" data-action="previous">Back</button>
-				<button class="button button-primary" data-action="next">Next &rarr;</button>
+				<button class="button button-primary" data-action="save-consents">Next &rarr;</button>
 			</div>
 		</div>
 
@@ -576,11 +711,12 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 			<div class="progress-section"><div class="progress-bar-container"><div class="progress-percentage">100%</div><div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div></div></div>
 			<div style="text-align:center;margin-bottom:40px;">
 				<div style="width:80px;height:80px;border-radius:50%;background:#dcfce7;color:#16a34a;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 24px;">&#10003;</div>
-				<h1 style="font-size:32px;margin-bottom:12px;">You're eligible for treatment!</h1>
-				<p>Based on your assessment, you qualify for GLP-1 weight loss treatment.</p>
+				<h1 style="font-size:32px;margin-bottom:12px;">Your answers are ready for a prescriber</h1>
+				<p>Based on your answers, you can have a video consultation with one of our prescribers. They will decide with you whether treatment is suitable.</p>
 			</div>
-			<h2 style="text-align:center;margin:32px 0 16px;">Choose Your Treatment</h2>
-			<p style="text-align:center;margin-bottom:24px;">Select the medication that works best for you</p>
+			<h2 style="text-align:center;margin:32px 0 16px;">Your preferred treatment</h2>
+			<p style="text-align:center;margin-bottom:24px;">Choose the treatment you would like to discuss. Your prescriber decides at the consultation and may recommend a different option or dose. A treatment you choose is not prescribed if it is not suitable for you.</p>
+			<div id="treatment-availability-note" class="info-box" style="display:none;text-align:left;margin-bottom:24px;"></div>
 			<div class="treatment-grid" role="group" aria-label="Choose your treatment">
 				<button type="button" class="treatment-card" id="wegovy-card" data-action="select-treatment" data-value="wegovy" aria-pressed="false">
 					<span class="treatment-selected-pill" aria-hidden="true"><svg class="tsp-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg>Selected</span>
@@ -594,11 +730,11 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 							</div>
 							<span class="tc-radio" aria-hidden="true"><svg class="tc-radio-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg></span>
 						</div>
-						<p class="treatment-description">Clinically proven semaglutide injection for significant weight loss</p>
+						<p class="treatment-description">Semaglutide, a once-weekly injection licensed for weight management</p>
 						<ul class="treatment-benefits">
-							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Average 15% weight loss</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Licensed for weight management in the UK</li>
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Once-weekly injection</li>
-							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA approved</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Licensed in the UK</li>
 						</ul>
 					</div>
 				</button>
@@ -614,11 +750,11 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 							</div>
 							<span class="tc-radio" aria-hidden="true"><svg class="tc-radio-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg></span>
 						</div>
-						<p class="treatment-description">Dual-action tirzepatide formula for maximum weight loss results</p>
+						<p class="treatment-description">Tirzepatide, a once-weekly injection licensed for weight management</p>
 						<ul class="treatment-benefits">
-							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Average 20% weight loss</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Licensed for weight management in the UK</li>
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Once-weekly injection</li>
-							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA approved</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Licensed in the UK</li>
 						</ul>
 					</div>
 				</button>
@@ -659,7 +795,7 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 						<ul class="treatment-benefits">
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Take it any time &mdash; with or without food</li>
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>No needles &mdash; one tablet a day</li>
-							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA approved &mdash; reviewed by a prescriber before dispatch</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Licensed in the UK &mdash; reviewed by a prescriber before dispatch</li>
 						</ul>
 						<p class="treatment-admin-note">Swallow one tablet whole with water, at any time of day. No waiting period before eating or drinking.</p>
 					</div>
@@ -676,20 +812,20 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 							</div>
 							<span class="tc-radio" aria-hidden="true"><svg class="tc-radio-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"></path></svg></span>
 						</div>
-						<p class="treatment-description">Orlistat (Xenical) &mdash; a lipase inhibitor that reduces how much fat your body absorbs from food. Not a GLP-1: an option if you would rather not take an appetite-suppressing medicine.</p>
+						<p class="treatment-description">Orlistat (Xenical) &mdash; a lipase inhibitor that reduces how much fat your body absorbs from food. It works in the gut and is not a GLP-1 medicine. Licensed for adults with a BMI of 30 or above, or 28 or above with a weight-related condition such as type 2 diabetes, high blood pressure or high cholesterol, alongside a reduced-calorie diet.</p>
 						<ul class="treatment-benefits">
 							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Taken with meals &mdash; one capsule up to three times a day</li>
-							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>No injections and no dose increases &mdash; one strength</li>
-							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>MHRA licensed &mdash; reviewed by a prescriber before dispatch</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>One strength, taken by mouth</li>
+							<li class="treatment-benefit"><svg class="benefit-icon" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Licensed medicine. Prescribed only if a prescriber decides it is suitable at your video consultation.</li>
 						</ul>
-						<p class="treatment-admin-note">Take one capsule with water immediately before, during, or up to one hour after each main meal that contains fat. If you miss a meal or it contains no fat, skip that dose.</p>
+						<p class="treatment-admin-note">Take with main meals: one capsule with water immediately before, during or up to 1 hour after each main meal. Skip the dose if you miss a meal or it has no fat, so a pack may last longer than 28 days.</p>
 					</div>
 				</button>
 			</div>
 			<div class="success-timeline">
 				<h3 style="margin-bottom:16px;">What happens next</h3>
-				<div class="timeline-item"><div class="timeline-number">1</div><div class="timeline-content"><p class="timeline-title">Clinician Review</p><p class="timeline-desc">Your assessment will be reviewed within 24 hours</p></div></div>
-				<div class="timeline-item"><div class="timeline-number">2</div><div class="timeline-content"><p class="timeline-title">Secure Payment Link</p><p class="timeline-desc">If approved, we email you a secure link to pay &mdash; nothing is charged before then</p></div></div>
+				<div class="timeline-item"><div class="timeline-number">1</div><div class="timeline-content"><p class="timeline-title">Video consultation</p><p class="timeline-desc">We contact you to book a video call. The prescriber checks your photo ID, your weight and height, and your NHS Summary Care Record</p></div></div>
+				<div class="timeline-item"><div class="timeline-number">2</div><div class="timeline-content"><p class="timeline-title">Prescriber decision</p><p class="timeline-desc">We place a temporary hold on your card. You are only charged if the prescriber issues a prescription; otherwise the hold is released</p></div></div>
 				<div class="timeline-item"><div class="timeline-number">3</div><div class="timeline-content"><p class="timeline-title">Tracked Delivery</p><p class="timeline-desc">Free tracked delivery to your door</p></div></div>
 			</div>
 			<button class="button button-primary" id="submit-button" data-action="submit-assessment" disabled>Submit Assessment for Review</button>
@@ -708,12 +844,12 @@ $logo_img           = TC_ELIGIBILITY_URL . 'assets/img/together-clinic-logo.png'
 				<span class="confirmed-treatment-badge">Selected</span>
 			</div>
 			<div class="info-box" style="text-align:left;margin-bottom:16px;">
-				<p><strong>No payment is taken now.</strong> Once a prescriber approves your treatment, we will email you a secure payment link. Your order is only dispatched after review and payment.</p>
+				<p><strong>You are not charged now.</strong> A prescriber will contact you to book a video consultation. You are only charged if they prescribe treatment, and nothing is dispatched before then.</p>
 			</div>
 			<div class="success-timeline">
 				<h3 style="margin-bottom:16px;">What happens next</h3>
-				<div class="timeline-item"><div class="timeline-number">1</div><div class="timeline-content"><p class="timeline-title">Prescriber Review</p><p class="timeline-desc">A prescriber will review your assessment within 24 hours</p></div></div>
-				<div class="timeline-item"><div class="timeline-number">2</div><div class="timeline-content"><p class="timeline-title">Secure Payment Link</p><p class="timeline-desc">If approved, we email you a secure link to pay &mdash; nothing is charged before then</p></div></div>
+				<div class="timeline-item"><div class="timeline-number">1</div><div class="timeline-content"><p class="timeline-title">Video consultation</p><p class="timeline-desc">We will contact you to book a video call with a prescriber</p></div></div>
+				<div class="timeline-item"><div class="timeline-number">2</div><div class="timeline-content"><p class="timeline-title">Prescriber decision</p><p class="timeline-desc">You are only charged if the prescriber issues a prescription</p></div></div>
 				<div class="timeline-item"><div class="timeline-number">3</div><div class="timeline-content"><p class="timeline-title">Tracked Delivery</p><p class="timeline-desc">Your medication will be dispatched with free tracked delivery</p></div></div>
 			</div>
 			<div class="confirmed-contact-box">

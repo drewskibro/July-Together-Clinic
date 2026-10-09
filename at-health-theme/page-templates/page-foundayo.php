@@ -31,7 +31,7 @@ get_header();
 
         <div class="flex items-center gap-2 mb-4">
           <span class="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full">
-            <?php echo esc_html( ah_field( 'fd_flag', 'New — MHRA approved August 2026' ) ); ?>
+            <?php echo esc_html( ah_field( 'fd_flag', 'New — licensed in the UK August 2026' ) ); ?>
           </span>
         </div>
 
@@ -63,7 +63,7 @@ get_header();
         </div>
 
         <div class="flex flex-wrap items-center gap-x-6 gap-y-3 pt-6 border-t border-gray-200/70">
-          <?php foreach ( array( 'MHRA Approved', 'UK Prescribers', 'No Food Restrictions' ) as $badge ) : ?>
+          <?php foreach ( array( 'Licensed in the UK', 'UK Prescribers', 'No Food Restrictions' ) as $badge ) : ?>
           <div class="flex items-center gap-2 text-gray-600 text-sm">
             <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
             <span class="font-medium"><?php echo esc_html( $badge ); ?></span>
@@ -205,7 +205,7 @@ get_header();
           array( 'question' => 'How does Foundayo work?', 'answer' => 'Foundayo (orforglipron) is a GLP-1 receptor agonist. It reduces appetite, slows digestion and helps regulate blood sugar, so you feel satisfied with less food. It is the first non-peptide GLP-1 medicine to be licensed for weight management in the UK.' ),
           array( 'question' => 'Can I switch to Foundayo from another treatment?', 'answer' => 'Yes. Use the screening form and tell us your current treatment and dose. Your prescriber will review it with you and confirm the appropriate Foundayo starting strength — switching does not always mean starting at the lowest dose.' ),
           array( 'question' => 'What side effects should I expect?', 'answer' => 'The most common side effects are mild nausea, reduced appetite and digestive discomfort, particularly in the first weeks and after each dose increase. These usually settle. The gradual titration across six strengths, with at least 30 days at each, is designed to keep side effects manageable.' ),
-          array( 'question' => 'Am I eligible?', 'answer' => 'Foundayo is generally suitable for adults with a BMI of 30 or above, or 27 or above alongside a weight-related health condition. Complete the screening assessment and one of our UK-registered prescribers will confirm whether it is appropriate for you.' ),
+          array( 'question' => 'Could Foundayo be right for me?', 'answer' => 'Foundayo is licensed for adults with a BMI of 30 or above, or 27 or above alongside a weight-related health condition. Complete the first check and one of our UK-registered prescribers will decide at a video consultation whether it is appropriate for you.' ),
       );
       $faqs = ah_field( 'fd_faqs', '' );
       if ( ! is_array( $faqs ) || count( $faqs ) === 0 ) { $faqs = $default_faqs; }

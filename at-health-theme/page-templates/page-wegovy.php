@@ -32,15 +32,15 @@ get_header();
         <h1 class="text-5xl lg:text-6xl font-serif text-gray-900 mb-5 leading-[1.02] tracking-[-0.02em]"><?php echo esc_html( ah_field( 'wg_title', 'Wegovy' ) ); ?></h1>
 
         <p class="text-base md:text-lg text-gray-600 leading-relaxed mb-8 max-w-lg">
-          <?php echo esc_html( ah_field( 'wg_description', 'Wegovy (semaglutide) is a once-weekly injection specifically approved for weight management. Clinical trials show patients lose up to 20.7% of their body weight. Food and Drug Administration (FDA) and Medicines and Healthcare products Regulatory Agency (MHRA) approved with proven cardiovascular benefits.' ) ); ?>
+          <?php echo esc_html( ah_field( 'wg_description', 'Wegovy (semaglutide) is a once-weekly injection specifically approved for weight management. Licensed by the Medicines and Healthcare products Regulatory Agency (MHRA).' ) ); ?>
         </p>
 
         <div class="space-y-3 mb-8">
           <?php
           $benefits = array(
-              '<strong>Up to 20.7% body weight loss</strong> in clinical trials',
+              '<strong>Licensed in the UK</strong> for weight management',
               '<strong>Once-weekly injection</strong> — simple and convenient',
-              '<strong>Reduces cardiovascular risk by 20%</strong> in clinical studies',
+              '<strong>Reviewed by a UK pharmacist prescriber</strong> before any supply',
               '<strong>Tracked, discreet delivery</strong> with ongoing support',
           );
           $acf_benefits = ah_field( 'wg_benefits', '' );
@@ -56,7 +56,7 @@ get_header();
         </div>
 
         <div class="flex flex-wrap items-center gap-x-6 gap-y-3 pt-6 border-t border-gray-200/70">
-          <?php foreach ( array( 'MHRA Approved', 'UK Prescribers' ) as $badge ) : ?>
+          <?php foreach ( array( 'Licensed in the UK', 'UK Prescribers' ) as $badge ) : ?>
           <div class="flex items-center gap-2 text-gray-600 text-sm">
             <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
             <span class="font-medium"><?php echo esc_html( $badge ); ?></span>
@@ -143,7 +143,6 @@ get_header();
       <?php
       $default_faqs = array(
           array( 'question' => 'How does Wegovy work?', 'answer' => 'Wegovy (semaglutide) mimics a naturally occurring hormone called Glucagon-Like Peptide-1 (GLP-1) that targets areas of the brain involved in appetite regulation. It reduces hunger, slows digestion, and helps you feel satisfied with less food.' ),
-          array( 'question' => 'What are the cardiovascular benefits?', 'answer' => 'Clinical studies show Wegovy reduces cardiovascular risk by 20%. It can lower blood pressure, improve cholesterol levels, and reduce inflammation — benefits that go beyond weight loss alone.' ),
           array( 'question' => 'What side effects should I expect?', 'answer' => 'Common side effects include mild nausea, reduced appetite, and occasional digestive discomfort. Your prescriber will explain what to expect and how to manage them. The gradual dosing schedule helps minimise side effects.' ),
           array( 'question' => 'How long do I need to take Wegovy?', 'answer' => 'Wegovy is designed as an ongoing treatment. Clinical evidence shows weight management is most effective with continued use. Your prescriber will work with you on a long-term plan.' ),
       );

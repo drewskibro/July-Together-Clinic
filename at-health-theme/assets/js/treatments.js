@@ -112,17 +112,16 @@
         var value = bmi.toFixed(1);
         var tone, body, cta;
 
-        if (bmi >= BMI_FULL) {
-            tone = 'likely';
-            body = 'You may be eligible for prescription treatment. The next step is a short assessment, reviewed by a UK-registered prescriber.';
-            cta  = button(CTA_URL, 'Start your assessment', true);
-        } else if (bmi >= BMI_MIN) {
-            tone = 'conditional';
-            body = 'You may be eligible if you also have a weight-related health condition — for example high blood pressure, type 2 diabetes or sleep apnoea. The assessment will ask about this.';
-            cta  = button(CTA_URL, 'Start your assessment', true);
-        } else {
+        // Product-neutral (rules WM-2026-10-v3): no eligibility verdict. The
+        // two licence thresholds are stated; the prescriber decides at the
+        // consultation. GLP-1 medicines: 30, or 27 with a weight-related
+        // condition. Orlistat: 30, or 28 with a weight-related condition.
+        var thresholds = 'The medicines we offer are licensed for a BMI of 30 or above, or a lower BMI with a weight-related condition such as type 2 diabetes or high blood pressure: from 27 for Wegovy, Mounjaro and Foundayo, and from 28 for Orlistat.';
+        tone = 'conditional';
+        body = thresholds + ' This is not a decision about you: a prescriber decides at a video consultation whether any treatment is suitable.';
+        cta  = button(CTA_URL, 'Start your first check', true);
+        if (bmi < BMI_MIN) {
             tone = 'below';
-            body = 'Prescription weight-management treatment is usually only considered at a BMI of ' + BMI_MIN + ' or above. If you would like to talk it through, our pharmacy team can help.';
             cta  = button(CONTACT_URL, 'Talk to our team', false);
         }
 

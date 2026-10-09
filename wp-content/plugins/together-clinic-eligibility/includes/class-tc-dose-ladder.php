@@ -34,9 +34,9 @@ class TC_Dose_Ladder {
 		'foundayo'       => [ '0.8mg', '2.5mg', '5.5mg', '9mg', '14.5mg', '17.2mg' ],
 		// Orlistat (Xenical) — a lipase inhibitor, NOT a GLP-1. One licensed
 		// strength and no titration, so a single-rung ladder: the ±1 reorder
-		// gate and the switching matrix both degrade correctly to "the only
-		// step". Licence BMI threshold (≥28 with risk factors) differs from the
-		// GLP-1s' and belongs in the rules class, not here.
+		// gate degrades to "the only step". propose_start_dose() handles any
+		// move to or from Orlistat as a new start (rule O2.3); its BMI and
+		// exclusion rules live in TC_Eligibility_Rules (section O).
 		'orlistat'       => [ '120mg' ],
 	];
 
@@ -194,58 +194,96 @@ class TC_Dose_Ladder {
 	}
 
 	/**
-	 * The switching-dose conversion matrix (BUILD-BRIEF-v3 §3). Ranges mean
-	 * the system supplies the conservative (lower) end and the prescriber
-	 * confirms or adjusts before the patient pays.
+	 * Starting dose for a patient already on a GLP-1 (IP-FRM-01 3A.3, rules
+	 * WM-2026-10-v1). Replaces the old cross-molecule conversion matrix, which
+	 * put Mounjaro patients straight onto Wegovy 0.5/1.7 mg and Wegovy
+	 * patients onto Mounjaro 5 mg: no licence supports that, and MHRA says
+	 * potency differs between products.
 	 *
-	 * @return array { dose: string, range: string|null, rule: string }
+	 * Same product:   continue / step down / restart by days since last dose:
+	 *                 weekly products 14 / 15-28 / >28; Wegovy tablets 7 /
+	 *                 8-28 / >28; Foundayo 3 / 4-7 / >7.
+	 * Other product:  first step of the new product, at least 7 days after
+	 *                 the last dose. Licensed exceptions (SmPC 4.2): Wegovy
+	 *                 2.4 mg injection -> Wegovy tablets 25 mg (applied if the
+	 *                 last injection was within 14 days, AT Health policy);
+	 *                 Wegovy tablets 25 mg -> Wegovy 2.4 mg injection (last
+	 *                 tablet within 7 days).
+	 *
+	 * Propose and flag, never block: the prescriber confirms every dose.
+	 *
+	 * @param int|null $days_since_last Days since last dose; null if unknown.
 	 */
-	public static function propose_start_dose( $from_drug, $from_dose, $to_drug ) {
+	public static function propose_start_dose( $from_drug, $from_dose, $to_drug, $days_since_last = null ) {
 		$from_drug = TC_Variation_Map::normalize_treatment( $from_drug );
 		$to_drug   = TC_Variation_Map::normalize_treatment( $to_drug );
 		$from_dose = TC_Variation_Map::normalize_dose( $from_dose );
+		$starter   = self::starter( $to_drug );
 
-		// Same drug, new provider: continue at the declared current dose.
+		// Orlistat (rules O2.3, WM-2026-10-v3): one strength, no ladder, no
+		// switching table and no GLP-1 restart windows. A move to or from
+		// Orlistat is a new start on the new product at its first step.
+		if ( $to_drug === 'orlistat' || $from_drug === 'orlistat' ) {
+			return [ 'dose' => $starter, 'range' => null, 'rule' => ( $to_drug === 'orlistat' ? 'orlistat_single_strength' : 'from_orlistat_new_start' ) ];
+		}
+
+		// Continue / step-down windows (AT Health policy, IP-FRM-01 3A.3).
+		// Foundayo has a short half-life (about 29 to 49 hours, SmPC 5.2), so
+		// its windows are shorter than the semaglutide tablet's.
+		$windows   = [
+			'wegovy'         => [ 14, 28 ],
+			'mounjaro'       => [ 14, 28 ],
+			'wegovy-tablets' => [ 7, 28 ],
+			'foundayo'       => [ 3, 7 ],
+		];
+		list( $continue, $step_down ) = $windows[ $from_drug ] ?? [ 7, 28 ];
+
+		if ( $days_since_last === null ) {
+			return [ 'dose' => $starter, 'range' => null, 'rule' => 'last_dose_unknown' ];
+		}
+		$days = (int) $days_since_last;
+
 		if ( $from_drug === $to_drug ) {
-			if ( self::index_of( $to_drug, $from_dose ) !== false ) {
-				return [
-					'dose'  => $from_dose,
-					'range' => null,
-					'rule'  => 'same_drug_continue',
-				];
+			if ( self::index_of( $to_drug, $from_dose ) === false ) {
+				return [ 'dose' => $starter, 'range' => null, 'rule' => 'same_drug_unrecognised_dose' ];
 			}
-			return [
-				'dose'  => self::starter( $to_drug ),
-				'range' => null,
-				'rule'  => 'same_drug_unrecognised_dose',
-			];
+			if ( $days <= $continue ) {
+				return [ 'dose' => $from_dose, 'range' => null, 'rule' => 'same_drug_continue' ];
+			}
+			if ( $days <= $step_down ) {
+				$down = self::step( $to_drug, $from_dose, -1 );
+				return [ 'dose' => $down ?: $starter, 'range' => null, 'rule' => 'same_drug_gap_step_down' ];
+			}
+			return [ 'dose' => $starter, 'range' => null, 'rule' => 'same_drug_gap_restart' ];
 		}
 
-		$from_index = self::index_of( $from_drug, $from_dose );
-
-		if ( $from_drug === 'mounjaro' && $to_drug === 'wegovy' ) {
-			if ( $from_index === false ) {
-				return [ 'dose' => self::starter( 'wegovy' ), 'range' => null, 'rule' => 'switch_unrecognised_dose' ];
-			}
-			// Mounjaro 2.5–7.5mg (index 0–2) → Wegovy 0.5–1mg; 10–15mg → Wegovy 1.7–2.4mg.
-			if ( $from_index <= 2 ) {
-				return [ 'dose' => '0.5mg', 'range' => '0.5mg–1mg', 'rule' => 'mounjaro_low_to_wegovy' ];
-			}
-			return [ 'dose' => '1.7mg', 'range' => '1.7mg–2.4mg', 'rule' => 'mounjaro_high_to_wegovy' ];
+		if ( $from_drug === 'wegovy' && $to_drug === 'wegovy-tablets' && $from_dose === '2.4mg' && $days <= 14 ) {
+			return [ 'dose' => '25mg', 'range' => null, 'rule' => 'smpc_injection_to_tablets' ];
+		}
+		if ( $from_drug === 'wegovy-tablets' && $to_drug === 'wegovy' && $from_dose === '25mg' && $days <= 7 ) {
+			return [ 'dose' => '2.4mg', 'range' => null, 'rule' => 'smpc_tablets_to_injection' ];
 		}
 
-		if ( $from_drug === 'wegovy' && $to_drug === 'mounjaro' ) {
-			if ( $from_index === false ) {
-				return [ 'dose' => self::starter( 'mounjaro' ), 'range' => null, 'rule' => 'switch_unrecognised_dose' ];
-			}
-			// Wegovy ≤1mg (index 0–2) → Mounjaro 2.5mg; 1.7/2.4mg → Mounjaro 5mg.
-			if ( $from_index <= 2 ) {
-				return [ 'dose' => '2.5mg', 'range' => null, 'rule' => 'wegovy_low_to_mounjaro' ];
-			}
-			return [ 'dose' => '5mg', 'range' => null, 'rule' => 'wegovy_high_to_mounjaro' ];
-		}
+		return [ 'dose' => $starter, 'range' => null, 'rule' => ( $from_drug ? 'switch_product_restart' : 'switch_unknown_source' ) ];
+	}
 
-		// Unknown source medication: start at the target's starter dose.
-		return [ 'dose' => self::starter( $to_drug ), 'range' => null, 'rule' => 'switch_unknown_source' ];
+	/**
+	 * Prescriber-facing explanation of a proposal.
+	 */
+	public static function explain_rule( $rule, $days = null ) {
+		$map = [
+			'last_dose_unknown'            => 'Date of last dose not recognised: first step proposed. Confirm last dose before prescribing.',
+			'same_drug_unrecognised_dose'  => 'Same product but declared dose not recognised: first step proposed.',
+			'same_drug_continue'           => 'Same product, last dose within the continuation window: declared dose proposed. Confirm with proof of previous prescription.',
+			'same_drug_gap_step_down'      => 'Same product, gap beyond the continuation window: one step down proposed (AT Health policy; Foundayo 4-7 days, others up to 28 days).',
+			'same_drug_gap_restart'        => 'Same product, gap beyond the step-down window: restart at the first step (AT Health policy).',
+			'smpc_injection_to_tablets'    => 'Wegovy 2.4 mg injection to Wegovy tablets 25 mg (SmPC 4.2): start one week after the last injection.',
+			'smpc_tablets_to_injection'    => 'Wegovy tablets 25 mg to Wegovy 2.4 mg injection (SmPC 4.2): start the day after the last tablet.',
+			'switch_product_restart'       => 'Change of product: first step of the new product, at least 7 days after the last dose of the previous product. No cross-molecule conversion (MHRA).',
+			'orlistat_single_strength'     => 'Orlistat 120 mg: one strength, no dose ladder or switching rules (rule O2.3). Moving from another weight-loss medicine is a new start; confirm the previous supply has stopped (OE7).',
+			'from_orlistat_new_start'      => 'Moving from Orlistat: new start at the first step of the new product (rule O2.3). Confirm Orlistat has stopped (never together).',
+			'switch_unknown_source'        => 'Previous medicine not one we supply: first step proposed, at least 7 days after the last dose.',
+		];
+		return $map[ $rule ] ?? 'Dose proposed; confirm before prescribing.';
 	}
 }
