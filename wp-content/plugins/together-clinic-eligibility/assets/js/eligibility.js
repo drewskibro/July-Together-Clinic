@@ -539,7 +539,7 @@
 		state.userData.conceive = c ? c.value : '';
 
 		if (state.userData.pregnant === 'yes' || state.userData.breastfeeding === 'yes' || state.userData.conceive === 'yes') {
-			showIneligible('For safety reasons, weight loss medications cannot be prescribed during pregnancy, when planning to become pregnant, or while breastfeeding.');
+			showIneligible('Our service does not prescribe weight loss medicines during pregnancy, while planning a pregnancy or while breastfeeding. Please speak with your GP.');
 		} else {
 			pushScreen(7);
 		}
@@ -751,7 +751,7 @@
 		state.glp1Only.conditions = glp1Only;
 
 		if (blocksAll || (glp1Only && !orlistatBmiFloorOk())) {
-			showIneligible('Based on the medical history you provided, weight loss medication is not clinically appropriate. Please speak with your GP about alternative options.');
+			showIneligible('Our online service cannot offer weight loss medication. Please speak with your GP.');
 			return;
 		}
 
@@ -1116,7 +1116,7 @@
 		// anyone out: the prescriber decides.
 		state.glp1Only.egfr = !!(egfr && parseFloat(egfr) < 30);
 		if (state.glp1Only.egfr && !orlistatLicenceOk()) {
-			showIneligible('Based on the medical history you provided, weight loss medication is not clinically appropriate. Please speak with your GP about alternative options.');
+			showIneligible('Our online service cannot offer weight loss medication. Please speak with your GP.');
 			return;
 		}
 		pushScreen(19);
@@ -1216,7 +1216,7 @@
 		if (note) {
 			var text = '';
 			if (!glp1) {
-				text = 'Based on your answers, Wegovy, Mounjaro and Foundayo are not options we can offer you. Orlistat can be discussed with a prescriber, who decides at your consultation whether it is suitable.';
+				text = 'Based on your answers, Wegovy (injection or tablets), Mounjaro and Foundayo are not options we can offer you. Orlistat can be discussed with a prescriber, who decides at your consultation whether it is suitable.';
 			} else if (!orl) {
 				text = 'Orlistat is not available to choose: its licence is for a BMI of 30 or above, or 28 or above with a weight-related condition.';
 			}

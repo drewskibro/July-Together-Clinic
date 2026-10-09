@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *    condition (O2.2); no dose ladder, switching table or GLP-1 transfer
  *    window, and a move to or from a GLP-1 is a new start (O2.3); a
  *    transfer from Orlistat elsewhere needs a starting BMI meeting O2.2 and
- *    a current BMI of 20 or above (O2.4); blocks OE1 to OE8; red flags OF1
+ *    a current BMI of 20 or above (O2.4); blocks OE1 to OE11; red flags OF1
  *    to OF15; GLP-1-only exclusions become information flags (OF16); no
  *    contraception agreement (pregnancy and planning still block).
  *
@@ -150,7 +150,7 @@ class TC_Eligibility_Rules {
 	/**
 	 * Orlistat 120 mg (rules section O, WM-2026-10-v3). Not a GLP-1: its own
 	 * BMI rule (O2.2), no dose ladder or switching rules (O2.3), its own
-	 * blocks (OE1 to OE8) and prescriber flags (OF1 to OF16).
+	 * blocks (OE1 to OE11) and prescriber flags (OF1 to OF16).
 	 */
 	const ORLISTAT = 'orlistat';
 	/** Rule O2.2 (Xenical SmPC 4.1): 30, or 28 to 29.9 with a list A/B condition. */
@@ -248,7 +248,7 @@ class TC_Eligibility_Rules {
 			if ( ( $payload['pregnant'] ?? '' ) === 'yes'
 				|| ( $payload['breastfeeding'] ?? '' ) === 'yes'
 				|| ( $payload['conceive'] ?? '' ) === 'yes' ) {
-				return self::ineligible( $base, 'For safety reasons, weight loss medications cannot be prescribed during pregnancy, when planning to become pregnant, or while breastfeeding.' );
+				return self::ineligible( $base, 'Our service does not prescribe weight loss medicines during pregnancy, while planning a pregnancy or while breastfeeding. Please speak with your GP.' );
 			}
 		}
 
@@ -264,7 +264,7 @@ class TC_Eligibility_Rules {
 			$flags['bmi_mismatch'] = sprintf( 'Browser BMI %.1f differs from server BMI %.1f; server value used.', $sent_bmi, $bmi );
 		}
 
-		$not_suitable = 'Based on the medical history you provided, weight loss medication is not clinically appropriate. Please speak with your GP about alternative options.';
+		$not_suitable = 'Our online service cannot offer weight loss medication. Please speak with your GP.';
 
 		// GLP-1 exclusions that are not Orlistat exclusions are carried for
 		// Orlistat as information flags (OF16); the prescriber decides.
@@ -553,8 +553,12 @@ class TC_Eligibility_Rules {
 		$allergies = (string) ( $payload['allergiesList'] ?? '' );
 		$other     = (string) ( $payload['otherConditionsList'] ?? '' );
 
-		// OE2: allergy to orlistat or any ingredient.
-		if ( self::text_matches( $allergies, [ 'orlistat', 'xenical', 'alli' ] ) ) {
+		// OE2: allergy to orlistat or any ingredient. Matches the active
+		// ingredient and brand names in the free-text allergies (for example
+		// "orlistat allergy", "allergic to Xenical"). Allergy to an excipient
+		// (capsule ingredients) cannot be screened from free text: it is asked
+		// at the consultation.
+		if ( self::text_matches( $allergies, [ 'orlistat', 'xenical', 'alli', 'orlos' ] ) ) {
 			$out['block'] = 'Based on the allergy you told us about, Orlistat is not suitable for you. Please speak with your GP.';
 			return $out;
 		}
@@ -573,7 +577,7 @@ class TC_Eligibility_Rules {
 		}
 		$orl_words = self::text_matches( $meds, [ 'orlistat', 'xenical', 'alli', 'naltrexone' ] );
 		if ( $orl_words ) {
-			$out['flags']['orl_existing_orlistat'] = self::orl_note( 'OE7', 'Current medicines mention ' . implode( ', ', $orl_words ) . '. Orlistat from another source (including alli 60 mg) must stop: never two supplies; a current supply elsewhere is a transfer (rule O2.4). Naltrexone as Mysimba is another weight-loss medicine (block).', 'Rule O2.4; rule T5 extended', 'CHECK' );
+			$out['flags']['orl_existing_orlistat'] = self::orl_note( 'OE7', 'Current medicines mention ' . implode( ', ', $orl_words ) . '. Orlistat from another source (including alli 60 mg) must stop: never two supplies; a current supply elsewhere is a transfer (rule O2.4). Naltrexone as Mysimba is another weight-loss medicine: confirm what it is for (flag; OE7 applies if it is Mysimba).', 'Rule O2.4; rule T5 extended', 'CHECK' );
 		}
 
 		foreach ( self::ORLISTAT_FLAGS as $key => $group ) {

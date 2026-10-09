@@ -136,10 +136,10 @@ class TC_Change_Treatment {
 		// order. Products have different rules (Orlistat BMI 28 vs GLP-1 27,
 		// and exclusions that apply to one group only, rules section O), so
 		// a change of product must never bypass the new product's screen.
-		$new_eligibility = null;
-		if ( ! empty( $payload['rulesVersion'] ) && class_exists( 'TC_Eligibility_Rules' ) ) {
-			$new_eligibility = TC_Eligibility_Rules::evaluate( $payload );
-			if ( empty( $new_eligibility['eligible'] ) ) {
+		$recheck         = self::recheck( $payload );
+		$new_eligibility = $recheck['eligibility'];
+		if ( $new_eligibility ) {
+			if ( ! $recheck['ok'] ) {
 				if ( class_exists( 'TC_Log' ) ) {
 					TC_Log::info( 'treatment_change_refused', [
 						'order_id' => $order->get_id(),
@@ -150,7 +150,9 @@ class TC_Change_Treatment {
 				}
 				$this->fail( $order, sprintf( 'Based on your answers, %s is not one we can offer you. Please keep your current choice or contact us and we will help.', $new_label ) );
 			}
-			$payload['rulesVersion'] = $new_eligibility['rules_version'];
+			if ( $recheck['legacy'] === '' ) {
+				$payload['rulesVersion'] = $new_eligibility['rules_version'];
+			}
 		}
 
 		// create_from_assessment's attach step reads TC_Cookie_Store::get(); this
@@ -163,8 +165,8 @@ class TC_Change_Treatment {
 		// replacement order.
 		$prior_flags = $order->get_meta( TC_Review_Status::FLAGS_META );
 		$prior_flags = is_array( $prior_flags ) ? $prior_flags : [];
-		if ( empty( $payload['rulesVersion'] ) ) {
-			$prior_flags['legacy_assessment'] = 'Assessment completed before rules WM-2026-10-v1: re-screen all criteria at the video consultation.';
+		if ( $recheck['legacy'] === 'absent' ) {
+			$prior_flags['legacy_assessment'] = self::LEGACY_ABSENT;
 		}
 		if ( $new_eligibility ) {
 			// The new product's own flags (for Orlistat: OF1 to OF16) replace
@@ -210,17 +212,13 @@ class TC_Change_Treatment {
 		// actually be paid — notify on the new order exactly as a fresh eligible
 		// submission would (no patient re-confirmation; they already have theirs).
 		if ( class_exists( 'TC_Eligibility_Rules' ) && class_exists( 'TC_Emails' ) ) {
-			$eligibility = $new_eligibility ?: TC_Eligibility_Rules::evaluate( $payload );
-			if ( empty( $payload['rulesVersion'] ) ) {
-				// Assessed before rules WM-2026-10-v1: it lacks the new consents,
-				// so a re-run would wrongly read as ineligible. Pass it through
-				// and tell the prescriber to re-screen at consultation.
-				$eligibility = [
-					'eligible' => true,
-					'reason'   => '',
-					'flags'    => [ 'legacy_assessment' => 'Assessment completed before rules WM-2026-10-v1: re-screen all criteria at the video consultation.' ],
-				];
-			}
+			$eligibility = $new_eligibility ?: [
+				// Old assessment without the answers the rules need: pass it
+				// through and tell the prescriber to re-screen at consultation.
+				'eligible' => true,
+				'reason'   => '',
+				'flags'    => [ 'legacy_assessment' => self::LEGACY_ABSENT ],
+			];
 			TC_Emails::send_clinician_notification( $payload, $assessment_id, $eligibility, $new_order->get_id() );
 		}
 
@@ -308,18 +306,65 @@ class TC_Change_Treatment {
 
 	/**
 	 * Whether the order's stored assessment passes the triage rules for
-	 * another product. Assessments made before the rules versions existed
-	 * pass (they are re-screened at consultation, as before).
+	 * another product (see recheck()).
 	 */
 	private function passes_rules_for( WC_Order $order, $treatment, $dose ) {
 		$payload = json_decode( (string) $order->get_meta( TC_Checkout::ORDER_META_RAW ), true );
-		if ( ! is_array( $payload ) || empty( $payload['rulesVersion'] ) || ! class_exists( 'TC_Eligibility_Rules' ) ) {
+		if ( ! is_array( $payload ) ) {
 			return true;
 		}
 		$payload['selectedTreatment'] = $treatment;
 		$payload['selectedDose']      = $dose;
+		return self::recheck( $payload )['ok'];
+	}
+
+	const LEGACY_ABSENT  = 'Assessment completed before rules WM-2026-10-v1 and missing answers the rules need: re-screen all criteria at the video consultation.';
+	const LEGACY_PARTIAL = 'Assessment completed before rules WM-2026-10-v1: the rules were re-run on the stored answers for this product, but consents and questions added since (ID and video, SCR, lifestyle, could become pregnant, contraception) were not asked. Re-screen them at the video consultation.';
+
+	/**
+	 * Re-run the triage rules on a stored assessment for the product now in
+	 * $payload['selectedTreatment'] (rules WM-2026-10-v3: products have
+	 * different rules, so a change of product is always re-screened).
+	 *
+	 * Assessments made before the rules version existed are re-run on the
+	 * answers they stored; only questions added later are taken as not asked
+	 * (and flagged). They pass through unscreened only when the answers the
+	 * rules need (date of birth, weight, height, sex, conditions, and for a
+	 * switcher the last dose and starting weight) are genuinely absent.
+	 *
+	 * @return array { ok: bool, eligibility: array|null, legacy: string ('' | 'partial' | 'absent') }
+	 */
+	public static function recheck( array $payload ) {
+		if ( ! class_exists( 'TC_Eligibility_Rules' ) ) {
+			return [ 'ok' => true, 'eligibility' => null, 'legacy' => 'absent' ];
+		}
+		$legacy = '';
+		if ( empty( $payload['rulesVersion'] ) ) {
+			$needed = ! empty( $payload['dob'] ) && (float) ( $payload['weightKg'] ?? 0 ) > 0 && (float) ( $payload['heightCm'] ?? 0 ) > 0
+				&& in_array( $payload['sex'] ?? '', [ 'male', 'female' ], true ) && ! empty( $payload['conditions'] );
+			if ( $needed && ( $payload['userType'] ?? '' ) === 'switching' ) {
+				$needed = ! empty( $payload['lastDoseDate'] ) && (float) ( $payload['startWeightKg'] ?? 0 ) > 0;
+			}
+			if ( ! $needed ) {
+				return [ 'ok' => true, 'eligibility' => null, 'legacy' => 'absent' ];
+			}
+			// Questions added in WM-2026-10-v1 were not asked: treat as given
+			// here and flag them for the consultation.
+			foreach ( [ 'consentIdVideo', 'gpConsentSCR', 'consentLifestyle', 'termsAgreed' ] as $k ) {
+				if ( ! array_key_exists( $k, $payload ) ) {
+					$payload[ $k ] = true;
+				}
+			}
+			if ( ! array_key_exists( 'couldConceive', $payload ) ) {
+				$payload['couldConceive'] = 'no';
+			}
+			$legacy = 'partial';
+		}
 		$result = TC_Eligibility_Rules::evaluate( $payload );
-		return ! empty( $result['eligible'] );
+		if ( $legacy === 'partial' && ! empty( $result['eligible'] ) ) {
+			$result['flags']['legacy_assessment'] = self::LEGACY_PARTIAL;
+		}
+		return [ 'ok' => ! empty( $result['eligible'] ), 'eligibility' => $result, 'legacy' => $legacy ];
 	}
 
 	/**

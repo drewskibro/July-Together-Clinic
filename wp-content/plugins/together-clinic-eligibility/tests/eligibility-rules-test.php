@@ -10,6 +10,8 @@ require $P.'/includes/class-tc-variation-map.php';
 require $P.'/includes/class-tc-dose-ladder.php';
 require $P.'/includes/class-tc-eligibility-rules.php';
 require $P.'/reorder/includes/class-tc-reorder-rules.php';
+require $P.'/reorder/includes/class-tc-reorder-pricing.php';
+require $P.'/includes/class-tc-change-treatment.php';
 $pass=0;$fail=0;
 function check($name,$cond,$extra=''){ global $pass,$fail; if($cond){$pass++; echo "PASS $name\n";} else {$fail++; echo "FAIL $name $extra\n";} }
 function base($o=[]){ return array_merge(['ageBand'=>'18-85','dob'=>'1980-01-01','sex'=>'male','weightKg'=>100,'heightCm'=>180,'termsAgreed'=>true,'consentIdVideo'=>true,'gpConsentSCR'=>true,'consentLifestyle'=>true,'gpConsentShare'=>true,'conditions'=>['None of these apply'],'weightConditions'=>['None of these apply'],'diabetes'=>'none','userType'=>'new','ethnicity'=>'white'],$o); }
@@ -226,15 +228,66 @@ $x=$D::propose_start_dose('orlistat','120mg','wegovy',3); check('Dose: Orlistat 
 check('Dose: Orlistat ladder is one strength', $D::ladder('orlistat')===['120mg']);
 // Reorders: rule O4.2 (12 weeks from first supply), O4.3 (BMI bands)
 $RR='TC_Reorder_Rules';
-$w=$RR::orlistat_twelve_week(100,97,40); check('Reorder at day 40: 12-week rule not yet, weights carried',!$w['block'] && $w['applies']===false && isset($w['flags']['orl_weight_change']));
-$w=$RR::orlistat_twelve_week(100,97,57); check('Reorder at day 57 (supply runs past 12 weeks), 3% loss -> blocked',$w['block'] && strpos($w['flags']['orl_12_week_stop'],'Under 5% at 12 weeks: stop under the licence')!==false,json_encode($w));
-$w=$RR::orlistat_twelve_week(100,95,90); check('Reorder at day 90, 5% loss -> not blocked, verify flag',!$w['block'] && isset($w['flags']['orl_12_week_ok']));
-$w=$RR::orlistat_twelve_week(100,96,120); check('Reorder at day 120, 4% loss -> blocked (every later reorder)',$w['block']);
-$w=$RR::orlistat_twelve_week(100,101,90); check('Weight gain at 12 weeks -> blocked, shows +1.0%',$w['block'] && strpos($w['flags']['orl_12_week_stop'],'+1.0%')!==false);
-$w=$RR::orlistat_twelve_week(null,90,90); check('Start weight unknown -> red flag, no silent pass',!$w['block'] && isset($w['flags']['orl_12_week_unknown']));
-$w=$RR::orlistat_twelve_week(100,90,null); check('First supply date unknown -> red flag',isset($w['flags']['orl_12_week_unknown']));
+$w=$RR::orlistat_twelve_week(100,97,40); check('Reorder at day 40: weights carried, no flag, no block',$w['block']==='' && $w['stage']==='early' && isset($w['flags']['orl_weight_change']) && !isset($w['flags']['orl_12_week_due']));
+$w=$RR::orlistat_twelve_week(100,97,55); check('Reorder at day 55, 3% loss -> no red flag yet',$w['block']==='' && !isset($w['flags']['orl_12_week_due']));
+$w=$RR::orlistat_twelve_week(100,97,56); check('Reorder at day 56, 3% loss -> red flag, not blocked',$w['block']==='' && $w['stage']==='flag' && isset($w['flags']['orl_12_week_due']),json_encode($w));
+$w=$RR::orlistat_twelve_week(100,97,83); check('Reorder at day 83, 3% loss -> still a flag, not a block',$w['block']==='' && isset($w['flags']['orl_12_week_due']));
+$w=$RR::orlistat_twelve_week(100,94,70); check('Reorder at day 70, 6% loss -> no red flag',$w['block']==='' && !isset($w['flags']['orl_12_week_due']));
+$w=$RR::orlistat_twelve_week(100,97,84); check('Reorder at day 84, 3% loss -> blocked with licence wording',$w['block']==='orlistat_12_week' && strpos($w['flags']['orl_12_week_stop'],'Under 5% at 12 weeks: stop under the licence')!==false);
+$w=$RR::orlistat_twelve_week(100,95,90); check('Reorder at day 90, 5% loss -> not blocked, verify flag',$w['block']==='' && isset($w['flags']['orl_12_week_ok']));
+$w=$RR::orlistat_twelve_week(100,96,120); check('Reorder at day 120, 4% loss -> blocked (every later reorder)',$w['block']==='orlistat_12_week');
+$w=$RR::orlistat_twelve_week(100,101,90); check('Weight gain at 12 weeks -> blocked, shows +1.0%',$w['block']==='orlistat_12_week' && strpos($w['flags']['orl_12_week_stop'],'+1.0%')!==false);
+$w=$RR::orlistat_twelve_week(null,90,90); check('Day 90, start weight missing -> blocked (no data)',$w['block']==='orlistat_12_week_no_data');
+$w=$RR::orlistat_twelve_week(100,0,90); check('Day 90, current weight missing -> blocked (no data)',$w['block']==='orlistat_12_week_no_data');
+$w=$RR::orlistat_twelve_week(100,90,null); check('First supply date missing -> blocked (no data)',$w['block']==='orlistat_12_week_no_data');
+$w=$RR::orlistat_twelve_week(null,90,60); check('Day 60, start weight missing -> red flag, not blocked',$w['block']==='' && isset($w['flags']['orl_12_week_due']));
 check('Reorder BMI 21 -> 20 to 22.9 flag (Orlistat O4.3)', isset($RR::bmi_band_flags(21.0,'orlistat')['bmi_20_23']) && strpos($RR::bmi_band_flags(21.0,'orlistat')['bmi_20_23'],'O4.3')!==false);
 check('Reorder BMI 22.9 flagged, 23.0 and 19.9 not (floor blocks separately)', $RR::bmi_band_flags(22.9,'mounjaro') && !$RR::bmi_band_flags(23.0,'mounjaro') && !$RR::bmi_band_flags(19.9,'orlistat'));
 $f=$RR::orlistat_new_medicine_flags('started warfarin and Wegovy'); check('Reorder new medicines: OE7 and OF4 flagged',isset($f['orl_oe7_reorder'],$f['orl_of4_anticoagulant']),json_encode(array_keys($f)));
 check('Percent loss maths', abs($R::percent_loss(100,95)-5.0)<1e-9 && $R::percent_loss(0,90)===null);
+
+// ---- Verifier and pharmacy-checker fixes (second pass) ----
+// Reorder BMI floor and band use the unrounded BMI (180 cm).
+$ctx=function($o=[]){ return array_merge(['height'=>180.0,'orlistat'=>['start_weight'=>100.0,'start_source'=>'test','days_since_first_supply'=>30]],$o); };
+$rp=function($o=[]){ return array_merge(['currentMedication'=>'mounjaro','currentWeight'=>90,'dob'=>'1980-01-01','healthChanged'=>'no','couldBePregnant'=>'no'],$o); };
+$x=$RR::evaluate($rp(['currentWeight'=>64.67]),null,$ctx()); check('Reorder floor: BMI 19.96 blocks (not rounded to 20.0)',empty($x['ok']) && $x['code']==='bmi_floor',json_encode($x));
+$x=$RR::evaluate($rp(['currentWeight'=>64.81]),null,$ctx()); check('Reorder floor: BMI 20.00 passes',!empty($x['ok']));
+$f=$RR::review_flags($rp(['currentWeight'=>74.39]),0,$ctx()); check('Reorder band: BMI 22.96 flagged (not rounded to 23.0)',isset($f['bmi_20_23']),json_encode($f));
+$f=$RR::review_flags($rp(['currentWeight'=>74.6]),0,$ctx()); check('Reorder band: BMI 23.02 not flagged',!isset($f['bmi_20_23']));
+// 12-week rule inside the reorder check
+$o=function($days,$start=100.0){ return ['height'=>180.0,'orlistat'=>['start_weight'=>$start,'start_source'=>'test','days_since_first_supply'=>$days]]; };
+$x=$RR::evaluate($rp(['currentMedication'=>'orlistat','currentWeight'=>97]),['previous_medication'=>'orlistat'],$o(90)); check('Reorder check: Orlistat day 90, 3% loss -> blocked, patient told why',empty($x['ok']) && $x['code']==='orlistat_12_week' && $x['reason']===$RR::ORLISTAT_UNDER_5_MESSAGE && strpos($x['prescriber'],'Under 5% at 12 weeks')!==false,json_encode($x));
+$x=$RR::evaluate($rp(['currentMedication'=>'orlistat','currentWeight'=>97]),['previous_medication'=>'orlistat'],$o(60)); check('Reorder check: day 60, 3% loss -> not blocked, patient not told',!empty($x['ok']));
+$f=$RR::review_flags($rp(['currentMedication'=>'orlistat','currentWeight'=>97]),0,$o(60)); check('Reorder flags: day 60, 3% loss -> red flag for the prescriber',isset($f['orl_12_week_due'],$f['orl_weight_change']));
+$x=$RR::evaluate($rp(['currentMedication'=>'orlistat','currentWeight'=>97]),['previous_medication'=>'orlistat'],$o(90,null)); check('Reorder check: day 90, start weight missing -> blocked, no 5% wording to patient',empty($x['ok']) && $x['code']==='orlistat_12_week_no_data' && strpos($x['reason'],'5%')===false);
+$x=$RR::evaluate($rp(['currentMedication'=>'orlistat','currentWeight'=>97]),['previous_medication'=>'orlistat'],$o(null)); check('Reorder check: first supply date missing -> blocked',empty($x['ok']) && $x['code']==='orlistat_12_week_no_data');
+$x=$RR::evaluate($rp(['currentMedication'=>'orlistat','currentWeight'=>94]),['previous_medication'=>'orlistat'],$o(120)); check('Reorder check: day 120, 6% loss -> allowed',!empty($x['ok']));
+$x=$RR::evaluate($rp(['currentWeight'=>97]),['previous_medication'=>'mounjaro'],$o(null)); check('Reorder check: GLP-1 never hits the Orlistat rule',!empty($x['ok']));
+// No reset: the clock and start weight come from the FIRST Orlistat supply.
+$sup=[['date'=>'2026-09-20','raw'=>['weightKg'=>104,'userType'=>'new']],['date'=>'2026-06-01','raw'=>['weightKg'=>110,'userType'=>'new']],['date'=>'2026-07-01','raw'=>null]];
+$first=$RR::earliest_supply($sup); check('No reset: earliest supply chosen, not the latest assessment',$first['date']==='2026-06-01');
+$c=$RR::context_from($first,['weight_kg'=>104,'start_weight_kg'=>0,'user_type'=>'new','current_medication'=>'','created_at'=>'2026-09-19 10:00:00'],new DateTime('2026-10-09'));
+check('No reset: start weight from the first supply (110), days from 1 June (130)',$c['start_weight']===110.0 && $c['days_since_first_supply']===130,json_encode($c));
+$c=$RR::context_from(['date'=>'2026-06-01','raw'=>null],['weight_kg'=>108,'start_weight_kg'=>0,'user_type'=>'new','current_medication'=>'','created_at'=>'2026-05-30 10:00:00'],new DateTime('2026-10-09'));
+check('No reset: earliest Orlistat assessment row used when the first order has no snapshot',$c['start_weight']===108.0);
+$c=$RR::context_from(['date'=>'2026-06-01','raw'=>['weightKg'=>90,'startWeightKg'=>112,'userType'=>'switching','currentMedication'=>'orlistat']],null,new DateTime('2026-10-09'));
+check('Transfer in: start weight is the declared weight when first starting',$c['start_weight']===112.0);
+$c=$RR::context_from(null,null,new DateTime('2026-10-09')); check('No supply found: days unknown (reorder then blocks)',$c['days_since_first_supply']===null && $c['start_weight']===null);
+// Pay-page change of treatment re-checks the new product.
+$CT='TC_Change_Treatment';
+$pp=base(['weightKg'=>89.1,'heightCm'=>180,'weightConditions'=>$bp,'selectedTreatment'=>'mounjaro','rulesVersion'=>'WM-2026-10-v2']);
+$x=$CT::recheck($pp); check('Pay-page change: Mounjaro at BMI 27.5 with condition passes',$x['ok'] && $x['legacy']==='');
+$x=$CT::recheck(array_merge($pp,['selectedTreatment'=>'orlistat'])); check('Pay-page change: same answers to Orlistat refused (BMI 28 rule)',!$x['ok']);
+$x=$CT::recheck(array_merge($pp,['selectedTreatment'=>'orlistat','weightKg'=>100])); check('Pay-page change: BMI 30.9 to Orlistat allowed, Orlistat flags attached',$x['ok'] && isset($x['eligibility']['flags']['orl_counselling']));
+$x=$CT::recheck(array_merge($pp,['conditions'=>['I have a history of pancreatitis'],'selectedTreatment'=>'mounjaro','weightKg'=>100])); check('Pay-page change: Orlistat patient with pancreatitis cannot switch to a GLP-1',!$x['ok']);
+$legacy=$pp; unset($legacy['rulesVersion'],$legacy['consentIdVideo'],$legacy['consentLifestyle'],$legacy['gpConsentSCR']);
+$x=$CT::recheck(array_merge($legacy,['selectedTreatment'=>'orlistat'])); check('Legacy assessment: rules re-run on stored answers, Orlistat refused at BMI 27.5',!$x['ok'] && $x['legacy']==='partial');
+$x=$CT::recheck(array_merge($legacy,['selectedTreatment'=>'mounjaro'])); check('Legacy assessment: passes on stored answers, flagged for re-screen',$x['ok'] && $x['legacy']==='partial' && isset($x['eligibility']['flags']['legacy_assessment']));
+$x=$CT::recheck(array_merge($legacy,['dob'=>'','selectedTreatment'=>'orlistat'])); check('Legacy assessment with answers genuinely absent: passes through as legacy',$x['ok'] && $x['legacy']==='absent' && $x['eligibility']===null);
+$x=$CT::recheck(array_merge($legacy,['userType'=>'switching','lastDoseDate'=>'','selectedTreatment'=>'mounjaro'])); check('Legacy switcher without last dose: legacy pass-through',$x['legacy']==='absent');
+// OE2 phrasing, naltrexone label
+$r=$R::evaluate(orl(['allergiesList'=>'orlistat allergy'])); check('OE2: "orlistat allergy" -> blocked',!$r['eligible']);
+$r=$R::evaluate(orl(['currentMedsList'=>'naltrexone 50mg'])); check('Naltrexone: flag (not labelled a block)',$r['eligible'] && strpos($r['flags']['orl_existing_orlistat'],'(block)')===false);
+// Patient wording
+check('Pregnancy screen-out wording (checker)', strpos($R::evaluate(orl(array_merge($fem,['pregnant'=>'yes','couldConceive'=>'yes'])))['reason'],'Our service does not prescribe')===0);
 echo "\n$pass passed, $fail failed\n"; exit($fail?1:0);

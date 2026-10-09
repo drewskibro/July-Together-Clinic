@@ -100,6 +100,13 @@ class TC_Reorder_Ajax {
 				'reason' => $rules['reason'],
 			];
 
+			// The Orlistat 12-week block (rule O4.2) needs a prescriber review,
+			// so the prescriber is told even though no order is created.
+			if ( strpos( (string) $rules['code'], 'orlistat_12_week' ) === 0 ) {
+				$payload['reorderBlocked'] = (string) ( $rules['prescriber'] ?? $rules['reason'] );
+				TC_Reorder_Emails::send_clinician_notification( $payload, $assessment_id, $prefill, null );
+			}
+
 			if ( $rules['code'] === 'medication_mismatch' ) {
 				$response['redirect'] = $this->assessment_url( true );
 			}

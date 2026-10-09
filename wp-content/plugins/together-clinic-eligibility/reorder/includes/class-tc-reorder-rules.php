@@ -6,12 +6,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 class TC_Reorder_Rules {
 
 	/** Rule O4.2: the 12-week stop rule (Xenical SmPC 4.1). */
-	const ORLISTAT_STOP_WEEKS   = 12;
 	const ORLISTAT_MIN_LOSS_PCT = 5;
-	/** Nominal days a supply covers (84 capsules, one with each main meal). */
-	const ORLISTAT_PACK_DAYS    = 28;
+	/** From this day after the first supply, under 5% loss is a red flag. */
+	const ORLISTAT_FLAG_DAY     = 56;
+	/** From this day (12 weeks) after the first supply, under 5% loss blocks. */
+	const ORLISTAT_BLOCK_DAY    = 84;
 
-	public static function evaluate( array $payload, $prefill ) {
+	/** Patient wording for the 12-week block (pharmacy checker, 9 Oct 2026). */
+	const ORLISTAT_UNDER_5_MESSAGE = 'Your weight change so far is under 5% of your starting weight. The licence says Orlistat should stop if at least 5% has not been lost by 12 weeks, so a prescriber needs to review you before another pack. Please contact us.';
+	/** Patient wording when the check cannot be made (never mentions the target). */
+	const ORLISTAT_NO_DATA_MESSAGE = 'We could not check your progress on Orlistat, so a prescriber needs to review you before another pack. Please contact us.';
+
+	/**
+	 * @param array      $payload Normalised reorder answers.
+	 * @param array|null $prefill From TC_Reorder_Prefill.
+	 * @param array|null $ctx     Test seam: [ 'height' => float, 'orlistat' => orlistat_context() ]. Built from the database when null.
+	 */
+	public static function evaluate( array $payload, $prefill, $ctx = null ) {
 		if ( ( $payload['healthChanged'] ?? '' ) === 'yes' ) {
 			return self::block( 'health_changed', 'A clinician consultation is required because of new or worsening health.' );
 		}
@@ -32,25 +43,27 @@ class TC_Reorder_Rules {
 			return self::block( 'under_18', 'You must be at least 18 years old to use this service.' );
 		}
 
+		$ctx = self::context( $ctx, $payload_med, function_exists( 'get_current_user_id' ) ? get_current_user_id() : 0 );
+
 		// Rules WM-2026-10-v1 onwards (IP-FRM-01 3A.7; Orlistat OE8): stop
-		// below BMI 20. Uses the height from the patient's eligibility
-		// assessment and the weight they report now. 20 to 22.9 is flagged
-		// for the prescriber (review_flags()).
-		if ( class_exists( 'TC_DB' ) && class_exists( 'TC_Eligibility_Rules' ) ) {
-			$height = TC_DB::latest_height_for_user( get_current_user_id() );
-			$bmi    = TC_Eligibility_Rules::bmi( $payload['currentWeight'] ?? 0, $height );
-			if ( $bmi !== null && $bmi < 20 ) {
+		// below BMI 20. Unrounded BMI, so 19.96 never passes as 20.0. Height
+		// from the eligibility assessment, weight reported now. 20 to 22.9 is
+		// flagged for the prescriber (review_flags()).
+		if ( class_exists( 'TC_Eligibility_Rules' ) ) {
+			$bmi_raw = TC_Eligibility_Rules::bmi_raw( $payload['currentWeight'] ?? 0, $ctx['height'] );
+			if ( $bmi_raw !== null && $bmi_raw < 20 ) {
 				return self::block( 'bmi_floor', 'Based on your current weight, a clinician consultation is needed before any further treatment.' );
 			}
 		}
 
-		// Rule O4.2 (WM-2026-10-v3): Orlistat stops if less than 5% of the
-		// starting weight is lost by 12 weeks from the first supply.
-		if ( $payload_med === 'orlistat' && class_exists( 'TC_DB' ) ) {
-			$ctx    = self::orlistat_context( get_current_user_id() );
-			$review = self::orlistat_twelve_week( $ctx['start_weight'], $payload['currentWeight'] ?? 0, $ctx['days_since_first_supply'] );
+		// Rule O4.2 (WM-2026-10-v3): Orlistat 12-week stop rule.
+		if ( $payload_med === 'orlistat' ) {
+			$o      = $ctx['orlistat'];
+			$review = self::orlistat_twelve_week( $o['start_weight'], $payload['currentWeight'] ?? 0, $o['days_since_first_supply'] );
 			if ( $review['block'] ) {
-				return self::block( 'orlistat_12_week', 'Based on the weight you entered, Orlistat should not be continued: its licence says to stop if less than 5% of your starting weight has been lost after 12 weeks. Please contact us or speak with your GP about other options.' );
+				$out = self::block( $review['block'], $review['block'] === 'orlistat_12_week' ? self::ORLISTAT_UNDER_5_MESSAGE : self::ORLISTAT_NO_DATA_MESSAGE );
+				$out['prescriber'] = implode( ' ', $review['flags'] );
+				return $out;
 			}
 		}
 
@@ -58,45 +71,59 @@ class TC_Reorder_Rules {
 	}
 
 	/**
-	 * Rule O4.2 as a pure check. Applies at the first reorder that would take
-	 * treatment beyond 12 weeks from the first supply date (a nominal 28-day
-	 * supply from today ending after day 84), and at every later reorder.
-	 * Counted from the first supply date, never from the number of packs.
+	 * Rule O4.2 as a pure check, counted in days from the FIRST supply date
+	 * (never the number of packs; a pack can last longer than 28 days).
+	 * - Before day 56: start weight, current weight and % change carried.
+	 * - Day 56 to 83: the same, and a red flag if loss is under 5%. The
+	 *   patient is never told before day 84 that they missed the target.
+	 * - Day 84 onwards: under 5% loss blocks; missing data blocks.
+	 * - First supply date unknown: blocks (the check cannot be made).
 	 *
-	 * @param float|null $start_kg  Starting weight, or null if unknown.
-	 * @param float      $current_kg Weight reported now.
-	 * @param int|null   $days      Days since the first supply, or null if unknown.
-	 * @return array { applies: bool|null, block: bool, loss_pct: float|null, flags: array }
+	 * @return array { stage: string, block: string ('' | 'orlistat_12_week' | 'orlistat_12_week_no_data'), loss_pct: float|null, flags: array }
 	 */
 	public static function orlistat_twelve_week( $start_kg, $current_kg, $days ) {
-		$out  = [ 'applies' => null, 'block' => false, 'loss_pct' => null, 'flags' => [] ];
+		$out  = [ 'stage' => '', 'block' => '', 'loss_pct' => null, 'flags' => [] ];
 		$loss = class_exists( 'TC_Eligibility_Rules' ) ? TC_Eligibility_Rules::percent_loss( $start_kg, $current_kg ) : null;
 		$out['loss_pct'] = $loss;
 
 		$weights = sprintf(
 			'Start weight %s, current weight %s, change %s.',
-			$start_kg ? sprintf( '%.1f kg', (float) $start_kg ) : 'not known',
+			$start_kg ? sprintf( '%.1f kg', (float) $start_kg ) : 'not found',
 			$current_kg ? sprintf( '%.1f kg', (float) $current_kg ) : 'not given',
 			$loss === null ? 'not known' : sprintf( '%s%.1f%%', $loss > 0 ? '-' : '+', abs( $loss ) )
 		);
 
 		if ( $days === null ) {
-			$out['flags']['orl_12_week_unknown'] = 'RED FLAG O4.2 (Orlistat): first supply date not found. ' . $weights . ' Check the 12-week stop rule by hand (stop if under 5% loss at 12 weeks). Basis: Xenical SmPC 4.1.';
+			$out['stage'] = 'unknown';
+			$out['block'] = 'orlistat_12_week_no_data';
+			$out['flags']['orl_12_week_no_data'] = 'BLOCK O4.2 (Orlistat): first supply date not found, so the 12-week stop rule cannot be checked. ' . $weights . ' Reorder blocked; review by hand (stop if under 5% loss at 12 weeks). Basis: Xenical SmPC 4.1.';
 			return $out;
 		}
 
-		$out['applies'] = ( (int) $days + self::ORLISTAT_PACK_DAYS ) > self::ORLISTAT_STOP_WEEKS * 7;
-		$out['flags']['orl_weight_change'] = sprintf( 'Orlistat weight review (rule O4.2): first supply %d days ago (week %d). %s', (int) $days, (int) floor( $days / 7 ), $weights );
+		$days = (int) $days;
+		$out['flags']['orl_weight_change'] = sprintf( 'Orlistat weight review (rule O4.2): first supply %d days ago (week %d). %s', $days, (int) floor( $days / 7 ), $weights );
 
-		if ( ! $out['applies'] ) {
+		if ( $days < self::ORLISTAT_FLAG_DAY ) {
+			$out['stage'] = 'early';
 			return $out;
 		}
+
+		if ( $days < self::ORLISTAT_BLOCK_DAY ) {
+			$out['stage'] = 'flag';
+			if ( $loss === null ) {
+				$out['flags']['orl_12_week_due'] = 'RED FLAG O4.2 (Orlistat): 12-week review due by day 84 and the weight change cannot be worked out. Get the start weight and a verified current weight. Basis: Xenical SmPC 4.1.';
+			} elseif ( $loss < self::ORLISTAT_MIN_LOSS_PCT ) {
+				$out['flags']['orl_12_week_due'] = 'RED FLAG O4.2 (Orlistat): under 5% loss so far with the 12-week review due by day 84. ' . $weights . ' At 12 weeks, under 5% means stop under the licence. Basis: Xenical SmPC 4.1.';
+			}
+			return $out;
+		}
+
+		$out['stage'] = 'block';
 		if ( $loss === null ) {
-			$out['flags']['orl_12_week_unknown'] = 'RED FLAG O4.2 (Orlistat): 12-week stop rule applies but the weight change cannot be worked out. Check it before supply. Basis: Xenical SmPC 4.1.';
-			return $out;
-		}
-		if ( $loss < self::ORLISTAT_MIN_LOSS_PCT ) {
-			$out['block'] = true;
+			$out['block'] = 'orlistat_12_week_no_data';
+			$out['flags']['orl_12_week_no_data'] = 'BLOCK O4.2 (Orlistat): past 12 weeks from the first supply and the weight change cannot be worked out (start or current weight missing). ' . $weights . ' Reorder blocked; review by hand. Basis: Xenical SmPC 4.1.';
+		} elseif ( $loss < self::ORLISTAT_MIN_LOSS_PCT ) {
+			$out['block'] = 'orlistat_12_week';
 			$out['flags']['orl_12_week_stop'] = 'BLOCK O4.2 (Orlistat): Under 5% at 12 weeks: stop under the licence. ' . $weights . ' Any override is off-label and needs recorded reasons and Superintendent approval. Basis: Xenical SmPC 4.1.';
 		} else {
 			$out['flags']['orl_12_week_ok'] = 'Orlistat 12-week rule: at least 5% loss reported. The weight for this review must be independently verified (section 6); a reported weight alone is not enough to continue. Basis: Xenical SmPC 4.1; rule O4.2.';
@@ -109,36 +136,37 @@ class TC_Reorder_Rules {
 	 * every product (rule T2, O4.3); for Orlistat the weight review and the
 	 * section O medicine screen of any new medicines.
 	 */
-	public static function review_flags( array $payload, $user_id ) {
+	public static function review_flags( array $payload, $user_id, $ctx = null ) {
 		$flags     = [];
 		$treatment = TC_Reorder_Pricing::normalize_treatment( $payload['currentMedication'] ?? '' );
+		$ctx       = self::context( $ctx, $treatment, $user_id );
 
-		if ( class_exists( 'TC_DB' ) && class_exists( 'TC_Eligibility_Rules' ) ) {
-			$bmi = TC_Eligibility_Rules::bmi( $payload['currentWeight'] ?? 0, TC_DB::latest_height_for_user( $user_id ) );
-			$flags = array_merge( $flags, self::bmi_band_flags( $bmi, $treatment ) );
+		if ( class_exists( 'TC_Eligibility_Rules' ) ) {
+			$flags = array_merge( $flags, self::bmi_band_flags( TC_Eligibility_Rules::bmi_raw( $payload['currentWeight'] ?? 0, $ctx['height'] ), $treatment ) );
 		}
 
 		if ( $treatment === 'orlistat' ) {
-			if ( class_exists( 'TC_DB' ) ) {
-				$ctx    = self::orlistat_context( $user_id );
-				$review = self::orlistat_twelve_week( $ctx['start_weight'], $payload['currentWeight'] ?? 0, $ctx['days_since_first_supply'] );
-				$flags  = array_merge( $flags, $review['flags'] );
-				if ( $ctx['start_source'] && isset( $flags['orl_weight_change'] ) ) {
-					$flags['orl_weight_change'] .= ' Start weight source: ' . $ctx['start_source'] . '.';
-				}
+			$o      = $ctx['orlistat'];
+			$review = self::orlistat_twelve_week( $o['start_weight'], $payload['currentWeight'] ?? 0, $o['days_since_first_supply'] );
+			$flags  = array_merge( $flags, $review['flags'] );
+			if ( $o['start_source'] && isset( $flags['orl_weight_change'] ) ) {
+				$flags['orl_weight_change'] .= ' Start weight source: ' . $o['start_source'] . '.';
 			}
 			$flags = array_merge( $flags, self::orlistat_new_medicine_flags( (string) ( $payload['newMedicationsList'] ?? '' ) ) );
 		}
 		return $flags;
 	}
 
-	/** BMI 20 to 22.9 at a reorder: prescriber decision (rule T2; Orlistat O4.3). */
-	public static function bmi_band_flags( $bmi, $treatment ) {
-		if ( $bmi === null || $bmi < 20 || $bmi >= 23 ) {
+	/**
+	 * BMI 20 to 22.9 at a reorder: prescriber decision (rule T2; Orlistat
+	 * O4.3). Takes the UNROUNDED BMI so 22.96 is flagged, not read as 23.0.
+	 */
+	public static function bmi_band_flags( $bmi_raw, $treatment ) {
+		if ( $bmi_raw === null || $bmi_raw < 20 || $bmi_raw >= 23 ) {
 			return [];
 		}
 		return [
-			'bmi_20_23' => sprintf( 'Current BMI %.1f (20 to 22.9): prescriber decision only, reason recorded; generally stop and monitor.%s Weight must be independently verified before every supply below BMI 23 (section 9).', $bmi, $treatment === 'orlistat' ? ' Orlistat: rule O4.3.' : ' Reduced dose considered (rule T2).' ),
+			'bmi_20_23' => sprintf( 'Current BMI %.2f (20 to 22.9): prescriber decision only, reason recorded; generally stop and monitor.%s Weight must be independently verified before every supply below BMI 23 (section 9).', $bmi_raw, $treatment === 'orlistat' ? ' Orlistat: rule O4.3.' : ' Reduced dose considered (rule T2).' ),
 		];
 	}
 
@@ -158,64 +186,111 @@ class TC_Reorder_Rules {
 		return $flags;
 	}
 
-	/**
-	 * Start weight and first supply date for the 12-week rule.
-	 *
-	 * @return array { start_weight: float|null, start_source: string, days_since_first_supply: int|null }
-	 */
-	public static function orlistat_context( $user_id ) {
-		$out = [ 'start_weight' => null, 'start_source' => '', 'days_since_first_supply' => null ];
-		$row = TC_DB::orlistat_start_for_user( $user_id );
-		if ( $row ) {
-			$transfer = ( $row['user_type'] ?? '' ) === 'switching' && ( $row['current_medication'] ?? '' ) === 'orlistat' && (float) $row['start_weight_kg'] > 0;
-			$out['start_weight'] = $transfer ? (float) $row['start_weight_kg'] : (float) $row['weight_kg'];
-			$out['start_source'] = $transfer
-				? 'declared weight when first starting, before transferring to us (check the evidence)'
-				: 'weight reported at the assessment on ' . substr( (string) $row['created_at'], 0, 10 );
+	/** Height and Orlistat context, from the test seam or the database. */
+	private static function context( $ctx, $treatment, $user_id ) {
+		if ( is_array( $ctx ) ) {
+			return $ctx + [ 'height' => 0.0, 'orlistat' => [ 'start_weight' => null, 'start_source' => '', 'days_since_first_supply' => null ] ];
 		}
-
-		$first = self::first_orlistat_supply( $user_id, $row ? (string) $row['created_at'] : '' );
-		if ( $first ) {
-			$today = new DateTime( 'today' );
-			$out['days_since_first_supply'] = (int) $today->diff( $first )->days;
+		$out = [
+			'height'   => class_exists( 'TC_DB' ) ? TC_DB::latest_height_for_user( $user_id ) : 0.0,
+			'orlistat' => [ 'start_weight' => null, 'start_source' => '', 'days_since_first_supply' => null ],
+		];
+		if ( $treatment === 'orlistat' ) {
+			$out['orlistat'] = self::orlistat_context( $user_id );
 		}
 		return $out;
 	}
 
-	/** Date of the first paid Orlistat order since the starting assessment. */
-	private static function first_orlistat_supply( $user_id, $since ) {
+	/**
+	 * Start weight and first supply date for the 12-week rule, always from
+	 * the patient's FIRST Orlistat supply with us: a later assessment never
+	 * resets the clock or the start weight.
+	 *
+	 * @return array { start_weight: float|null, start_source: string, days_since_first_supply: int|null }
+	 */
+	public static function orlistat_context( $user_id ) {
+		$supplies = self::orlistat_supplies( $user_id );
+		$first    = self::earliest_supply( $supplies );
+		$row      = class_exists( 'TC_DB' ) ? TC_DB::orlistat_start_for_user( $user_id ) : null;
+		return self::context_from( $first, $row, new DateTime( 'today' ) );
+	}
+
+	/**
+	 * Pure: build the 12-week context from the first supply and the
+	 * earliest Orlistat assessment row (fallback for the start weight).
+	 *
+	 * @param array|null $first [ 'date' => 'Y-m-d', 'raw' => assessment payload array|null ]
+	 * @param array|null $row   Earliest Orlistat assessment row.
+	 */
+	public static function context_from( $first, $row, DateTime $today ) {
+		$out = [ 'start_weight' => null, 'start_source' => '', 'days_since_first_supply' => null ];
+		if ( $first && ! empty( $first['date'] ) ) {
+			$out['days_since_first_supply'] = (int) $today->diff( new DateTime( $first['date'] ) )->days;
+		}
+		$raw = ( $first && is_array( $first['raw'] ?? null ) ) ? $first['raw'] : null;
+		if ( $raw && (float) ( $raw['weightKg'] ?? 0 ) > 0 ) {
+			$transfer = ( $raw['userType'] ?? '' ) === 'switching' && ( $raw['currentMedication'] ?? '' ) === 'orlistat' && (float) ( $raw['startWeightKg'] ?? 0 ) > 0;
+			$out['start_weight'] = $transfer ? (float) $raw['startWeightKg'] : (float) $raw['weightKg'];
+			$out['start_source'] = $transfer
+				? 'declared weight when first starting orlistat, before transferring to us (check the evidence)'
+				: 'weight at the assessment for the first Orlistat supply (' . $first['date'] . ')';
+		} elseif ( $row && (float) ( $row['weight_kg'] ?? 0 ) > 0 ) {
+			$transfer = ( $row['user_type'] ?? '' ) === 'switching' && ( $row['current_medication'] ?? '' ) === 'orlistat' && (float) ( $row['start_weight_kg'] ?? 0 ) > 0;
+			$out['start_weight'] = $transfer ? (float) $row['start_weight_kg'] : (float) $row['weight_kg'];
+			$out['start_source'] = 'earliest Orlistat assessment, ' . substr( (string) ( $row['created_at'] ?? '' ), 0, 10 );
+		}
+		return $out;
+	}
+
+	/**
+	 * Pure: the earliest supply in a list of [ 'date' => 'Y-m-d', 'raw' => ... ].
+	 */
+	public static function earliest_supply( array $supplies ) {
+		$first = null;
+		foreach ( $supplies as $s ) {
+			if ( empty( $s['date'] ) ) {
+				continue;
+			}
+			if ( $first === null || strcmp( $s['date'], $first['date'] ) < 0 ) {
+				$first = $s;
+			}
+		}
+		return $first;
+	}
+
+	/** Every paid Orlistat order for the customer, with its assessment snapshot. */
+	private static function orlistat_supplies( $user_id ) {
 		if ( ! function_exists( 'wc_get_orders' ) || ! class_exists( 'TC_Variation_Map' ) ) {
-			return null;
+			return [];
 		}
 		$product_id = (int) TC_Variation_Map::get_variation_id( 'orlistat', '120mg' );
 		if ( ! $product_id ) {
-			return null;
-		}
-		$args = [
-			'customer_id' => (int) $user_id,
-			'status'      => [ 'processing', 'completed' ],
-			'limit'       => 50,
-			'orderby'     => 'date',
-			'order'       => 'ASC',
-			'type'        => 'shop_order',
-		];
-		if ( $since !== '' ) {
-			$args['date_created'] = '>=' . strtotime( $since );
+			return [];
 		}
 		try {
-			$orders = wc_get_orders( $args );
+			$orders = wc_get_orders( [
+				'customer_id' => (int) $user_id,
+				'status'      => [ 'processing', 'completed' ],
+				'limit'       => -1,
+				'orderby'     => 'date',
+				'order'       => 'ASC',
+				'type'        => 'shop_order',
+			] );
 		} catch ( Exception $e ) {
-			return null;
+			return [];
 		}
+		$out = [];
 		foreach ( $orders as $order ) {
 			foreach ( $order->get_items() as $item ) {
 				if ( (int) $item->get_variation_id() === $product_id || (int) $item->get_product_id() === $product_id ) {
-					$date = $order->get_date_paid() ?: $order->get_date_created();
-					return $date ? new DateTime( $date->date( 'Y-m-d' ) ) : null;
+					$date  = $order->get_date_paid() ?: $order->get_date_created();
+					$raw   = json_decode( (string) $order->get_meta( '_tc_eligibility_raw' ), true );
+					$out[] = [ 'date' => $date ? $date->date( 'Y-m-d' ) : '', 'raw' => is_array( $raw ) ? $raw : null ];
+					break;
 				}
 			}
 		}
-		return null;
+		return $out;
 	}
 
 	public static function age_from_dob( $dob ) {
