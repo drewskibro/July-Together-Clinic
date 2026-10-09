@@ -576,7 +576,7 @@ get_header();
             <tfoot>
               <tr>
                 <td class="px-8 py-6 rounded-bl-3xl" style="background: #fdf8f3; border-top: 1.5px solid #ede8f6;">
-                  <p class="text-[11px] text-gray-400 italic">Prices correct as of 2026. Subject to clinical eligibility.</p>
+                  <p class="text-[11px] text-gray-400 italic">Prices correct as of 2026. Subject to a prescriber's assessment.</p>
                 </td>
                 <td class="at-col-cell px-5 py-6 text-center rounded-b-3xl" style="border-top: 1.5px solid rgba(255,255,255,0.08);">
                   <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="inline-flex items-center gap-2 bg-white text-[#2d1f6e] text-[13px] font-extrabold px-6 py-3 rounded-xl transition-all hover:bg-purple-50 hover:-translate-y-0.5" style="box-shadow: 0 4px 20px rgba(0,0,0,0.25);">
@@ -696,7 +696,7 @@ get_header();
           </div>
         </div>
         <!-- disclaimer -->
-        <p class="text-center text-[11px] text-gray-400 italic px-4">Prices correct as of 2026. Subject to clinical eligibility.</p>
+        <p class="text-center text-[11px] text-gray-400 italic px-4">Prices correct as of 2026. Subject to a prescriber's assessment.</p>
       </div>
       <!-- end mobile cards -->
 

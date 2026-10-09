@@ -394,7 +394,7 @@ function ah_refund_policy_default_content() {
 <ul>
 <li>Each repeat order follows the same pending authorisation model as a standard order. Payment is authorised when your repeat order is queued and captured only once your prescription is approved.</li>
 <li>If a repeat order is cancelled before clinical review is completed, the authorisation is released and no charge is made.</li>
-<li>If a repeat order has been prescribed and dispensed, it is not eligible for a refund.</li>
+<li>If a repeat order has been prescribed and dispensed, it cannot be refunded.</li>
 </ul>
 
 <h3>6.3 Dose or Treatment Adjustments</h3>

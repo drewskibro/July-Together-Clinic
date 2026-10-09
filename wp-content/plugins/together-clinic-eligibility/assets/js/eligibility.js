@@ -1259,7 +1259,7 @@
 			return ajax('tc_eligibility_save', payload);
 		}).then(function (data) {
 			if (data.eligible === false) {
-				showIneligible(data.reason || 'You do not meet the eligibility criteria.');
+				showIneligible(data.reason || 'Our online service cannot offer weight loss medication based on your answers. Please speak with your GP.');
 				state.isSubmitting = false;
 				return;
 			}

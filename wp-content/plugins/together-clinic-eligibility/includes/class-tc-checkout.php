@@ -333,7 +333,7 @@ class TC_Checkout {
 
 		$cookie = TC_Cookie_Store::get();
 		if ( empty( $cookie ) || empty( $cookie['assessment_id'] ) ) {
-			wc_add_notice( 'Please complete the eligibility assessment before ordering.', 'error' );
+			wc_add_notice( 'Please complete the first check before ordering.', 'error' );
 			TC_Log::info( 'add_to_cart_blocked_no_assessment', [ 'product_id' => $product_id ] );
 			return false;
 		}
@@ -388,12 +388,6 @@ class TC_Checkout {
 	}
 
 	/**
-	 * Treatment products are dispensed through the assessment, never browsed.
-	 * Their single-product pages are unstyled thin pages that also expose
-	 * add-to-basket and express-pay buttons, so send visitors to the treatment
-	 * page instead. Filterable, and never interferes with admin or the REST API.
-	 */
-	/**
 	 * Keep prescription products out of shop, category and search listings
 	 * (MHRA Blue Guide Appendix 6: no "Add to basket" for a POM; supply only
 	 * through the assessment). Affects listings only: the assessment, the
@@ -406,6 +400,12 @@ class TC_Checkout {
 		return self::product_requires_assessment( $product_id ) ? false : $visible;
 	}
 
+	/**
+	 * Treatment products are dispensed through the assessment, never browsed.
+	 * Their single-product pages are unstyled thin pages that also expose
+	 * add-to-basket and express-pay buttons, so send visitors to the treatment
+	 * page instead. Filterable, and never interferes with admin or the REST API.
+	 */
 	public function redirect_single_product() {
 		if ( is_admin() || wp_doing_ajax() || ! function_exists( 'is_product' ) || ! is_product() ) {
 			return;

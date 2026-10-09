@@ -401,7 +401,7 @@ class TC_Eligibility_Rules {
 						return self::ineligible( $base, $not_licensed );
 					}
 					$flags['pathway'] = $comorbidity['a']
-						? sprintf( 'BMI %.1f (27 to 29.9): eligible only with the condition relied on, verified.', $bmi )
+						? sprintf( 'BMI %.1f (27 to 29.9): may proceed only with the condition relied on, verified.', $bmi )
 						: sprintf( 'BMI %.1f (27 to 29.9) with list B condition only: prescriber judgement required.', $bmi );
 				}
 			} else {

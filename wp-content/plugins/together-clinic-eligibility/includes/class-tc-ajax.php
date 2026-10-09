@@ -245,7 +245,7 @@ class TC_Ajax {
 				'has_session' => ( function_exists( 'WC' ) && WC()->session && WC()->session->has_session() ) ? 'yes' : 'no',
 				'has_data'    => ! empty( $cookie ) ? 'yes' : 'no',
 			] );
-			wp_send_json_error( [ 'message' => 'No eligibility data found. Please complete the assessment again.' ], 400 );
+			wp_send_json_error( [ 'message' => 'We could not find your answers. Please complete the first check again.' ], 400 );
 		}
 
 		$treatment = $cookie['selectedTreatment'];

@@ -48,7 +48,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
             <svg class="w-3.5 h-3.5 text-purple-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
             <span class="text-[11px] font-bold text-purple-700 uppercase tracking-[0.14em]"><?php echo esc_html( ah_field( 'tr_bmi_pill', 'Takes 10 seconds' ) ); ?></span>
           </div>
-          <h2 class="text-2xl md:text-[1.75rem] font-serif text-gray-900 leading-tight mb-2"><?php echo esc_html( ah_field( 'tr_bmi_title', 'Am I eligible?' ) ); ?></h2>
+          <h2 class="text-2xl md:text-[1.75rem] font-serif text-gray-900 leading-tight mb-2"><?php echo esc_html( ah_field( 'tr_bmi_title', 'Could this be right for me?' ) ); ?></h2>
           <p class="text-sm text-gray-600 leading-relaxed mb-6"><?php echo esc_html( ah_field( 'tr_bmi_subtitle', 'Enter your height and weight for an instant, private indication. Nothing is stored.' ) ); ?></p>
 
           <form id="bmiForm" novalidate>
@@ -90,7 +90,7 @@ $tr_contact  = get_page_by_path( 'contact' ) ? get_permalink( get_page_by_path( 
             <p id="bmiError" class="hidden text-sm text-red-600 mb-3" role="alert"></p>
 
             <button type="submit" class="w-full flex items-center justify-center gap-2.5 bg-purple-600 hover:bg-purple-700 text-white text-base font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all hover-lift">
-              <?php echo esc_html( ah_field( 'tr_bmi_button', 'Check my eligibility' ) ); ?>
+              <?php echo esc_html( ah_field( 'tr_bmi_button', 'Start my first check' ) ); ?>
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </button>
           </form>

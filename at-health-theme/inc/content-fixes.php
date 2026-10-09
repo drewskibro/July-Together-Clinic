@@ -106,7 +106,7 @@ function ah_fix_faq_text( $text ) {
             'Treatment plans start from &pound;149/month',
         ),
         array(
-            'approved by UK-registered prescribers (GPhC qualified).',
+            'approved by UK-registered prescribers (registered with the GPhC).',
             'Treatment plans start from £99/month',
             'Treatment plans start from &pound;99/month',
         ),

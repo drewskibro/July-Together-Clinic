@@ -75,7 +75,7 @@ class TC_My_Account {
 		if ( $original === 'No order has been made yet.' ) {
 			return $is_returning
 				? 'Ready to reorder your treatment?'
-				: 'No orders yet — start with a quick eligibility check.';
+				: 'No orders yet — start with a quick first check.';
 		}
 
 		return $translated;

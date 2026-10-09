@@ -41,7 +41,7 @@ get_header();
 <section class="py-14" style="background: #f7f4f9;">
   <div class="ah-container text-center" data-reveal>
     <h2 class="text-2xl md:text-3xl font-serif text-gray-900 mb-4">Ready to start your journey?</h2>
-    <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="ah-btn-purple">Check Eligibility <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+    <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="ah-btn-purple">Start your first check <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
   </div>
 </section>
 

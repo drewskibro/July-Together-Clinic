@@ -41,7 +41,7 @@
     <div class="ah-top-banner" style="background:#8e88d0;">
         <a href="<?php echo esc_url( ah_booking_url() ); ?>" class="block ah-container text-center text-white text-sm font-medium py-3 hover:opacity-90 transition-opacity">
             <?php echo wp_kses_post( ah_option( 'top_banner_text', 'GPhC-registered online pharmacy. Prescriber-reviewed care, delivered to your door —' ) ); ?>
-            <span class="underline ml-1"><?php echo esc_html( ah_option( 'top_banner_link_text', 'Check your eligibility' ) ); ?></span>
+            <span class="underline ml-1"><?php echo esc_html( ah_option( 'top_banner_link_text', 'Start your first check' ) ); ?></span>
         </a>
     </div>
 
@@ -85,7 +85,7 @@
                        class="text-gray-700 text-sm font-medium hover:text-purple-600">Switching Providers</a>
 
                     <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'weight-loss-eligibility' ) ?: get_page_by_path( 'eligibility' ) ) ); ?>"
-                       class="text-gray-700 text-sm font-medium hover:text-purple-600">Eligibility</a>
+                       class="text-gray-700 text-sm font-medium hover:text-purple-600">First check</a>
 
                     <!-- About Dropdown -->
                     <div class="relative group">
@@ -172,7 +172,7 @@
                 </a>
 
                 <a class="group flex items-center px-4 py-4 rounded-xl hover:bg-purple-50 transition-all" href="<?php echo esc_url( get_permalink( get_page_by_path( 'weight-loss-eligibility' ) ?: get_page_by_path( 'eligibility' ) ) ); ?>">
-                    <span class="text-gray-700 text-base font-semibold group-hover:text-purple-600 transition-colors">Eligibility</span>
+                    <span class="text-gray-700 text-base font-semibold group-hover:text-purple-600 transition-colors">First check</span>
                 </a>
 
                 <!-- About Accordion -->

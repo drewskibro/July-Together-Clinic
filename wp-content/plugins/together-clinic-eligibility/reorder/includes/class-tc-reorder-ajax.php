@@ -33,7 +33,7 @@ class TC_Reorder_Ajax {
 		$prefill = TC_Reorder_Prefill::for_user( $user_id );
 
 		if ( ! $prefill || ! $prefill['has_previous_order'] ) {
-			wp_send_json_error( [ 'message' => 'No previous qualifying order found on your account.' ], 403 );
+			wp_send_json_error( [ 'message' => 'We could not find a previous order on your account that can be reordered.' ], 403 );
 		}
 
 		$assessment_id = TC_Reorder_DB::insert_partial( $user_id, $prefill['previous_order_id'], [
