@@ -41,7 +41,7 @@ get_header();
         <h1 class="text-5xl lg:text-6xl font-serif text-gray-900 mb-5 leading-[1.02] tracking-[-0.02em]"><?php echo esc_html( ah_field( 'wt_title', 'Wegovy Tablets' ) ); ?></h1>
 
         <p class="text-base md:text-lg text-gray-600 leading-relaxed mb-8 max-w-lg">
-          <?php echo esc_html( ah_field( 'wt_description', 'A once-daily oral form of semaglutide containing the same active ingredient as Wegovy® injection. Designed for adults who prefer a needle-free option for weight management. In clinical studies, patients lost up to 16.6% of their body weight (OASIS-4 trial, oral semaglutide 25 mg over 64 weeks; trial-product estimand).' ) ); ?>
+          <?php echo esc_html( ah_field( 'wt_description', 'A once-daily oral form of semaglutide containing the same active ingredient as Wegovy® injection. Designed for adults who prefer a needle-free option for weight management. Whether it is suitable for you is decided by a prescriber at your video consultation.' ) ); ?>
         </p>
 
         <div class="space-y-3 mb-8">
