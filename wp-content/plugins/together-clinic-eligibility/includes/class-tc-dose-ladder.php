@@ -34,9 +34,9 @@ class TC_Dose_Ladder {
 		'foundayo'       => [ '0.8mg', '2.5mg', '5.5mg', '9mg', '14.5mg', '17.2mg' ],
 		// Orlistat (Xenical) — a lipase inhibitor, NOT a GLP-1. One licensed
 		// strength and no titration, so a single-rung ladder: the ±1 reorder
-		// gate and the switching matrix both degrade correctly to "the only
-		// step". Licence BMI threshold (≥28 with risk factors) differs from the
-		// GLP-1s' and belongs in the rules class, not here.
+		// gate degrades to "the only step". propose_start_dose() handles any
+		// move to or from Orlistat as a new start (rule O2.3); its BMI and
+		// exclusion rules live in TC_Eligibility_Rules (section O).
 		'orlistat'       => [ '120mg' ],
 	];
 
@@ -219,6 +219,14 @@ class TC_Dose_Ladder {
 		$to_drug   = TC_Variation_Map::normalize_treatment( $to_drug );
 		$from_dose = TC_Variation_Map::normalize_dose( $from_dose );
 		$starter   = self::starter( $to_drug );
+
+		// Orlistat (rules O2.3, WM-2026-10-v3): one strength, no ladder, no
+		// switching table and no GLP-1 restart windows. A move to or from
+		// Orlistat is a new start on the new product at its first step.
+		if ( $to_drug === 'orlistat' || $from_drug === 'orlistat' ) {
+			return [ 'dose' => $starter, 'range' => null, 'rule' => ( $to_drug === 'orlistat' ? 'orlistat_single_strength' : 'from_orlistat_new_start' ) ];
+		}
+
 		// Continue / step-down windows (AT Health policy, IP-FRM-01 3A.3).
 		// Foundayo has a short half-life (about 29 to 49 hours, SmPC 5.2), so
 		// its windows are shorter than the semaglutide tablet's.
@@ -272,6 +280,8 @@ class TC_Dose_Ladder {
 			'smpc_injection_to_tablets'    => 'Wegovy 2.4 mg injection to Wegovy tablets 25 mg (SmPC 4.2): start one week after the last injection.',
 			'smpc_tablets_to_injection'    => 'Wegovy tablets 25 mg to Wegovy 2.4 mg injection (SmPC 4.2): start the day after the last tablet.',
 			'switch_product_restart'       => 'Change of product: first step of the new product, at least 7 days after the last dose of the previous product. No cross-molecule conversion (MHRA).',
+			'orlistat_single_strength'     => 'Orlistat 120 mg: one strength, no dose ladder or switching rules (rule O2.3). Moving from another weight-loss medicine is a new start; confirm the previous supply has stopped (OE7).',
+			'from_orlistat_new_start'      => 'Moving from Orlistat: new start at the first step of the new product (rule O2.3). Confirm Orlistat has stopped (never together).',
 			'switch_unknown_source'        => 'Previous medicine not one we supply: first step proposed, at least 7 days after the last dose.',
 		];
 		return $map[ $rule ] ?? 'Dose proposed; confirm before prescribing.';

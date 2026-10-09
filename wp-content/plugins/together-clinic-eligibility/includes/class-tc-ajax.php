@@ -399,6 +399,7 @@ class TC_Ajax {
 		$p['bariatricDetails']    = sanitize_textarea_field( $p['bariatricDetails'] ?? '' );
 		$p['mentalHealthDetails'] = sanitize_textarea_field( $p['mentalHealthDetails'] ?? '' );
 		$p['otherConditions']     = sanitize_textarea_field( $p['otherConditions'] ?? '' );
+		$p['otherConditionsList'] = sanitize_textarea_field( $p['otherConditionsList'] ?? '' );
 		$p['currentMedsList']     = sanitize_textarea_field( $p['currentMedsList'] ?? $p['currentMeds'] ?? '' );
 		$p['allergiesList']       = sanitize_textarea_field( $p['allergiesList'] ?? $p['allergies'] ?? '' );
 		$p['goalWeight']          = sanitize_text_field( $p['goalWeight'] ?? '' );
@@ -414,7 +415,7 @@ class TC_Ajax {
 		$p['selectedTreatment']   = TC_Variation_Map::normalize_treatment( $p['selectedTreatment'] ?? '' );
 		$p['selectedDose']        = TC_Variation_Map::normalize_dose( $p['selectedDose'] ?? '' );
 		$p['termsAgreed']         = ! empty( $p['termsAgreed'] );
-		// Rules WM-2026-10-v1 fields.
+		// Rules WM-2026-10-v1 onwards (v3 adds Orlistat, section O).
 		$p['startWeightKg']        = (float) ( $p['startWeightKg'] ?? 0 );
 		$p['lastDoseDate']         = preg_match( '/^\d{4}-\d{2}-\d{2}$/', (string) ( $p['lastDoseDate'] ?? '' ) ) ? (string) $p['lastDoseDate'] : '';
 		$p['couldConceive']        = in_array( $p['couldConceive'] ?? '', [ 'yes', 'no' ], true ) ? $p['couldConceive'] : '';

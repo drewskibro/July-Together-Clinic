@@ -251,6 +251,33 @@ class TC_DB {
 		);
 	}
 
+	/**
+	 * The assessment that started a patient's Orlistat treatment, for the
+	 * 12-week stop rule (rules O4.2, WM-2026-10-v3). Prefers the latest
+	 * assessment that chose Orlistat and created an order; falls back to the
+	 * latest assessment with an order (a patient may have changed to Orlistat
+	 * on the pay page).
+	 *
+	 * @return array|null { weight_kg, start_weight_kg, user_type, current_medication, selected_treatment, created_at }
+	 */
+	public static function orlistat_start_for_user( $user_id ) {
+		global $wpdb;
+		$user_id = (int) $user_id;
+		if ( $user_id <= 0 ) {
+			return null;
+		}
+		$row = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT weight_kg, start_weight_kg, user_type, current_medication, selected_treatment, created_at FROM " . self::table_name() . "
+				 WHERE user_id = %d AND order_id IS NOT NULL AND weight_kg > 0
+				 ORDER BY ( selected_treatment = 'orlistat' ) DESC, created_at DESC LIMIT 1",
+				$user_id
+			),
+			ARRAY_A
+		);
+		return $row ?: null;
+	}
+
 	public static function purge_stale( $days = 30 ) {
 		global $wpdb;
 		$table = self::table_name();

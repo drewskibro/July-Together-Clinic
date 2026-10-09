@@ -10,7 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $is_eligible = ! empty( $eligibility['eligible'] );
 $bmi         = (float) ( $payload['bmi'] ?? 0 );
-$bmi_warn    = $bmi > 0 && ( $bmi < 27 || $bmi > 50 );
+$tc_is_orl   = ( ( $payload['selectedTreatment'] ?? '' ) === 'orlistat' );
+// Licence floor: GLP-1 27 with a condition; Orlistat 28 (rule O2.2).
+$bmi_warn    = $bmi > 0 && ( $bmi < ( $tc_is_orl ? 28 : 27 ) || $bmi > 50 );
 $tc_flags    = (array) ( $payload['clinicalFlags'] ?? ( $eligibility['flags'] ?? [] ) );
 ?>
 
@@ -27,6 +29,11 @@ $tc_flags    = (array) ( $payload['clinicalFlags'] ?? ( $eligibility['flags'] ??
 	</p>
 <?php endif; ?>
 
+<?php if ( $tc_is_orl && $is_eligible ) : ?>
+	<p style="background:#fef3c7;padding:12px;border-left:4px solid #f59e0b;font-size:13px;">
+		<strong>Orlistat 120 mg (rules section O).</strong> Licence BMI 30, or 28 to 29.9 with a risk factor (rule O2.2). No dose ladder or switching rules. No contraception agreement needed; pregnancy and planning pregnancy block. Flags marked OF1 to OF16 below are Orlistat flags; each shows its basis. Stop if under 5% loss at 12 weeks (SmPC 4.1).
+	</p>
+<?php endif; ?>
 <?php if ( $tc_flags ) : ?>
 	<h3>Prescriber flags</h3>
 	<ul style="font-size:13px;">
@@ -93,7 +100,7 @@ $tc_flags    = (array) ( $payload['clinicalFlags'] ?? ( $eligibility['flags'] ??
 		<tr><th align="left">Trying to conceive</th><td><?php echo esc_html( $payload['conceive'] ?? 'Not asked' ); ?></td></tr>
 		<tr><th align="left">Could become pregnant</th><td><?php echo esc_html( $payload['couldConceive'] ?? 'Not asked' ); ?></td></tr>
 		<tr><th align="left">Contraception</th><td><?php echo esc_html( $payload['contraception'] ?? 'Not asked' ); ?></td></tr>
-		<tr><th align="left">Agreed to use contraception</th><td><?php echo ! empty( $payload['consentContraception'] ) ? 'Yes' : 'No / not asked'; ?></td></tr>
+		<tr><th align="left">Agreed to use contraception</th><td><?php echo ! empty( $payload['consentContraception'] ) ? 'Yes' : ( $tc_is_orl ? 'No (not required for Orlistat, rule O3)' : 'No / not asked' ); ?></td></tr>
 	</table>
 <?php endif; ?>
 

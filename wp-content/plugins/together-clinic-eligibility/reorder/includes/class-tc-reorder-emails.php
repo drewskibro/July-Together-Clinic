@@ -55,6 +55,17 @@ class TC_Reorder_Emails {
 		];
 
 		$body = '<div style="background:#dcfce7;padding:12px 16px;border-radius:8px;margin-bottom:16px;"><strong>REORDER — prescriber review required</strong></div>';
+
+		// Prescriber flags on the order (BMI band, Orlistat weight review and
+		// medicine flags, dose gate), each with its basis.
+		$tc_flags = ( $order instanceof WC_Order ) ? $order->get_meta( '_tc_review_flags' ) : [];
+		if ( is_array( $tc_flags ) && $tc_flags ) {
+			$body .= '<h3>Prescriber flags</h3><ul style="font-size:13px;">';
+			foreach ( $tc_flags as $tc_flag ) {
+				$body .= '<li>' . esc_html( is_array( $tc_flag ) ? wp_json_encode( $tc_flag ) : (string) $tc_flag ) . '</li>';
+			}
+			$body .= '</ul>';
+		}
 		$body .= '<table cellspacing="0" cellpadding="6" border="1" style="width:100%;font-size:13px;border-collapse:collapse;">';
 		foreach ( $rows as $label => $value ) {
 			if ( $value === '' ) {

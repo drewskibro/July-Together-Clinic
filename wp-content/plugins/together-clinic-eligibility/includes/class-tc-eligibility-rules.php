@@ -7,7 +7,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Server-side triage rules for the weight-management questionnaire.
  *
  * Source of truth: AT Health IP-FRM-01 section 3A, rules version
- * WM-2026-10-v2 (Superintendent Pharmacist). The questionnaire is TRIAGE
+ * WM-2026-10-v3 (Superintendent Pharmacist): the GLP-1 rules (v2) plus
+ * section O for Orlistat 120 mg (draft 9 Oct 2026). The questionnaire is TRIAGE
  * ONLY: it screens out patients who clearly fall outside the product licence
  * or meet an exclusion. It never decides that a patient will be treated; the
  * prescriber decides in a video consultation after ID, weight/height and
@@ -32,6 +33,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  *  - Possible medicine exclusions are FLAGGED for the prescriber from the
  *    free-text medicines list, never shown to the patient (GPhC review of
  *    weight management services, April 2026).
+ *  - Orlistat (section O) has its own rules: BMI 30, or 28 to 29.9 with a
+ *    condition (O2.2); no dose ladder, switching table or GLP-1 transfer
+ *    window, and a move to or from a GLP-1 is a new start (O2.3); a
+ *    transfer from Orlistat elsewhere needs a starting BMI meeting O2.2 and
+ *    a current BMI of 20 or above (O2.4); blocks OE1 to OE8; red flags OF1
+ *    to OF15; GLP-1-only exclusions become information flags (OF16); no
+ *    contraception agreement (pregnancy and planning still block).
  *
  * evaluate() returns:
  *   eligible  bool    may proceed to a prescriber consultation
@@ -45,7 +53,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class TC_Eligibility_Rules {
 
-	const RULES_VERSION = 'WM-2026-10-v2';
+	const RULES_VERSION = 'WM-2026-10-v3';
 
 	/** Rule S1: online service age range, inclusive, by date of birth. */
 	const MIN_AGE = 18;
@@ -139,14 +147,64 @@ class TC_Eligibility_Rules {
 		'foundayo_bp'     => [ 'words' => [ 'amlodipine', 'felodipine', 'nifedipine', 'lercanidipine', 'ramipril', 'lisinopril', 'perindopril', 'enalapril', 'losartan', 'candesartan', 'irbesartan', 'valsartan', 'olmesartan', 'telmisartan', 'bisoprolol', 'atenolol', 'propranolol', 'metoprolol', 'nebivolol', 'indapamide', 'bendroflumethiazide', 'furosemide', 'doxazosin', 'spironolactone' ], 'products' => [ 'foundayo' ], 'note' => 'FOUNDAYO: blood pressure medicine mentioned. SmPC 4.4: hypotension more frequent with antihypertensives; warn and monitor.' ],
 	];
 
+	/**
+	 * Orlistat 120 mg (rules section O, WM-2026-10-v3). Not a GLP-1: its own
+	 * BMI rule (O2.2), no dose ladder or switching rules (O2.3), its own
+	 * blocks (OE1 to OE8) and prescriber flags (OF1 to OF16).
+	 */
+	const ORLISTAT = 'orlistat';
+	/** Rule O2.2 (Xenical SmPC 4.1): 30, or 28 to 29.9 with a list A/B condition. */
+	const ORLISTAT_BMI                = 30;
+	const ORLISTAT_BMI_WITH_CONDITION = 28;
+	/** Rule O2.4 / OE8: current BMI floor for a transfer and for repeat supplies. */
+	const ORLISTAT_TRANSFER_FLOOR = 20;
+
+	/**
+	 * Conditions that block Orlistat: OE5 malabsorption, OE6 cholestasis,
+	 * OE9 current or past eating disorder. Every other GLP-1 exclusion in
+	 * section 5 of the main rules is an information flag (OF16).
+	 */
+	const ORLISTAT_BLOCK_CONDITIONS = [ 'chronic_malabsorption', 'cholestasis', 'eating_disorder' ];
+
+	/** Weight-loss medicines other than GLP-1s and orlistat (OE7). */
+	const ORLISTAT_OTHER_WEIGHTLOSS = [ 'mysimba', 'contrave', 'phentermine', 'qsymia', 'sibutramine', 'rimonabant' ];
+
+	/**
+	 * Orlistat red flags from the free-text medicines (and, where given,
+	 * the free-text other conditions). Rule O3, flags OF1 to OF15.
+	 */
+	const ORLISTAT_FLAGS = [
+		// OF2 acarbose stays a flag pending the Superintendent's decision
+		// (the checker suggested a block).
+		'of1_ciclosporin'    => [ 'code' => 'OF1', 'words' => [ 'ciclosporin', 'cyclosporin', 'cyclosporine', 'neoral', 'sandimmun', 'capimune', 'deximune', 'vanquoral' ], 'note' => 'Ciclosporin: combination not recommended; if unavoidable, monitor ciclosporin levels when orlistat starts and stops.', 'basis' => 'Xenical SmPC 4.4, 4.5; Deltera PGD: exclusion, refer to GP' ],
+		'of2_acarbose'       => [ 'code' => 'OF2', 'words' => [ 'acarbose', 'glucobay' ], 'note' => 'Acarbose: avoid the combination.', 'basis' => 'Xenical SmPC 4.5: should be avoided; Deltera PGD: exclusion, refer to GP' ],
+		'of3_amiodarone'     => [ 'code' => 'OF3', 'words' => [ 'amiodarone', 'cordarone' ], 'note' => 'Amiodarone: reinforce clinical and ECG monitoring.', 'basis' => 'Xenical SmPC 4.5; Deltera PGD: exclusion, refer to GP' ],
+		'of4_anticoagulant'  => [ 'code' => 'OF4', 'words' => [ 'warfarin', 'acenocoumarol', 'phenindione', 'apixaban', 'eliquis', 'rivaroxaban', 'xarelto', 'edoxaban', 'lixiana', 'dabigatran', 'pradaxa', 'anticoagulant', 'blood thinner', 'blood thinners' ], 'note' => 'Oral anticoagulant: monitor INR (warfarin); tell the INR or anticoagulation clinic.', 'basis' => 'Xenical SmPC 4.4, 4.5; Deltera PGD' ],
+		'of5_thyroid'        => [ 'code' => 'OF5', 'words' => [ 'levothyroxine', 'thyroxine', 'liothyronine', 'eltroxin', 'iodine', 'iodide' ], 'note' => 'Levothyroxine or iodine: risk of hypothyroidism or poorer control; separate doses and monitor.', 'basis' => 'Xenical SmPC 4.4, 4.5' ],
+		'of6_antiepileptic'  => [ 'code' => 'OF6', 'words' => [ 'valproate', 'valproic', 'epilim', 'depakote', 'dyzantil', 'lamotrigine', 'lamictal', 'levetiracetam', 'keppra', 'carbamazepine', 'tegretol', 'oxcarbazepine', 'trileptal', 'eslicarbazepine', 'phenytoin', 'epanutin', 'phenobarbital', 'phenobarbitone', 'primidone', 'topiramate', 'topamax', 'zonisamide', 'lacosamide', 'vimpat', 'brivaracetam', 'perampanel', 'clobazam', 'ethosuximide', 'gabapentin', 'pregabalin', 'rufinamide', 'cenobamate', 'epilepsy', 'anti-epileptic', 'antiepileptic' ], 'note' => 'Anti-epileptic medicine: fits reported with valproate and lamotrigine; monitor for changes in fit frequency or severity.', 'basis' => 'Xenical SmPC 4.4, 4.5; Deltera PGD refers' ],
+		'of7_hiv'            => [ 'code' => 'OF7', 'words' => [ 'hiv', 'antiretroviral', 'antiretrovirals', 'tenofovir', 'emtricitabine', 'truvada', 'descovy', 'biktarvy', 'dolutegravir', 'tivicay', 'triumeq', 'dovato', 'juluca', 'raltegravir', 'isentress', 'elvitegravir', 'genvoya', 'stribild', 'darunavir', 'prezista', 'symtuza', 'rezolsta', 'atazanavir', 'ritonavir', 'norvir', 'lopinavir', 'kaletra', 'cobicistat', 'efavirenz', 'atripla', 'rilpivirine', 'odefsey', 'eviplera', 'edurant', 'nevirapine', 'abacavir', 'kivexa', 'lamivudine', 'zidovudine', 'doravirine', 'cabotegravir', 'vocabria' ], 'note' => 'HIV antiretroviral medicine: possible loss of virological control; liaise with the HIV clinic.', 'basis' => 'Xenical SmPC 4.4, 4.5; MHRA Drug Safety Update March 2014; Deltera PGD refers' ],
+		'of8_psychiatric'    => [ 'code' => 'OF8', 'words' => [ 'sertraline', 'citalopram', 'escitalopram', 'fluoxetine', 'prozac', 'paroxetine', 'fluvoxamine', 'venlafaxine', 'desvenlafaxine', 'duloxetine', 'mirtazapine', 'amitriptyline', 'nortriptyline', 'clomipramine', 'imipramine', 'dosulepin', 'lofepramine', 'doxepin', 'trimipramine', 'trazodone', 'bupropion', 'vortioxetine', 'agomelatine', 'reboxetine', 'phenelzine', 'moclobemide', 'tranylcypromine', 'isocarboxazid', 'olanzapine', 'quetiapine', 'risperidone', 'aripiprazole', 'abilify', 'haloperidol', 'clozapine', 'lurasidone', 'paliperidone', 'amisulpride', 'sulpiride', 'chlorpromazine', 'flupentixol', 'zuclopenthixol', 'cariprazine', 'lithium', 'priadel', 'camcolit', 'liskonum', 'diazepam', 'lorazepam', 'temazepam', 'clonazepam', 'alprazolam', 'chlordiazepoxide', 'nitrazepam', 'oxazepam', 'loprazolam', 'lormetazepam', 'antidepressant', 'antidepressants', 'antipsychotic', 'antipsychotics', 'benzodiazepine', 'benzodiazepines' ], 'note' => 'Antidepressant, antipsychotic (including lithium) or benzodiazepine: case reports of reduced effect; start orlistat only after careful consideration and monitor.', 'basis' => 'Xenical SmPC 4.5' ],
+		'of9_diabetes'       => [ 'code' => 'OF9', 'words' => [ 'metformin', 'glucophage', 'gliclazide', 'glimepiride', 'glipizide', 'glibenclamide', 'tolbutamide', 'sitagliptin', 'januvia', 'janumet', 'linagliptin', 'trajenta', 'jentadueto', 'alogliptin', 'saxagliptin', 'vildagliptin', 'empagliflozin', 'jardiance', 'synjardy', 'dapagliflozin', 'forxiga', 'xigduo', 'canagliflozin', 'invokana', 'ertugliflozin', 'pioglitazone', 'repaglinide', 'nateglinide', 'insulin', 'novorapid', 'humalog', 'lantus', 'levemir', 'tresiba', 'toujeo', 'abasaglar', 'humulin', 'fiasp', 'lyumjev', 'semglee' ], 'note' => 'Diabetes medicine: may need adjusting as weight falls (hypoglycaemia risk); ensure diabetes monitoring is current.', 'basis' => 'Xenical SmPC 4.4; Deltera PGD' ],
+		'of10_bp'            => [ 'code' => 'OF10', 'words' => [ 'amlodipine', 'felodipine', 'nifedipine', 'lercanidipine', 'verapamil', 'diltiazem', 'ramipril', 'lisinopril', 'perindopril', 'enalapril', 'losartan', 'candesartan', 'irbesartan', 'valsartan', 'olmesartan', 'telmisartan', 'sacubitril', 'entresto', 'bisoprolol', 'atenolol', 'propranolol', 'metoprolol', 'nebivolol', 'labetalol', 'carvedilol', 'indapamide', 'bendroflumethiazide', 'hydrochlorothiazide', 'chlortalidone', 'furosemide', 'bumetanide', 'spironolactone', 'eplerenone', 'doxazosin', 'prazosin', 'terazosin', 'clonidine', 'moxonidine', 'hydralazine', 'minoxidil', 'blood pressure', 'atorvastatin', 'simvastatin', 'rosuvastatin', 'pravastatin', 'fluvastatin', 'lipitor', 'crestor', 'statin', 'statins', 'ezetimibe', 'ezetrol', 'inegy', 'fenofibrate', 'bezafibrate', 'gemfibrozil', 'bempedoic', 'nustendi', 'nilemdo', 'evolocumab', 'repatha', 'alirocumab', 'praluent', 'inclisiran', 'leqvio', 'icosapent', 'vazkepa', 'cholesterol' ], 'note' => 'Blood pressure or cholesterol medicine: ensure blood pressure and cholesterol monitoring is current; doses may need review as weight falls.', 'basis' => 'Deltera PGD' ],
+		'of11_kidney'        => [ 'code' => 'OF11', 'words' => [ 'furosemide', 'bumetanide', 'bendroflumethiazide', 'indapamide', 'diuretic', 'diuretics', 'water tablet', 'water tablets' ], 'condition_words' => [ 'kidney', 'kidneys', 'renal', 'ckd', 'nephropathy', 'dialysis', 'dehydration', 'dehydrated' ], 'note' => 'Chronic kidney disease or risk of dehydration (including diuretics): risk of oxalate kidney injury; check renal function and hydration advice.', 'basis' => 'Xenical SmPC 4.4; BNF caution' ],
+		'of12_liver'         => [ 'code' => 'OF12', 'words' => [], 'condition_words' => [ 'liver', 'hepatitis', 'cirrhosis', 'hepatic', 'masld', 'nafld' ], 'note' => 'Liver disease other than cholestasis: not studied in hepatic impairment; prescriber review.', 'basis' => 'Deltera PGD refers; Xenical SmPC 4.2' ],
+		'of15_pill'          => [ 'code' => 'OF15', 'words' => [ 'contraceptive pill', 'the pill', 'combined pill', 'progestogen-only pill', 'mini pill', 'minipill', 'microgynon', 'rigevidon', 'ovranette', 'levest', 'cilest', 'lizinna', 'yasmin', 'lucette', 'eloine', 'marvelon', 'gedarel', 'femodene', 'femodette', 'katya', 'millinette', 'sunya', 'logynon', 'qlaira', 'zoely', 'brevinor', 'norimin', 'loestrin', 'cerazette', 'cerelle', 'desogestrel', 'feanolla', 'lovima', 'zelleta', 'slynd', 'noriday', 'norgeston' ], 'note' => 'Oral contraceptive pill: counsel to use an extra method if severe diarrhoea occurs.', 'basis' => 'Xenical SmPC 4.4, 4.5' ],
+	];
+
 	public static function evaluate( array $payload ) {
-		$flags = [];
-		$base  = [
+		$flags     = [];
+		$treatment = self::treatment_of( $payload );
+		$is_orl    = ( $treatment === self::ORLISTAT );
+		$switching = ( ( $payload['userType'] ?? '' ) === 'switching' );
+		$from      = class_exists( 'TC_Variation_Map' )
+			? TC_Variation_Map::normalize_treatment( (string) ( $payload['currentMedication'] ?? '' ) )
+			: strtolower( trim( (string) ( $payload['currentMedication'] ?? '' ) ) );
+		$base      = [
 			'eligible'      => false,
 			'reason'        => '',
 			'bmi'           => 0.0,
 			'start_bmi'     => 0.0,
-			'pathway'       => ( ( $payload['userType'] ?? '' ) === 'switching' ) ? 'transfer' : 'new',
+			'pathway'       => $switching ? 'transfer' : 'new',
 			'flags'         => [],
 			'prisma7_score' => null,
 			'rules_version' => self::RULES_VERSION,
@@ -161,7 +219,8 @@ class TC_Eligibility_Rules {
 			return self::ineligible( $base, $too_old );
 		}
 
-		// Rule S1 is applied to the date of birth, which is required.
+		// Rule S1 (and O2.1 for Orlistat) is applied to the date of birth,
+		// which is required. Under 18 is exclusion OE1 for Orlistat.
 		$dob_age = self::age_from_dob( $payload['dob'] ?? '' );
 		if ( $dob_age === null ) {
 			return self::ineligible( $base, 'Please enter your date of birth.' );
@@ -173,7 +232,12 @@ class TC_Eligibility_Rules {
 			return self::ineligible( $base, $too_old );
 		}
 		$is_s1a = $dob_age >= self::S1A_AGE;
+		if ( $is_orl && $is_s1a ) {
+			$flags['orl_of14_age'] = self::orl_note( 'OF14', sprintf( 'Age %d. Outside the Deltera PGD age range (18 to 75); not studied in the elderly; independent prescriber decision, record reasons. Rule S1A checks apply.', $dob_age ), 'Rule O2.1; Xenical SmPC 4.2' );
+		}
 
+		// Pregnancy, planning pregnancy and breastfeeding block every product
+		// (E1; Orlistat OE3 and OE4).
 		$is_female = ( $payload['sex'] ?? '' ) === 'female';
 		if ( $is_female ) {
 			foreach ( [ 'pregnant', 'breastfeeding', 'conceive', 'couldConceive' ] as $tc_q ) {
@@ -200,23 +264,49 @@ class TC_Eligibility_Rules {
 			$flags['bmi_mismatch'] = sprintf( 'Browser BMI %.1f differs from server BMI %.1f; server value used.', $sent_bmi, $bmi );
 		}
 
+		$not_suitable = 'Based on the medical history you provided, weight loss medication is not clinically appropriate. Please speak with your GP about alternative options.';
+
+		// GLP-1 exclusions that are not Orlistat exclusions are carried for
+		// Orlistat as information flags (OF16); the prescriber decides.
+		$orl_info = [];
+
 		$diabetes = (string) ( $payload['diabetes'] ?? '' );
 		if ( $diabetes === 'type1' ) {
-			return self::ineligible( $base, 'Based on your answers, our online weight loss service is not suitable for you. Please speak with your GP or diabetes team about the options available to you.' );
+			if ( ! $is_orl ) {
+				return self::ineligible( $base, 'Based on your answers, our online weight loss service is not suitable for you. Please speak with your GP or diabetes team about the options available to you.' );
+			}
+			$orl_info[] = 'type 1 diabetes';
 		}
 
 		$conditions = (array) ( $payload['conditions'] ?? [] );
 		foreach ( $conditions as $condition ) {
-			if ( self::is_disqualifying_condition( $condition ) ) {
-				return self::ineligible( $base, 'Based on the medical history you provided, weight loss medication is not clinically appropriate. Please speak with your GP about alternative options.' );
+			$key = self::condition_key( $condition );
+			if ( $key === '' ) {
+				continue;
+			}
+			if ( ! $is_orl || in_array( $key, self::ORLISTAT_BLOCK_CONDITIONS, true ) ) {
+				// Orlistat: OE5 malabsorption, OE6 cholestasis, OE9 eating
+				// disorder.
+				return self::ineligible( $base, $not_suitable );
+			}
+			$orl_info[] = self::DISQUALIFYING_CONDITIONS[ $key ];
+			if ( $key === 'kidney_disease' || $key === 'kidney_disease_legacy' ) {
+				$flags['orl_of11_kidney_condition'] = self::orl_note( 'OF11', 'Severe kidney disease or kidney failure reported. Chronic kidney disease: risk of oxalate kidney injury; check renal function and hydration.', 'Xenical SmPC 4.4; BNF caution' );
+			}
+			if ( $key === 'liver_disease' ) {
+				$flags['orl_of12_liver_condition'] = self::orl_note( 'OF12', 'Severe liver disease reported (not cholestasis). Not studied in hepatic impairment.', 'Deltera PGD refers; Xenical SmPC 4.2' );
 			}
 		}
 
 		$has_bariatric = self::list_contains( $conditions, 'bariatric' );
-		if ( $has_bariatric && ( $payload['bariatricRecent'] ?? '' ) === 'yes' ) {
+		$bariatric_recent = ( $payload['bariatricRecent'] ?? '' ) === 'yes';
+		if ( $has_bariatric && $is_orl && ! $bariatric_recent ) {
+			// OF13 (6 months to 2 years ago). Within 6 months is OE11 below.
+			$flags['orl_of13_bariatric'] = self::orl_note( 'OF13', 'Bariatric surgery more than 6 months ago. The questionnaire asks about 6 months only: confirm the date; within 2 years needs a recorded reason to proceed. If the procedure was malabsorptive, check against OE5 (chronic malabsorption, a block).', 'Deltera PGD refers ("recent"); 2-year window is AT Health policy; Xenical SmPC 4.3' );
+		} elseif ( $has_bariatric && $bariatric_recent ) {
+			// E15; Orlistat OE11.
 			return self::ineligible( $base, 'Weight loss medication is not suitable within 6 months of bariatric surgery.' );
-		}
-		if ( $has_bariatric ) {
+		} elseif ( $has_bariatric ) {
 			$flags['bariatric_history'] = 'Previous bariatric surgery (more than 6 months ago): review details before prescribing.';
 		}
 
@@ -238,15 +328,25 @@ class TC_Eligibility_Rules {
 		}
 
 		if ( $is_female && ( $payload['couldConceive'] ?? '' ) === 'yes' ) {
-			if ( empty( $payload['consentContraception'] ) ) {
-				return self::ineligible( $base, 'These medicines can only be prescribed if you agree to use effective contraception during treatment.' );
-			}
 			$contraception = (string) ( $payload['contraception'] ?? '' );
-			if ( $contraception === 'none' ) {
-				$flags['contraception_none'] = 'Could become pregnant and reports no contraception: counsel and confirm effective method before prescribing (Mounjaro SmPC: not recommended without contraception).';
-			}
-			if ( $contraception === 'pill' ) {
-				$flags['contraception_pill'] = 'Oral contraceptive: if Mounjaro, non-oral method or barrier for 4 weeks after starting and each increase; if Foundayo, the same for 30 days.';
+			if ( $is_orl ) {
+				// Rule O3: the GLP-1 contraception agreement is not required
+				// for Orlistat. Pregnancy and planning still block (OE4).
+				if ( $contraception === 'pill' ) {
+					$flags['orl_of15_pill'] = self::orl_note( 'OF15', 'Oral contraceptive pill. Counsel: use an extra method if severe diarrhoea occurs.', 'Xenical SmPC 4.4, 4.5' );
+				} elseif ( $contraception === 'none' || $contraception === '' ) {
+					$flags['orl_contraception_none'] = 'Orlistat: could become pregnant and reports no contraception. No contraception agreement is required for Orlistat (rule O3); counsel to stop and tell us at once if pregnant or planning pregnancy (OE4).';
+				}
+			} else {
+				if ( empty( $payload['consentContraception'] ) ) {
+					return self::ineligible( $base, 'These medicines can only be prescribed if you agree to use effective contraception during treatment.' );
+				}
+				if ( $contraception === 'none' ) {
+					$flags['contraception_none'] = 'Could become pregnant and reports no contraception: counsel and confirm effective method before prescribing (Mounjaro SmPC: not recommended without contraception).';
+				}
+				if ( $contraception === 'pill' ) {
+					$flags['contraception_pill'] = 'Oral contraceptive: if Mounjaro, non-oral method or barrier for 4 weeks after starting and each increase; if Foundayo, the same for 30 days.';
+				}
 			}
 		}
 
@@ -257,59 +357,87 @@ class TC_Eligibility_Rules {
 		if ( $comorbidity['b'] ) {
 			$flags['comorbidity_b'] = 'Condition needing prescriber judgement: ' . implode( ', ', $comorbidity['b'] ) . '. Record clinical link to weight if relied on.';
 		}
+		$has_condition = $comorbidity['a'] || $comorbidity['b'];
 
 		$not_licensed = 'Based on your answers, the weight loss medicines we offer are not licensed for you at the moment. Please speak with your GP, who can discuss other support.';
 
-		// Transfer rules apply only if the last dose was within 3 months;
-		// otherwise the patient is assessed as starting treatment (3A.3).
-		$days = null;
-		if ( $base['pathway'] === 'transfer' ) {
-			$days = self::days_since( $payload['lastDoseDate'] ?? '' );
-			if ( $days === null ) {
-				return self::ineligible( $base, 'Please tell us the date of your last dose.' );
+		if ( $is_orl ) {
+			$result = self::orlistat_pathway( $payload, $base, $flags, $bmi, $bmi_raw, $has_condition, $switching, $from );
+			if ( $result['reason'] !== '' ) {
+				return self::ineligible( $base, $result['reason'] );
 			}
-			if ( $days > 91 ) {
-				$base['pathway']           = 'new';
-				$flags['restart_over_3m']  = sprintf( 'Last GLP-1 dose %d days ago (more than 3 months): assessed as starting treatment on current BMI; first step of the ladder.', $days );
+			$base  = $result['base'];
+			$flags = $result['flags'];
+		} else {
+			// Rule O2.3: a move from Orlistat to a GLP-1 is a new start on the
+			// GLP-1, never a GLP-1 transfer.
+			if ( $switching && $from === self::ORLISTAT ) {
+				$base['pathway']         = 'new';
+				$flags['from_orlistat']  = 'Moving from Orlistat to a GLP-1: assessed as a new start on current BMI, first step of the ladder (rule O2.3). Confirm Orlistat has stopped: never supplied together (rule T5 extended, OE7).'
+					. ( ! empty( $payload['lastDoseDate'] ) ? ' Last Orlistat dose ' . sanitize_text_field( (string) $payload['lastDoseDate'] ) . '.' : '' );
 			}
-		}
 
-		if ( $base['pathway'] === 'new' ) {
-			// Thresholds use the unrounded BMI so 26.96 never passes as 27.0.
-			if ( $bmi_raw < 27 ) {
-				return self::ineligible( $base, $not_licensed );
+			// Transfer rules apply only if the last dose was within 3 months;
+			// otherwise the patient is assessed as starting treatment (3A.3).
+			$days = null;
+			if ( $base['pathway'] === 'transfer' ) {
+				$days = self::days_since( $payload['lastDoseDate'] ?? '' );
+				if ( $days === null ) {
+					return self::ineligible( $base, 'Please tell us the date of your last dose.' );
+				}
+				if ( $days > 91 ) {
+					$base['pathway']           = 'new';
+					$flags['restart_over_3m']  = sprintf( 'Last GLP-1 dose %d days ago (more than 3 months): assessed as starting treatment on current BMI; first step of the ladder.', $days );
+				}
 			}
-			if ( $bmi_raw < 30 ) {
-				if ( ! $comorbidity['a'] && ! $comorbidity['b'] ) {
+
+			if ( $base['pathway'] === 'new' ) {
+				// Thresholds use the unrounded BMI so 26.96 never passes as 27.0.
+				if ( $bmi_raw < 27 ) {
 					return self::ineligible( $base, $not_licensed );
 				}
-				$flags['pathway'] = $comorbidity['a']
-					? sprintf( 'BMI %.1f (27 to 29.9): eligible only with the condition relied on, verified.', $bmi )
-					: sprintf( 'BMI %.1f (27 to 29.9) with list B condition only: prescriber judgement required.', $bmi );
-			}
-		} else {
-			// Transfer / restart within 3 months / change of product. Current
-			// BMI must be above 25 (AT Health policy, as the Deltera PGDs);
-			// the 20 to 25 bands apply only to continuing AT Health patients.
-			if ( $bmi_raw <= 25 ) {
-				return self::ineligible( $base, $not_licensed );
-			}
+				if ( $bmi_raw < 30 ) {
+					if ( ! $has_condition ) {
+						return self::ineligible( $base, $not_licensed );
+					}
+					$flags['pathway'] = $comorbidity['a']
+						? sprintf( 'BMI %.1f (27 to 29.9): eligible only with the condition relied on, verified.', $bmi )
+						: sprintf( 'BMI %.1f (27 to 29.9) with list B condition only: prescriber judgement required.', $bmi );
+				}
+			} else {
+				// Transfer / restart within 3 months / change of product. Current
+				// BMI must be above 25 (AT Health policy, as the Deltera PGDs);
+				// the 20 to 25 bands apply only to continuing AT Health patients.
+				if ( $bmi_raw <= 25 ) {
+					return self::ineligible( $base, $not_licensed );
+				}
 
-			$start_bmi     = self::bmi( $payload['startWeightKg'] ?? 0, $payload['heightCm'] ?? 0 );
-			$start_bmi_raw = self::bmi_raw( $payload['startWeightKg'] ?? 0, $payload['heightCm'] ?? 0 );
-			if ( $start_bmi === null ) {
-				return self::ineligible( $base, 'Please tell us your weight when you first started weight loss medication.' );
+				$start_bmi     = self::bmi( $payload['startWeightKg'] ?? 0, $payload['heightCm'] ?? 0 );
+				$start_bmi_raw = self::bmi_raw( $payload['startWeightKg'] ?? 0, $payload['heightCm'] ?? 0 );
+				if ( $start_bmi === null ) {
+					return self::ineligible( $base, 'Please tell us your weight when you first started weight loss medication.' );
+				}
+				$base['start_bmi'] = $start_bmi;
+				if ( $start_bmi_raw < 27 || ( $start_bmi_raw < 30 && ! $has_condition ) ) {
+					return self::ineligible( $base, $not_licensed );
+				}
+				$flags['proof_required'] = sprintf( 'Transfer: declared starting BMI %.1f. Before prescribing, see evidence from a UK-registered prescriber or pharmacy of: BMI when first starting a GLP-1, product, current dose and date of last supply. If dose or last-dose date cannot be evidenced, start at the first step. Unregulated sources (research peptides, unlicensed or overseas products) are not accepted: assess as a new patient.', $start_bmi );
+				$flags['last_dose']      = sprintf( 'Last dose %s (%d days ago).', sanitize_text_field( (string) $payload['lastDoseDate'] ), $days );
 			}
-			$base['start_bmi'] = $start_bmi;
-			if ( $start_bmi_raw < 27 || ( $start_bmi_raw < 30 && ! $comorbidity['a'] && ! $comorbidity['b'] ) ) {
-				return self::ineligible( $base, $not_licensed );
-			}
-			$flags['proof_required'] = sprintf( 'Transfer: declared starting BMI %.1f. Before prescribing, see evidence from a UK-registered prescriber or pharmacy of: BMI when first starting a GLP-1, product, current dose and date of last supply. If dose or last-dose date cannot be evidenced, start at the first step. Unregulated sources (research peptides, unlicensed or overseas products) are not accepted: assess as a new patient.', $start_bmi );
-			$flags['last_dose']      = sprintf( 'Last dose %s (%d days ago).', sanitize_text_field( (string) $payload['lastDoseDate'] ), $days );
 		}
 
+		if ( $is_orl ) {
+			$orl = self::orlistat_medicine_check( $payload, $switching, $from );
+			if ( $orl['block'] !== '' ) {
+				return self::ineligible( $base, $orl['block'] );
+			}
+			$flags = array_merge( $flags, $orl['flags'] );
+		}
 		foreach ( self::medicine_flags( $payload ) as $key => $note ) {
-			$flags[ 'med_' . $key ] = $note;
+			if ( $is_orl && in_array( $key, [ 'glp1', 'other_weightloss' ], true ) ) {
+				continue; // Handled by OE7 for Orlistat.
+			}
+			$flags[ 'med_' . $key ] = ( $is_orl ? 'GLP-1 products only, not an Orlistat rule (for the prescriber if another product is considered): ' : '' ) . $note;
 		}
 
 		if ( $is_s1a ) {
@@ -318,11 +446,22 @@ class TC_Eligibility_Rules {
 				return self::ineligible( $base, 'Please answer all the extra questions for people aged 75 and over.' );
 			}
 			if ( $s1a['exclude'] ) {
-				// Exclusion E11: eGFR below 30.
-				return self::ineligible( $base, 'Based on the medical history you provided, weight loss medication is not clinically appropriate. Please speak with your GP about alternative options.' );
+				if ( ! $is_orl ) {
+					// Exclusion E11: eGFR below 30.
+					return self::ineligible( $base, $not_suitable );
+				}
+				$orl_info[]               = 'eGFR below 30 (exclusion E11 for GLP-1 products)';
+				$flags['orl_of11_egfr'] = self::orl_note( 'OF11', 'Reported eGFR ' . self::egfr_value( $payload['s1aEgfrResult'] ?? '' ) . ' (below 30). Chronic kidney disease: risk of oxalate kidney injury; check renal function and hydration.', 'Xenical SmPC 4.4; BNF caution' );
 			}
 			$base['prisma7_score'] = $s1a['prisma7_score'];
 			$flags                 = array_merge( $flags, $s1a['flags'] );
+		}
+
+		if ( $is_orl ) {
+			if ( $orl_info ) {
+				$flags['orl_of16_info'] = 'INFORMATION OF16 (not an Orlistat exclusion; the prescriber decides): ' . implode( '; ', array_unique( $orl_info ) ) . '. These are GLP-1 exclusions (main rules section 5), not Orlistat exclusions. Basis: rule O3 (OF16).';
+			}
+			$flags['orl_counselling'] = 'Orlistat (rules O2 to O5): no dose ladder; contraception agreement not required. Counsel at consultation: about 30% of calories from fat over three main meals; skip the dose if a meal is missed or has no fat; extra contraception if severe diarrhoea on the pill; multivitamin optional, at bedtime or 2 hours after a dose; investigate severe or persistent rectal bleeding. Stop if under 5% weight loss at 12 weeks. Basis: Xenical SmPC 4.1, 4.2, 4.4, 4.5.';
 		}
 
 		$flags['triage_only'] = 'Triage passed (rules ' . self::RULES_VERSION . '). Video consultation, photo ID, SCR check and independent weight/height verification required before prescribing.';
@@ -330,6 +469,186 @@ class TC_Eligibility_Rules {
 		$base['eligible'] = true;
 		$base['flags']    = $flags;
 		return $base;
+	}
+
+	/**
+	 * Orlistat start and transfer rules (rules O2.2 to O2.4). No dose ladder,
+	 * no switching table and no GLP-1 "last dose within 3 months" logic.
+	 *
+	 * @return array { reason: string, base: array, flags: array }
+	 */
+	private static function orlistat_pathway( array $payload, array $base, array $flags, $bmi, $bmi_raw, $has_condition, $switching, $from ) {
+		$fail = function ( $reason ) use ( $base, $flags ) {
+			return [ 'reason' => $reason, 'base' => $base, 'flags' => $flags ];
+		};
+		$not_licensed = 'Based on your answers, Orlistat is not licensed for you at the moment. You can go back and choose another treatment, or speak with your GP, who can discuss other support.';
+
+		// Rule O2.2 (licence, Xenical SmPC 4.1): BMI 30 or above, or 28 to
+		// 29.9 with a list A or B condition. Unrounded BMI, as for GLP-1.
+		$passes_new = $bmi_raw >= self::ORLISTAT_BMI || ( $bmi_raw >= self::ORLISTAT_BMI_WITH_CONDITION && $has_condition );
+
+		$days = null;
+		if ( $switching ) {
+			$days = self::days_since( $payload['lastDoseDate'] ?? '' );
+			if ( $days === null ) {
+				return $fail( 'Please tell us the date of your last dose.' );
+			}
+		}
+
+		if ( $switching && $from === self::ORLISTAT ) {
+			// Rule O2.4: already on Orlistat elsewhere. Accepted as a transfer
+			// with evidence of a starting BMI meeting O2.2 and a current BMI of
+			// 20 or above; otherwise assessed as a new start.
+			$start_bmi     = self::bmi( $payload['startWeightKg'] ?? 0, $payload['heightCm'] ?? 0 );
+			$start_bmi_raw = self::bmi_raw( $payload['startWeightKg'] ?? 0, $payload['heightCm'] ?? 0 );
+			$start_ok      = $start_bmi_raw !== null
+				&& ( $start_bmi_raw >= self::ORLISTAT_BMI || ( $start_bmi_raw >= self::ORLISTAT_BMI_WITH_CONDITION && $has_condition ) );
+			if ( $start_bmi !== null ) {
+				$base['start_bmi'] = $start_bmi;
+			}
+			if ( $start_ok && $bmi_raw >= self::ORLISTAT_TRANSFER_FLOOR ) {
+				$base['pathway']         = 'transfer';
+				$flags['proof_required'] = sprintf( 'Orlistat transfer (rule O2.4): declared starting BMI %.1f, current BMI %.1f. Before prescribing, see evidence from a UK-registered prescriber or pharmacy of: BMI when first starting Orlistat (30, or 28 with a risk factor), product, and date of last supply. Unregulated sources are not accepted: assess as a new start.', $start_bmi, $bmi );
+				$flags['last_dose']      = sprintf( 'Last Orlistat dose %s (%d days ago). Recorded only: no dose ladder or restart window for Orlistat (rule O2.3).', sanitize_text_field( (string) $payload['lastDoseDate'] ), $days );
+				// Rule O2.4: on orlistat 12 weeks or more needs evidence of at
+				// least 5% loss at 12 weeks, or it is not continued (licence
+				// 4.1). Duration is not asked, so the prescriber checks it.
+				$loss = self::percent_loss( $payload['startWeightKg'] ?? 0, $payload['weightKg'] ?? 0 );
+				$flags['orl_transfer_12_week'] = self::orl_note( 'O2.4', sprintf( 'If the patient has taken orlistat for 12 weeks or more, see evidence of at least 5%% loss from the starting weight at 12 weeks; without it, orlistat is not continued. Declared loss so far: %s.', $loss === null ? 'not known' : sprintf( '%.1f%%', $loss ) ) . ( ( $loss !== null && $loss < 5 ) ? ' Declared loss is under 5%.' : '' ), 'Xenical SmPC 4.1; rule O2.4' );
+				return [ 'reason' => '', 'base' => $base, 'flags' => $flags ];
+			}
+			if ( ! $passes_new ) {
+				return $fail( $not_licensed );
+			}
+			$base['pathway']        = 'new';
+			$flags['orl_transfer_as_new'] = sprintf( 'Already on Orlistat, but the declared starting BMI%s does not meet the transfer rule (rule O2.4): assessed as a new start on current BMI %.1f. Last dose %s.', $start_bmi !== null ? sprintf( ' %.1f', $start_bmi ) : ' (not given)', $bmi, sanitize_text_field( (string) $payload['lastDoseDate'] ) );
+		} else {
+			if ( ! $passes_new ) {
+				return $fail( $not_licensed );
+			}
+			$base['pathway'] = 'new';
+			if ( $switching ) {
+				$label = class_exists( 'TC_Variation_Map' ) ? TC_Variation_Map::treatment_label( $from ) : $from;
+				$flags['orl_new_start'] = sprintf( 'Moving from %s (last dose %s, %d days ago) to Orlistat: assessed as a new start on Orlistat (rule O2.3). No GLP-1 transfer or dose rules apply. RED FLAG OE7: confirm the previous supply has stopped; Orlistat is never supplied alongside a GLP-1 or another weight-loss medicine.', ( $from && $from !== 'other' ) ? $label : 'another weight-loss medicine', sanitize_text_field( (string) $payload['lastDoseDate'] ), $days );
+			}
+		}
+
+		if ( $bmi_raw < self::ORLISTAT_BMI ) {
+			$flags['pathway'] = sprintf( 'BMI %.1f (28 to 29.9): Orlistat only with the weight-related condition relied on, verified (rule O2.2; Xenical SmPC 4.1).', $bmi );
+		}
+		return [ 'reason' => '', 'base' => $base, 'flags' => $flags ];
+	}
+
+	/**
+	 * Orlistat medicine and condition screen from the free-text lists (rule
+	 * O3). Blocks: OE2 allergy, OE7 another weight-loss medicine. Every other
+	 * match is a red prescriber flag (OF1 to OF13, OF15). The patient never
+	 * sees these lists.
+	 *
+	 * @return array { block: string, flags: array }
+	 */
+	public static function orlistat_medicine_check( array $payload, $switching = false, $from = '' ) {
+		$out       = [ 'block' => '', 'flags' => [] ];
+		$meds      = (string) ( $payload['currentMedsList'] ?? '' );
+		$allergies = (string) ( $payload['allergiesList'] ?? '' );
+		$other     = (string) ( $payload['otherConditionsList'] ?? '' );
+
+		// OE2: allergy to orlistat or any ingredient.
+		if ( self::text_matches( $allergies, [ 'orlistat', 'xenical', 'alli' ] ) ) {
+			$out['block'] = 'Based on the allergy you told us about, Orlistat is not suitable for you. Please speak with your GP.';
+			return $out;
+		}
+
+		// OE7: another weight-loss medicine, including any GLP-1. A patient who
+		// told us they are moving from a GLP-1 or another medicine is flagged
+		// to confirm it has stopped; anyone else is screened out.
+		$other_wl = self::text_matches( $meds, array_merge( self::MEDICINE_FLAGS['glp1']['words'], self::ORLISTAT_OTHER_WEIGHTLOSS ) );
+		if ( $other_wl ) {
+			if ( $switching && $from !== self::ORLISTAT ) {
+				$out['flags']['orl_oe7_confirm_stopped'] = self::orl_note( 'OE7', 'Weight-loss medicine in current medicines (' . implode( ', ', $other_wl ) . '). Patient is moving to Orlistat: confirm the supply has stopped before the first Orlistat supply. If still taking it, do not prescribe.', 'Deltera PGD; AT Health policy (rule T5 extended)', 'BLOCK UNLESS STOPPED' );
+			} else {
+				$out['block'] = 'Based on your answers, Orlistat cannot be prescribed alongside another weight-loss medicine you are taking. Please speak with your GP.';
+				return $out;
+			}
+		}
+		$orl_words = self::text_matches( $meds, [ 'orlistat', 'xenical', 'alli', 'naltrexone' ] );
+		if ( $orl_words ) {
+			$out['flags']['orl_existing_orlistat'] = self::orl_note( 'OE7', 'Current medicines mention ' . implode( ', ', $orl_words ) . '. Orlistat from another source (including alli 60 mg) must stop: never two supplies; a current supply elsewhere is a transfer (rule O2.4). Naltrexone as Mysimba is another weight-loss medicine (block).', 'Rule O2.4; rule T5 extended', 'CHECK' );
+		}
+
+		foreach ( self::ORLISTAT_FLAGS as $key => $group ) {
+			$hits = self::text_matches( $meds, $group['words'] );
+			if ( ! $hits && ! empty( $group['condition_words'] ) ) {
+				$hits = self::text_matches( $other, $group['condition_words'] );
+			}
+			if ( $hits ) {
+				$out['flags'][ 'orl_' . $key ] = self::orl_note( $group['code'], $group['note'] . ' Mentioned: ' . implode( ', ', $hits ) . '.', $group['basis'] );
+			}
+		}
+
+		// Structured answers that raise the same flags.
+		if ( ( $payload['diabetes'] ?? '' ) === 'type2-meds' && empty( $out['flags']['orl_of9_diabetes'] ) ) {
+			$out['flags']['orl_of9_diabetes'] = self::orl_note( 'OF9', self::ORLISTAT_FLAGS['of9_diabetes']['note'] . ' Patient reports type 2 diabetes treated with medication.', self::ORLISTAT_FLAGS['of9_diabetes']['basis'] );
+		}
+		if ( ( $payload['s1aBpWater'] ?? '' ) === 'yes' && empty( $out['flags']['orl_of10_bp'] ) ) {
+			$out['flags']['orl_of10_bp'] = self::orl_note( 'OF10', self::ORLISTAT_FLAGS['of10_bp']['note'] . ' Patient reports blood pressure or water tablets.', self::ORLISTAT_FLAGS['of10_bp']['basis'] );
+		}
+		$egfr = self::egfr_value( $payload['s1aEgfrResult'] ?? '' );
+		if ( $egfr !== null && $egfr < 60 && $egfr >= 30 ) {
+			$out['flags']['orl_of11_egfr'] = self::orl_note( 'OF11', 'Reported eGFR ' . $egfr . ' (below 60). Chronic kidney disease: risk of oxalate kidney injury; check renal function and hydration.', 'Xenical SmPC 4.4; BNF caution' );
+		}
+		foreach ( (array) ( $payload['weightConditions'] ?? [] ) as $c ) {
+			if ( stripos( (string) $c, 'fatty liver' ) !== false && empty( $out['flags']['orl_of12_liver'] ) ) {
+				$out['flags']['orl_of12_liver'] = self::orl_note( 'OF12', 'Fatty liver disease reported (liver disease other than cholestasis). Not studied in hepatic impairment.', 'Deltera PGD refers; Xenical SmPC 4.2' );
+			}
+		}
+		if ( ( $payload['contraception'] ?? '' ) === 'pill' && empty( $out['flags']['orl_of15_pill'] ) ) {
+			$out['flags']['orl_of15_pill'] = self::orl_note( 'OF15', 'Oral contraceptive pill. Counsel: use an extra method if severe diarrhoea occurs.', 'Xenical SmPC 4.4, 4.5' );
+		}
+		return $out;
+	}
+
+	/**
+	 * Words from $words found in $text as whole words, in list order.
+	 *
+	 * @return string[]
+	 */
+	public static function text_matches( $text, array $words ) {
+		$text = ' ' . strtolower( (string) $text ) . ' ';
+		if ( trim( $text ) === '' ) {
+			return [];
+		}
+		$hits = [];
+		foreach ( $words as $word ) {
+			if ( preg_match( '/(?<![a-z])' . preg_quote( strtolower( $word ), '/' ) . '(?![a-z])/', $text ) ) {
+				$hits[ $word ] = $word;
+			}
+		}
+		return array_values( $hits );
+	}
+
+	/**
+	 * Weight lost as a percentage of the starting weight (positive = loss),
+	 * or null when either weight is missing or implausible.
+	 */
+	public static function percent_loss( $start_kg, $current_kg ) {
+		$start   = (float) $start_kg;
+		$current = (float) $current_kg;
+		if ( $start < 30 || $start > 350 || $current < 30 || $current > 350 ) {
+			return null;
+		}
+		return ( $start - $current ) / $start * 100;
+	}
+
+	/** Prescriber note for an Orlistat block or flag, with its basis. */
+	private static function orl_note( $code, $text, $basis, $level = 'RED FLAG' ) {
+		return sprintf( '%s %s (Orlistat): %s Basis: %s.', $level, $code, $text, $basis );
+	}
+
+	/** Selected treatment, normalised. */
+	private static function treatment_of( array $payload ) {
+		$t = (string) ( $payload['selectedTreatment'] ?? '' );
+		return class_exists( 'TC_Variation_Map' ) ? TC_Variation_Map::normalize_treatment( $t ) : strtolower( trim( $t ) );
 	}
 
 	/**
@@ -570,23 +889,33 @@ class TC_Eligibility_Rules {
 	}
 
 	public static function is_disqualifying_condition( $condition ) {
+		return self::condition_key( $condition ) !== '';
+	}
+
+	/**
+	 * Key in DISQUALIFYING_CONDITIONS matched by a condition answer, or ''.
+	 * Each needle is tried in full first, so an exact phrase always wins over
+	 * another needle's first-three-words match.
+	 */
+	public static function condition_key( $condition ) {
 		$condition = strtolower( trim( (string) $condition ) );
 		if ( $condition === '' || $condition === 'none of these apply' ) {
-			return false;
+			return '';
 		}
 
-		foreach ( self::DISQUALIFYING_CONDITIONS as $needle ) {
+		foreach ( self::DISQUALIFYING_CONDITIONS as $key => $needle ) {
 			if ( strpos( $condition, strtolower( $needle ) ) !== false ) {
-				return true;
+				return $key;
 			}
-
+		}
+		foreach ( self::DISQUALIFYING_CONDITIONS as $key => $needle ) {
 			$first_words = implode( ' ', array_slice( explode( ' ', strtolower( $needle ) ), 0, 3 ) );
 			if ( $first_words && strpos( $condition, $first_words ) !== false ) {
-				return true;
+				return $key;
 			}
 		}
 
-		return false;
+		return '';
 	}
 
 	private static function list_contains( array $list, $needle ) {

@@ -9,6 +9,7 @@ $P = getenv("PLUGIN") ?: dirname(__DIR__);
 require $P.'/includes/class-tc-variation-map.php';
 require $P.'/includes/class-tc-dose-ladder.php';
 require $P.'/includes/class-tc-eligibility-rules.php';
+require $P.'/reorder/includes/class-tc-reorder-rules.php';
 $pass=0;$fail=0;
 function check($name,$cond,$extra=''){ global $pass,$fail; if($cond){$pass++; echo "PASS $name\n";} else {$fail++; echo "FAIL $name $extra\n";} }
 function base($o=[]){ return array_merge(['ageBand'=>'18-85','dob'=>'1980-01-01','sex'=>'male','weightKg'=>100,'heightCm'=>180,'termsAgreed'=>true,'consentIdVideo'=>true,'gpConsentSCR'=>true,'consentLifestyle'=>true,'gpConsentShare'=>true,'conditions'=>['None of these apply'],'weightConditions'=>['None of these apply'],'diabetes'=>'none','userType'=>'new','ethnicity'=>'white'],$o); }
@@ -103,9 +104,9 @@ $r=$R::evaluate(base(['sex'=>'female','weightKg'=>100,'heightCm'=>170]));
 check('Female with pregnancy answers missing -> not eligible',!$r['eligible']);
 $r=$R::evaluate(base(['currentMedsList'=>'amlodipine 5mg','selectedTreatment'=>'mounjaro']));
 check('Foundayo BP flag raised even if Mounjaro preferred',isset($r['flags']['med_foundayo_bp']));
-// Rules WM-2026-10-v2: age 18 to 85 by date of birth (rule S1), ages 75 to 85 (rule S1A).
-check('Rules version is WM-2026-10-v2', $R::RULES_VERSION==='WM-2026-10-v2');
-$r=$R::evaluate(base()); check('Result records rules version v2', $r['rules_version']==='WM-2026-10-v2');
+// Rules WM-2026-10-v2: age 18 to 85 by date of birth (rule S1), ages 75 to 85 (rule S1A); v3 adds Orlistat.
+check('Rules version is WM-2026-10-v3', $R::RULES_VERSION==='WM-2026-10-v3');
+$r=$R::evaluate(base()); check('Result records rules version v3', $r['rules_version']==='WM-2026-10-v3');
 function dob_years_ago($y,$plus_days=0){ return (new DateTime('today'))->modify("-$y years")->modify(($plus_days>=0?'+':'').$plus_days.' days')->format('Y-m-d'); }
 function s1a($o=[]){ return array_merge(['s1aFalls'=>'no','s1aFracture'=>'no','s1aMedsCount'=>'under-5','s1aBpWater'=>'no','s1aKidneyTest'=>'within-12m','s1aEgfrDate'=>'','s1aEgfrResult'=>'','gpName'=>'Test Surgery','s1aPrisma'=>['limitActivities'=>'no','needHelp'=>'no','stayHome'=>'no','countOnSomeone'=>'no','walkingAid'=>'no']],$o); }
 $r=$R::evaluate(base(['dob'=>dob_years_ago(18)])); check('DOB: 18th birthday today -> may proceed',$r['eligible'],json_encode($r));
@@ -150,4 +151,90 @@ $r=$R::evaluate(base(['dob'=>dob_years_ago(60),'s1aEgfrResult'=>'20'])); check('
 $rows=$R::s1a_summary(s1a(['sex'=>'male','s1aPrismaScore'=>1])); check('S1A summary lists answers and score', isset($rows['Falls in the last 12 months'],$rows['eGFR result'],$rows['PRISMA-7 Q7: Regularly uses a stick, walker or wheelchair']) && $rows['PRISMA-7 Q2: male']==='Yes' && isset($rows['PRISMA-7 score (yes answers; 3 or more: face-to-face)']), json_encode($rows));
 check('S1A summary empty when not asked', $R::s1a_summary(base())===[]);
 check('eGFR future month rejected', $R::egfr_date('2999-01')==='' && $R::egfr_date('2026-13')==='' && $R::egfr_date('2025-06')==='2025-06');
+
+// ---- Orlistat, rules section O (WM-2026-10-v3) ----
+function orl($o=[]){ return base(array_merge(['selectedTreatment'=>'orlistat','selectedDose'=>'120mg'],$o)); }
+$fem=['sex'=>'female','pregnant'=>'no','breastfeeding'=>'no','conceive'=>'no'];
+$bp=["I've been diagnosed with high blood pressure"];
+// O2.2 BMI: 30, or 28 to 29.9 with a condition. 180 cm: 90.8 kg = 28.0, 93.96 = 29.0, 89.1 = 27.5
+$r=$R::evaluate(orl(['weightKg'=>90.8,'heightCm'=>180,'weightConditions'=>$bp])); check('Orlistat: BMI 28.0 with condition -> may proceed',$r['eligible'] && isset($r['flags']['pathway']),json_encode($r));
+$r=$R::evaluate(orl(['weightKg'=>90.8,'heightCm'=>180])); check('Orlistat: BMI 28.0 without condition -> not eligible',!$r['eligible'],json_encode($r));
+$r=$R::evaluate(orl(['weightKg'=>93.96,'heightCm'=>180,'weightConditions'=>$bp])); check('Orlistat: BMI 29.0 with condition -> may proceed',$r['eligible']);
+$r=$R::evaluate(orl(['weightKg'=>93.96,'heightCm'=>180])); check('Orlistat: BMI 29.0 without condition -> not eligible',!$r['eligible']);
+$r=$R::evaluate(orl(['weightKg'=>89.1,'heightCm'=>180,'weightConditions'=>$bp])); check('Orlistat: BMI 27.5 with condition -> not eligible',!$r['eligible'] && strpos($r['reason'],'Orlistat')!==false,json_encode($r));
+$r=$R::evaluate(base(['weightKg'=>89.1,'heightCm'=>180,'weightConditions'=>$bp,'selectedTreatment'=>'mounjaro'])); check('GLP-1: same BMI 27.5 with condition -> may proceed',$r['eligible']);
+$r=$R::evaluate(orl(['weightKg'=>90.68,'heightCm'=>180,'weightConditions'=>$bp])); check('Orlistat: BMI 27.99 does not round up to 28',!$r['eligible']);
+$r=$R::evaluate(orl(['weightKg'=>100,'heightCm'=>180])); check('Orlistat: BMI 30.9 -> may proceed, counselling flag, no GLP-1 pathway flag',$r['eligible'] && isset($r['flags']['orl_counselling']) && !isset($r['flags']['pathway']));
+$r=$R::evaluate(orl(['weightKg'=>90.8,'heightCm'=>180,'diabetes'=>'type2-diet'])); check('Orlistat: BMI 28 with type 2 diabetes -> may proceed',$r['eligible']);
+// Blocks OE1 to OE11
+$r=$R::evaluate(orl(['dob'=>dob_years_ago(17)])); check('OE1: under 18 -> blocked',!$r['eligible']);
+$r=$R::evaluate(orl(['allergiesList'=>'Allergic to Xenical capsules'])); check('OE2: allergy to orlistat -> blocked',!$r['eligible'] && strpos($r['reason'],'allergy')!==false);
+$r=$R::evaluate(orl(['allergiesList'=>'Allium vegetables'])); check('OE2: no false "alli" allergy match',$r['eligible']);
+$r=$R::evaluate(orl(array_merge($fem,['breastfeeding'=>'yes','couldConceive'=>'no']))); check('OE3: breastfeeding -> blocked',!$r['eligible']);
+$r=$R::evaluate(orl(array_merge($fem,['pregnant'=>'yes','couldConceive'=>'yes']))); check('OE4: pregnant -> blocked',!$r['eligible']);
+$r=$R::evaluate(orl(array_merge($fem,['conceive'=>'yes','couldConceive'=>'yes']))); check('OE4: planning pregnancy -> blocked',!$r['eligible']);
+$r=$R::evaluate(orl(['sex'=>'female'])); check('Orlistat: pregnancy questions still required',!$r['eligible']);
+$r=$R::evaluate(orl(['conditions'=>['I have chronic malabsorption syndrome']])); check('OE5: malabsorption -> blocked',!$r['eligible']);
+$r=$R::evaluate(orl(['conditions'=>['I have cholestasis']])); check('OE6: cholestasis -> blocked',!$r['eligible']);
+$r=$R::evaluate(orl(['currentMedsList'=>'Wegovy 1mg weekly, ramipril'])); check('OE7: new patient taking a GLP-1 alongside -> blocked',!$r['eligible'] && strpos($r['reason'],'alongside')!==false,json_encode($r));
+$r=$R::evaluate(orl(['currentMedsList'=>'Ozempic'])); check('OE7: diabetes GLP-1 (Ozempic) alongside -> blocked',!$r['eligible']);
+$r=$R::evaluate(orl(['currentMedsList'=>'phentermine'])); check('OE7: other weight-loss medicine -> blocked',!$r['eligible']);
+$r=$R::evaluate(orl(['currentMedsList'=>'alli 60mg'])); check('OE7: alli or orlistat elsewhere -> flagged, not blocked',$r['eligible'] && isset($r['flags']['orl_existing_orlistat']));
+$r=$R::evaluate(orl(['conditions'=>['I have or have had an eating disorder']])); check('OE9: eating disorder -> blocked',!$r['eligible']);
+$r=$R::evaluate(orl(['gpConsentSCR'=>false])); check('OE10: refuses SCR check -> blocked',!$r['eligible']);
+$r=$R::evaluate(orl(['consentIdVideo'=>false])); check('OE10: refuses ID and weight check -> blocked',!$r['eligible']);
+$r=$R::evaluate(orl(['conditions'=>['I have had a bariatric operation'],'bariatricRecent'=>'yes'])); check('OE11: bariatric surgery within 6 months -> blocked',!$r['eligible']);
+check('OE8: reorder BMI 19.9 blocked by the shared floor (constant)', $R::ORLISTAT_TRANSFER_FLOOR===20);
+// Red flags OF1 to OF15, each from the free-text list, each with a basis
+$of=['OF1'=>['ciclosporin','orl_of1_ciclosporin'],'OF2'=>['acarbose','orl_of2_acarbose'],'OF3'=>['amiodarone','orl_of3_amiodarone'],'OF4'=>['apixaban 5mg','orl_of4_anticoagulant'],'OF5'=>['levothyroxine 100mcg','orl_of5_thyroid'],'OF6'=>['lamotrigine','orl_of6_antiepileptic'],'OF7'=>['Biktarvy','orl_of7_hiv'],'OF8'=>['sertraline 50mg','orl_of8_psychiatric'],'OF9'=>['metformin','orl_of9_diabetes'],'OF10'=>['atorvastatin 20mg','orl_of10_bp'],'OF11'=>['furosemide','orl_of11_kidney'],'OF15'=>['Microgynon','orl_of15_pill']];
+foreach($of as $code=>$c){ $r=$R::evaluate(orl(['currentMedsList'=>$c[0]])); check("$code: {$c[0]} -> may proceed with red flag and basis",$r['eligible'] && isset($r['flags'][$c[1]]) && strpos($r['flags'][$c[1]],$code)!==false && strpos($r['flags'][$c[1]],'Basis:')!==false,json_encode(array_keys($r['flags']))); }
+$r=$R::evaluate(orl(['currentMedsList'=>'amlodipine'])); check('OF10: blood pressure medicine flagged',isset($r['flags']['orl_of10_bp']));
+$r=$R::evaluate(orl(['otherConditionsList'=>'Stage 3 chronic kidney disease'])); check('OF11: kidney disease from free-text conditions',$r['eligible'] && isset($r['flags']['orl_of11_kidney']));
+$r=$R::evaluate(orl(['otherConditionsList'=>'hepatitis B'])); check('OF12: liver disease from free-text conditions',$r['eligible'] && isset($r['flags']['orl_of12_liver']));
+$r=$R::evaluate(orl(['weightConditions'=>['I have fatty liver disease']])); check('OF12: fatty liver flagged',isset($r['flags']['orl_of12_liver']));
+$r=$R::evaluate(orl(['conditions'=>['I have had a bariatric operation'],'bariatricRecent'=>'no'])); check('OF13: bariatric over 6 months -> flag, malabsorption check',$r['eligible'] && strpos($r['flags']['orl_of13_bariatric'],'OE5')!==false);
+$r=$R::evaluate(orl(s1a(['dob'=>dob_years_ago(76)]))); check('OF14: age 76 -> flag with rule O2.1 wording',$r['eligible'] && strpos($r['flags']['orl_of14_age'],'Outside the Deltera PGD age range (18 to 75); not studied in the elderly; independent prescriber decision, record reasons.')!==false,json_encode($r['flags']['orl_of14_age']??''));
+$r=$R::evaluate(orl(['dob'=>dob_years_ago(60)])); check('OF14: age 60 -> no age flag',!isset($r['flags']['orl_of14_age']));
+$r=$R::evaluate(orl(s1a(['dob'=>dob_years_ago(86)]))); check('Orlistat: 86 -> blocked (rule O2.1)',!$r['eligible']);
+$r=$R::evaluate(orl(array_merge($fem,['couldConceive'=>'yes','consentContraception'=>false,'contraception'=>'pill']))); check('Orlistat: no contraception agreement needed; pill -> OF15',$r['eligible'] && isset($r['flags']['orl_of15_pill']),json_encode($r));
+$r=$R::evaluate(orl(array_merge($fem,['couldConceive'=>'yes','consentContraception'=>false,'contraception'=>'none']))); check('Orlistat: no contraception, no agreement -> may proceed, counselling flag',$r['eligible'] && isset($r['flags']['orl_contraception_none']));
+$r=$R::evaluate(base(array_merge($fem,['couldConceive'=>'yes','consentContraception'=>false,'contraception'=>'pill','selectedTreatment'=>'mounjaro']))); check('GLP-1: contraception agreement still required',!$r['eligible']);
+// OF16: GLP-1-only exclusions are information flags for Orlistat
+$r=$R::evaluate(orl(['diabetes'=>'type1'])); check('OF16: type 1 diabetes -> information flag, not blocked',$r['eligible'] && strpos($r['flags']['orl_of16_info'],'type 1 diabetes')!==false);
+foreach (['I have severe kidney disease or kidney failure','I have severe stomach or bowel problems, including gastroparesis (very slow stomach emptying)','My weight gain is caused by a hormone condition or by a medicine I take','I have a history of pancreatitis',"I have a family history of thyroid cancer and/or I've had thyroid cancer",'I have diabetic retinopathy','I have severe heart failure',"I'm currently being treated for cancer",'I have severe liver disease (for example cirrhosis)','I have Multiple endocrine neoplasia type 2 (MEN2)','I have had surgery or an operation to my thyroid'] as $c){
+  $r=$R::evaluate(orl(['conditions'=>[$c]])); check('OF16 info for Orlistat: '.substr($c,0,38),$r['eligible'] && isset($r['flags']['orl_of16_info']),json_encode($r));
+  $g=$R::evaluate(base(['conditions'=>[$c],'selectedTreatment'=>'wegovy'])); check('  still a GLP-1 block: '.substr($c,0,38),!$g['eligible']);
+}
+$r=$R::evaluate(orl(['conditions'=>['I have severe kidney disease or kidney failure']])); check('OF16 kidney also raises OF11',isset($r['flags']['orl_of11_kidney_condition']));
+$r=$R::evaluate(orl(s1a(['dob'=>$d75,'s1aEgfrResult'=>'25','s1aEgfrDate'=>'2026-05']))); check('Orlistat: eGFR 25 at 75 -> OF11/OF16 flag, not blocked (GLP-1 E11 only)',$r['eligible'] && isset($r['flags']['orl_of11_egfr'],$r['flags']['orl_of16_info']),json_encode($r));
+$r=$R::evaluate(orl(['currentMedsList'=>'gliclazide'])); check('Orlistat: GLP-1 medicine notes labelled GLP-1 only',strpos($r['flags']['med_sulfonylurea'],'GLP-1 products only')===0 && isset($r['flags']['orl_of9_diabetes']));
+// O2.3 / O2.4: no ladder, no switching table; moves are new starts
+$ld=(new DateTime('-5 days'))->format('Y-m-d');
+$r=$R::evaluate(orl(['userType'=>'switching','currentMedication'=>'mounjaro','currentDose'=>'7.5mg','lastDoseDate'=>$ld,'weightKg'=>84,'heightCm'=>180,'startWeightKg'=>110,'currentMedsList'=>'Mounjaro'])); check('GLP-1 to Orlistat: BMI 25.9 -> new start rules, not eligible',!$r['eligible']);
+$r=$R::evaluate(orl(['userType'=>'switching','currentMedication'=>'mounjaro','currentDose'=>'7.5mg','lastDoseDate'=>$ld,'weightKg'=>100,'heightCm'=>180,'startWeightKg'=>110,'currentMedsList'=>'Mounjaro'])); check('GLP-1 to Orlistat: BMI 30.9 -> new start, OE7 confirm-stopped flag',$r['eligible'] && $r['pathway']==='new' && isset($r['flags']['orl_new_start'],$r['flags']['orl_oe7_confirm_stopped']) && !isset($r['flags']['proof_required']),json_encode($r));
+$old=(new DateTime('-200 days'))->format('Y-m-d');
+$r=$R::evaluate(orl(['userType'=>'switching','currentMedication'=>'wegovy','lastDoseDate'=>$old,'weightKg'=>100,'heightCm'=>180])); check('GLP-1 to Orlistat: no 3-month restart logic',$r['eligible'] && !isset($r['flags']['restart_over_3m']));
+$r=$R::evaluate(base(['userType'=>'switching','currentMedication'=>'orlistat','currentDose'=>'120mg','lastDoseDate'=>$ld,'weightKg'=>84,'heightCm'=>180,'startWeightKg'=>100,'selectedTreatment'=>'mounjaro'])); check('Orlistat to GLP-1: BMI 25.9 -> new start on GLP-1, not eligible',!$r['eligible']);
+$r=$R::evaluate(base(['userType'=>'switching','currentMedication'=>'orlistat','currentDose'=>'120mg','lastDoseDate'=>$ld,'weightKg'=>100,'heightCm'=>180,'startWeightKg'=>110,'selectedTreatment'=>'mounjaro'])); check('Orlistat to GLP-1: BMI 30.9 -> new start flag',$r['eligible'] && $r['pathway']==='new' && isset($r['flags']['from_orlistat']) && !isset($r['flags']['proof_required']));
+$r=$R::evaluate(orl(['userType'=>'switching','currentMedication'=>'orlistat','currentDose'=>'120mg','lastDoseDate'=>$ld,'weightKg'=>70,'heightCm'=>180,'startWeightKg'=>100])); check('Orlistat transfer: start 30.9, now 21.6 -> transfer with proof and 12-week evidence flags',$r['eligible'] && $r['pathway']==='transfer' && isset($r['flags']['proof_required'],$r['flags']['orl_transfer_12_week']),json_encode($r));
+$r=$R::evaluate(orl(['userType'=>'switching','currentMedication'=>'orlistat','currentDose'=>'120mg','lastDoseDate'=>$ld,'weightKg'=>98,'heightCm'=>180,'startWeightKg'=>100])); check('Orlistat transfer: declared loss 2% -> flagged under 5%',$r['eligible'] && strpos($r['flags']['orl_transfer_12_week'],'under 5%')!==false);
+$r=$R::evaluate(orl(['userType'=>'switching','currentMedication'=>'orlistat','currentDose'=>'120mg','lastDoseDate'=>$ld,'weightKg'=>64,'heightCm'=>180,'startWeightKg'=>100])); check('Orlistat transfer: now BMI 19.8 -> not eligible',!$r['eligible']);
+$r=$R::evaluate(orl(['userType'=>'switching','currentMedication'=>'orlistat','currentDose'=>'120mg','lastDoseDate'=>$ld,'weightKg'=>100,'heightCm'=>180,'startWeightKg'=>85])); check('Orlistat transfer: start BMI 26.2 but now 30.9 -> assessed as new start',$r['eligible'] && $r['pathway']==='new' && isset($r['flags']['orl_transfer_as_new']));
+$r=$R::evaluate(orl(['userType'=>'switching','currentMedication'=>'orlistat','lastDoseDate'=>'','weightKg'=>100,'heightCm'=>180,'startWeightKg'=>110])); check('Orlistat transfer: last dose date still required',!$r['eligible']);
+$x=$D::propose_start_dose('mounjaro','7.5mg','orlistat',3); check('Dose: GLP-1 to Orlistat -> 120mg, Orlistat rule', $x['dose']==='120mg' && $x['rule']==='orlistat_single_strength');
+$x=$D::propose_start_dose('orlistat','120mg','wegovy',3); check('Dose: Orlistat to Wegovy -> first step 0.25mg', $x['dose']==='0.25mg' && $x['rule']==='from_orlistat_new_start');
+check('Dose: Orlistat ladder is one strength', $D::ladder('orlistat')===['120mg']);
+// Reorders: rule O4.2 (12 weeks from first supply), O4.3 (BMI bands)
+$RR='TC_Reorder_Rules';
+$w=$RR::orlistat_twelve_week(100,97,40); check('Reorder at day 40: 12-week rule not yet, weights carried',!$w['block'] && $w['applies']===false && isset($w['flags']['orl_weight_change']));
+$w=$RR::orlistat_twelve_week(100,97,57); check('Reorder at day 57 (supply runs past 12 weeks), 3% loss -> blocked',$w['block'] && strpos($w['flags']['orl_12_week_stop'],'Under 5% at 12 weeks: stop under the licence')!==false,json_encode($w));
+$w=$RR::orlistat_twelve_week(100,95,90); check('Reorder at day 90, 5% loss -> not blocked, verify flag',!$w['block'] && isset($w['flags']['orl_12_week_ok']));
+$w=$RR::orlistat_twelve_week(100,96,120); check('Reorder at day 120, 4% loss -> blocked (every later reorder)',$w['block']);
+$w=$RR::orlistat_twelve_week(100,101,90); check('Weight gain at 12 weeks -> blocked, shows +1.0%',$w['block'] && strpos($w['flags']['orl_12_week_stop'],'+1.0%')!==false);
+$w=$RR::orlistat_twelve_week(null,90,90); check('Start weight unknown -> red flag, no silent pass',!$w['block'] && isset($w['flags']['orl_12_week_unknown']));
+$w=$RR::orlistat_twelve_week(100,90,null); check('First supply date unknown -> red flag',isset($w['flags']['orl_12_week_unknown']));
+check('Reorder BMI 21 -> 20 to 22.9 flag (Orlistat O4.3)', isset($RR::bmi_band_flags(21.0,'orlistat')['bmi_20_23']) && strpos($RR::bmi_band_flags(21.0,'orlistat')['bmi_20_23'],'O4.3')!==false);
+check('Reorder BMI 22.9 flagged, 23.0 and 19.9 not (floor blocks separately)', $RR::bmi_band_flags(22.9,'mounjaro') && !$RR::bmi_band_flags(23.0,'mounjaro') && !$RR::bmi_band_flags(19.9,'orlistat'));
+$f=$RR::orlistat_new_medicine_flags('started warfarin and Wegovy'); check('Reorder new medicines: OE7 and OF4 flagged',isset($f['orl_oe7_reorder'],$f['orl_of4_anticoagulant']),json_encode(array_keys($f)));
+check('Percent loss maths', abs($R::percent_loss(100,95)-5.0)<1e-9 && $R::percent_loss(0,90)===null);
 echo "\n$pass passed, $fail failed\n"; exit($fail?1:0);

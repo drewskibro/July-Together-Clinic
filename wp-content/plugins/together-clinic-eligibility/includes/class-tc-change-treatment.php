@@ -132,6 +132,27 @@ class TC_Change_Treatment {
 		$payload['selectedDose']      = $new_dose;
 		$payload['assessment_id']     = $assessment_id;
 
+		// Re-run the triage rules for the new product BEFORE replacing the
+		// order. Products have different rules (Orlistat BMI 28 vs GLP-1 27,
+		// and exclusions that apply to one group only, rules section O), so
+		// a change of product must never bypass the new product's screen.
+		$new_eligibility = null;
+		if ( ! empty( $payload['rulesVersion'] ) && class_exists( 'TC_Eligibility_Rules' ) ) {
+			$new_eligibility = TC_Eligibility_Rules::evaluate( $payload );
+			if ( empty( $new_eligibility['eligible'] ) ) {
+				if ( class_exists( 'TC_Log' ) ) {
+					TC_Log::info( 'treatment_change_refused', [
+						'order_id' => $order->get_id(),
+						'from'     => $current,
+						'to'       => $new,
+						'reason'   => (string) ( $new_eligibility['reason'] ?? '' ),
+					] );
+				}
+				$this->fail( $order, sprintf( 'Based on your answers, %s is not one we can offer you. Please keep your current choice or contact us and we will help.', $new_label ) );
+			}
+			$payload['rulesVersion'] = $new_eligibility['rules_version'];
+		}
+
 		// create_from_assessment's attach step reads TC_Cookie_Store::get(); this
 		// primes its request cache so the new order carries the updated payload
 		// even where the WC session is not loaded (admin-post.php).
@@ -144,6 +165,11 @@ class TC_Change_Treatment {
 		$prior_flags = is_array( $prior_flags ) ? $prior_flags : [];
 		if ( empty( $payload['rulesVersion'] ) ) {
 			$prior_flags['legacy_assessment'] = 'Assessment completed before rules WM-2026-10-v1: re-screen all criteria at the video consultation.';
+		}
+		if ( $new_eligibility ) {
+			// The new product's own flags (for Orlistat: OF1 to OF16) replace
+			// any carried flag with the same key.
+			$prior_flags = array_merge( $prior_flags, (array) ( $new_eligibility['flags'] ?? [] ) );
 		}
 		$flags = $prior_flags + [
 			'treatment_changed' => sprintf(
@@ -184,7 +210,7 @@ class TC_Change_Treatment {
 		// actually be paid — notify on the new order exactly as a fresh eligible
 		// submission would (no patient re-confirmation; they already have theirs).
 		if ( class_exists( 'TC_Eligibility_Rules' ) && class_exists( 'TC_Emails' ) ) {
-			$eligibility = TC_Eligibility_Rules::evaluate( $payload );
+			$eligibility = $new_eligibility ?: TC_Eligibility_Rules::evaluate( $payload );
 			if ( empty( $payload['rulesVersion'] ) ) {
 				// Assessed before rules WM-2026-10-v1: it lacks the new consents,
 				// so a re-run would wrongly read as ineligible. Pass it through
@@ -258,12 +284,16 @@ class TC_Change_Treatment {
 			if ( ! $starter || ! TC_Dose_Ladder::is_available( $treatment, $starter ) ) {
 				continue;
 			}
+			if ( ! $this->passes_rules_for( $order, $treatment, $starter ) ) {
+				continue; // Never offer a product the patient's answers rule out.
+			}
 
 			$product_id = TC_Variation_Map::get_variation_id( $treatment, $starter );
 			$product    = $product_id ? wc_get_product( $product_id ) : null;
 			$price_html = '';
 			if ( $product && $product->get_price() !== '' ) {
-				$price_html = wc_price( $product->get_price() ) . '/mo';
+				// Orlistat is sold by the 84-capsule pack, not by the month.
+				$price_html = wc_price( $product->get_price() ) . ( $treatment === 'orlistat' ? '/pack' : '/mo' );
 			}
 
 			$out[] = [
@@ -274,6 +304,22 @@ class TC_Change_Treatment {
 		}
 
 		return $out;
+	}
+
+	/**
+	 * Whether the order's stored assessment passes the triage rules for
+	 * another product. Assessments made before the rules versions existed
+	 * pass (they are re-screened at consultation, as before).
+	 */
+	private function passes_rules_for( WC_Order $order, $treatment, $dose ) {
+		$payload = json_decode( (string) $order->get_meta( TC_Checkout::ORDER_META_RAW ), true );
+		if ( ! is_array( $payload ) || empty( $payload['rulesVersion'] ) || ! class_exists( 'TC_Eligibility_Rules' ) ) {
+			return true;
+		}
+		$payload['selectedTreatment'] = $treatment;
+		$payload['selectedDose']      = $dose;
+		$result = TC_Eligibility_Rules::evaluate( $payload );
+		return ! empty( $result['eligible'] );
 	}
 
 	/**
